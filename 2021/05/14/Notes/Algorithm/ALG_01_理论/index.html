@@ -20,16 +20,17 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="ALG_01_理论复杂度分析LeetCode顺序数组链表 移除元素是虚节点的用处  链表操作  反转列表  删除链表倒数的第n个节点:   ​         主要走的次数  142  哈希表双指针字符串二叉树回溯贪心算法动态规划">
+  <meta name="description" content="ALG_01_理论数组链表 移除元素是虚节点的用处  链表操作  反转列表  删除链表倒数的第n个节点:   ​         主要走的次数  142  哈希表双指针字符串二叉树回溯贪心算法动态规划">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Sven&#39;s blog">
+<meta property="og:title" content="ALG_01_理论">
 <meta property="og:url" content="http://example.com/2021/05/14/Notes/Algorithm/ALG_01_%E7%90%86%E8%AE%BA/index.html">
 <meta property="og:site_name" content="Sven&#39;s blog">
-<meta property="og:description" content="ALG_01_理论复杂度分析LeetCode顺序数组链表 移除元素是虚节点的用处  链表操作  反转列表  删除链表倒数的第n个节点:   ​         主要走的次数  142  哈希表双指针字符串二叉树回溯贪心算法动态规划">
+<meta property="og:description" content="ALG_01_理论数组链表 移除元素是虚节点的用处  链表操作  反转列表  删除链表倒数的第n个节点:   ​         主要走的次数  142  哈希表双指针字符串二叉树回溯贪心算法动态规划">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-05-14T11:54:57.151Z">
-<meta property="article:modified_time" content="2021-05-14T11:54:57.151Z">
+<meta property="article:modified_time" content="2021-10-25T16:43:09.296Z">
 <meta property="article:author" content="sven">
+<meta property="article:tag" content="dp">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://example.com/2021/05/14/Notes/Algorithm/ALG_01_%E7%90%86%E8%AE%BA/">
@@ -45,7 +46,7 @@
   };
 </script>
 
-  <title> | Sven's blog</title>
+  <title>ALG_01_理论 | Sven's blog</title>
   
 
 
@@ -196,7 +197,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          
+          ALG_01_理论
         </h1>
 
         <div class="post-meta">
@@ -207,6 +208,19 @@
               <span class="post-meta-item-text">发表于</span>
 
               <time title="创建时间：2021-05-14 19:54:57" itemprop="dateCreated datePublished" datetime="2021-05-14T19:54:57+08:00">2021-05-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/algorithm/" itemprop="url" rel="index"><span itemprop="name">algorithm</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/algorithm/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+                </span>
             </span>
 
           
@@ -227,7 +241,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="ALG-01-理论"><a href="#ALG-01-理论" class="headerlink" title="ALG_01_理论"></a>ALG_01_理论</h1><h2 id="复杂度分析"><a href="#复杂度分析" class="headerlink" title="复杂度分析"></a>复杂度分析</h2><h2 id="LeetCode顺序"><a href="#LeetCode顺序" class="headerlink" title="LeetCode顺序"></a>LeetCode顺序</h2><h2 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h2><h2 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h2><ol>
+        <h1 id="ALG-01-理论"><a href="#ALG-01-理论" class="headerlink" title="ALG_01_理论"></a>ALG_01_理论</h1><h2 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h2><h2 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h2><ol>
 <li><p>移除元素是虚节点的用处</p>
 </li>
 <li><p>链表操作</p>
@@ -249,6 +263,9 @@
     
 
       <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/dp/" rel="tag"># dp</a>
+          </div>
 
         
 
@@ -256,12 +273,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2021/04/17/Notes/Java/JVM/JVM_08_%E6%96%B9%E6%B3%95%E5%8C%BA/" rel="prev" title="JVM_08_方法区">
-      <i class="fa fa-chevron-left"></i> JVM_08_方法区
+    <a href="/2021/05/14/Notes/Algorithm/ALG_00_%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E7%AE%97%E6%B3%95/" rel="prev" title="ALG_00_数据结构和算法之美">
+      <i class="fa fa-chevron-left"></i> ALG_00_数据结构和算法之美
     </a></div>
       <div class="post-nav-item">
-    <a href="/2021/05/30/Notes/Android/Framework/FrameWork_01_Binder/" rel="next" title="FrameWork_01_Binder">
-      FrameWork_01_Binder <i class="fa fa-chevron-right"></i>
+    <a href="/2021/05/14/Notes/Algorithm/ALG_10_%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95/" rel="next" title="ALG_10_贪心算法">
+      ALG_10_贪心算法 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -321,7 +338,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ALG-01-%E7%90%86%E8%AE%BA"><span class="nav-number">1.</span> <span class="nav-text">ALG_01_理论</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90"><span class="nav-number">1.1.</span> <span class="nav-text">复杂度分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LeetCode%E9%A1%BA%E5%BA%8F"><span class="nav-number">1.2.</span> <span class="nav-text">LeetCode顺序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E7%BB%84"><span class="nav-number">1.3.</span> <span class="nav-text">数组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%93%BE%E8%A1%A8"><span class="nav-number">1.4.</span> <span class="nav-text">链表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%88%E5%B8%8C%E8%A1%A8"><span class="nav-number">1.5.</span> <span class="nav-text">哈希表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8C%E6%8C%87%E9%92%88"><span class="nav-number">1.6.</span> <span class="nav-text">双指针</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="nav-number">1.7.</span> <span class="nav-text">字符串</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E5%8F%89%E6%A0%91"><span class="nav-number">1.8.</span> <span class="nav-text">二叉树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9E%E6%BA%AF"><span class="nav-number">1.9.</span> <span class="nav-text">回溯</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95"><span class="nav-number">1.10.</span> <span class="nav-text">贪心算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92"><span class="nav-number">1.11.</span> <span class="nav-text">动态规划</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ALG-01-%E7%90%86%E8%AE%BA"><span class="nav-number">1.</span> <span class="nav-text">ALG_01_理论</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E7%BB%84"><span class="nav-number">1.1.</span> <span class="nav-text">数组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%93%BE%E8%A1%A8"><span class="nav-number">1.2.</span> <span class="nav-text">链表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%93%88%E5%B8%8C%E8%A1%A8"><span class="nav-number">1.3.</span> <span class="nav-text">哈希表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8C%E6%8C%87%E9%92%88"><span class="nav-number">1.4.</span> <span class="nav-text">双指针</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="nav-number">1.5.</span> <span class="nav-text">字符串</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E5%8F%89%E6%A0%91"><span class="nav-number">1.6.</span> <span class="nav-text">二叉树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9E%E6%BA%AF"><span class="nav-number">1.7.</span> <span class="nav-text">回溯</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%AA%E5%BF%83%E7%AE%97%E6%B3%95"><span class="nav-number">1.8.</span> <span class="nav-text">贪心算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92"><span class="nav-number">1.9.</span> <span class="nav-text">动态规划</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -336,20 +353,20 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">58</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">23</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

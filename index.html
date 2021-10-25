@@ -178,6 +178,471 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/26/Notes/Android/FourComponents/Android%20Activity%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E5%90%AF%E5%8A%A8%E6%A8%A1%E5%BC%8F%E7%90%86%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/sven.jpeg">
+      <meta itemprop="name" content="sven">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sven's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/26/Notes/Android/FourComponents/Android%20Activity%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%92%8C%E5%90%AF%E5%8A%A8%E6%A8%A1%E5%BC%8F%E7%90%86%E8%A7%A3/" class="post-title-link" itemprop="url">Android Activity生命周期和启动模式理解</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-26 00:54:48" itemprop="dateCreated datePublished" datetime="2021-10-26T00:54:48+08:00">2021-10-26</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Android-Activity生命周期和启动模式理解"><a href="#Android-Activity生命周期和启动模式理解" class="headerlink" title="Android Activity生命周期和启动模式理解"></a>Android Activity生命周期和启动模式理解</h1><h1 id="一、生命周期"><a href="#一、生命周期" class="headerlink" title="一、生命周期"></a>一、生命周期</h1><h2 id="1-正常情况下生命周期分析"><a href="#1-正常情况下生命周期分析" class="headerlink" title="1.正常情况下生命周期分析"></a>1.正常情况下生命周期分析</h2><p><img src="https://leanote.com/api/file/getImage?fileId=594635f1ab64413c78001121" alt="Activity的生命周期"><br>完整生命周期：onCreate -&gt; onDestroy<br>可见生命周期：onStart -&gt; onStop<br>前台生命周期: onResume -&gt; onPause</p>
+<h3 id=""><a href="#" class="headerlink" title=""></a></h3><h2 id="2-常见生命周期的区别"><a href="#2-常见生命周期的区别" class="headerlink" title="2.常见生命周期的区别"></a>2.常见生命周期的区别</h2><h3 id="1-onCreate-和-onStart"><a href="#1-onCreate-和-onStart" class="headerlink" title="1. onCreate 和 onStart"></a>1. onCreate 和 onStart</h3><p>（1）可见与不可见的区别。前者不可见，后者可见。<br>（2）onCreate方法只在Activity创建时执行一次，而onStart方法在Activity的切换以及按Home键返回桌面再切回应用的过程中被多次调用。</p>
+<h3 id="2-onStart-和-onRestart"><a href="#2-onStart-和-onRestart" class="headerlink" title="2.onStart 和 onRestart"></a>2.onStart 和 onRestart</h3><p>如果一个activity第一次创建，那么只会走onStart，如果是切换应用或者桌面，那么就会走onRestart<br>If it’s destroyed onCreate(.) &gt;  onStart(.) &gt; onResume(.) is called(variables are lost, redraw).<br>If it’s stopped onRestart(.) &gt; onStart(.) &gt; onResume(.) is called(variables are not lost, redraw)</p>
+<h3 id="3-onStart-和-onResume"><a href="#3-onStart-和-onResume" class="headerlink" title="3.onStart 和 onResume"></a>3.onStart 和 onResume</h3><p>onStart activity 可见，不在前台<br>onResume activity 可见，前台且可与用户交互<br>这2个的主要区别就是Activity此时是否可以与用户交互</p>
+<h3 id="4-onPause-和-onStop"><a href="#4-onPause-和-onStop" class="headerlink" title="4.onPause 和 onStop"></a>4.onPause 和 onStop</h3><p>这2个状态通常是配对执行的，<br>有一种情况是特殊的，新启动的Activity是一个透明的界面，那么第一个Activity执行onPause后，onStop是不会调用的</p>
+<pre><code>&lt;activity android:name=&quot;.SecondActivity&quot;
+    android:theme=&quot;@style/Theme.AppCompat.Dialog&quot; /&gt;
+</code></pre>
+<h3 id="5-onStop-amp-onDestroy"><a href="#5-onStop-amp-onDestroy" class="headerlink" title="5.onStop &amp; onDestroy"></a>5.onStop &amp; onDestroy</h3><p>onStop阶段Activity还没有被销毁，对象还在内存中，此时可以通过切换Activity再次回到该Activity，而onDestroy阶段Activity被销毁</p>
+<h3 id="tips："><a href="#tips：" class="headerlink" title="tips："></a>tips：</h3><p>不同的生命周期适合不同的资源初始化或者释放工作，实践和工作中多总结。<a target="_blank" rel="noopener" href="http://www.jianshu.com/p/fb44584daee3">http://www.jianshu.com/p/fb44584daee3</a></p>
+<h2 id="3-常见操作的生命周期"><a href="#3-常见操作的生命周期" class="headerlink" title="3.常见操作的生命周期"></a>3.常见操作的生命周期</h2><h3 id="1-Launcher点击启动"><a href="#1-Launcher点击启动" class="headerlink" title="1.Launcher点击启动"></a>1.Launcher点击启动</h3><pre><code>01-16 10:57:22.429 26845-26845/? I/ActivityLife: onCreate...
+01-16 10:57:22.429 26845-26845/? I/ActivityLife: onStart...
+01-16 10:57:22.429 26845-26845/? I/ActivityLife: onResume...
+</code></pre>
+<h3 id="2-back键退出"><a href="#2-back键退出" class="headerlink" title="2.back键退出"></a>2.back键退出</h3><pre><code>01-16 10:58:58.139 26845-26845/? I/ActivityLife: onPause...
+01-16 10:58:58.459 26845-26845/? I/ActivityLife: onStop...
+01-16 10:58:58.459 26845-26845/? I/ActivityLife: onDestroy...
+</code></pre>
+<h3 id="3-HOME键退出然后再次点击启动"><a href="#3-HOME键退出然后再次点击启动" class="headerlink" title="3.HOME键退出然后再次点击启动"></a>3.HOME键退出然后再次点击启动</h3><pre><code>01-16 10:59:49.019 26845-26845/? I/ActivityLife: onPause...
+01-16 10:59:49.309 26845-26845/? I/ActivityLife: onStop...
+01-16 11:00:06.519 26845-26845/? I/ActivityLife: onRestart...
+01-16 11:00:06.519 26845-26845/? I/ActivityLife: onStart...
+01-16 11:00:06.519 26845-26845/? I/ActivityLife: onResume...
+</code></pre>
+<h3 id="4-锁屏解锁"><a href="#4-锁屏解锁" class="headerlink" title="4.锁屏解锁"></a>4.锁屏解锁</h3><pre><code>01-16 11:02:33.739 26845-26845/? I/ActivityLife: onPause...
+01-16 11:02:33.779 26845-26845/? I/ActivityLife: onStop...
+01-16 11:02:35.509 26845-26845/? I/ActivityLife: onRestart...
+01-16 11:02:35.529 26845-26845/? I/ActivityLife: onStart...
+01-16 11:02:35.529 26845-26845/? I/ActivityLife: onResume...
+</code></pre>
+<h1 id="2-异常情况下的生命周期分析"><a href="#2-异常情况下的生命周期分析" class="headerlink" title="2.异常情况下的生命周期分析"></a>2.异常情况下的生命周期分析</h1><h2 id="1-触发情况："><a href="#1-触发情况：" class="headerlink" title="1.触发情况："></a>1.触发情况：</h2><p>1.系统资源相关的配置发生变化导致Activity被杀死和重建<br>2.系统内存资源不足，lmk</p>
+<h2 id="2-执行的特殊生命周期："><a href="#2-执行的特殊生命周期：" class="headerlink" title="2.执行的特殊生命周期："></a>2.执行的特殊生命周期：</h2><pre><code>onSaveInstanceState &amp; onRestoreInstanceState
+</code></pre>
+<p>1.onSaveInstanceState 通常在onStop之前，用于保存Activity数据<br>2.onRestoreInstanceState 通常在onStart之后，恢复Activity数据 </p>
+<h3 id="tips：-1"><a href="#tips：-1" class="headerlink" title="tips："></a>tips：</h3><p>在onCreate和onRestoreInstanceState中都有一个参数savedInstanceState，二者的区别是：onRestoreInstanceState的参数是一定有值的，我们不用额外的判断它是否为空，但是onCreate不行，onCreate如果正常启动的话，savedInstanceState的值是null</p>
+<h2 id="3-典型示例，系统配置变化，屏幕旋转"><a href="#3-典型示例，系统配置变化，屏幕旋转" class="headerlink" title="3.典型示例，系统配置变化，屏幕旋转"></a>3.典型示例，系统配置变化，屏幕旋转</h2><pre><code>public class MainActivity extends AppCompatActivity &#123;
+
+    private static final String TAG = &quot;ActivityLife&quot;;
+
+    private static final String EDIT_TAG = &quot;edit_tag&quot;;
+    private EditText editText;
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) &#123;
+        Log.i(TAG, &quot;onSaveInstanceState...&quot;);
+        super.onSaveInstanceState(outState);
+        String s = editText.getText().toString();
+        outState.putString(EDIT_TAG,s);
+    &#125;
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) &#123;
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.i(TAG, &quot;onRestoreInstanceState...&quot;);
+        //onCreate 或者这里恢复数据均可
+        editText.setText(savedInstanceState.getString(EDIT_TAG));
+    &#125;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) &#123;
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        Log.i(TAG, &quot;onCreate...&quot;);
+        editText = (EditText) findViewById(R.id.edit_content);
+        if (savedInstanceState != null)&#123;
+            Log.i(TAG, &quot;onCreate savedInstanceState is not null&quot;);
+            editText.setText(savedInstanceState.getString(EDIT_TAG));
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<p>从Lanucher启动并且旋转一次屏幕，生命周期如下：</p>
+<pre><code>01-16 11:59:30.459 29726-29726/? I/ActivityLife: onCreate...
+01-16 11:59:30.459 29726-29726/? I/ActivityLife: onStart...
+01-16 11:59:30.459 29726-29726/? I/ActivityLife: onResume...
+01-16 11:59:38.609 29726-29726/? I/ActivityLife: onPause...
+01-16 11:59:38.609 29726-29726/? I/ActivityLife: onSaveInstanceState...
+01-16 11:59:38.619 29726-29726/? I/ActivityLife: onStop...
+01-16 11:59:38.619 29726-29726/? I/ActivityLife: onDestroy...
+01-16 11:59:38.669 29726-29726/? I/ActivityLife: onCreate...
+01-16 11:59:38.669 29726-29726/? I/ActivityLife: onCreate savedInstanceState is not null
+01-16 11:59:38.669 29726-29726/? I/ActivityLife: onStart...
+01-16 11:59:38.669 29726-29726/? I/ActivityLife: onRestoreInstanceState...
+01-16 11:59:38.669 29726-29726/? I/ActivityLife: onResume...
+</code></pre>
+<h2 id="4-onConfigurationChanged"><a href="#4-onConfigurationChanged" class="headerlink" title="4.onConfigurationChanged"></a>4.onConfigurationChanged</h2><p>当系统配置发生变化，如果不希望Activity重新创建，可以在AndroidManifest文件中给Activity加上属性，以屏幕旋转为例</p>
+<pre><code>android:configChanges=&quot;orientation|screenSize&quot;
+</code></pre>
+<p>注意：从 Android 3.2（API 级别 13）开始，当设备在纵向和横向之间切换时，“屏幕尺寸”也会发生变化。因此，在开发针对 API 级别 13 或更高版本（正如 minSdkVersion 和 targetSdkVersion 属性中所声明）的应用时，若要避免由于设备方向改变而导致运行时重启，则除了 “orientation” 值以外，您还必须添加 “screenSize” 值。 也就是说，您必须声明 android:configChanges=”orientation|screenSize”。</p>
+<h3 id="configChanges相关属性"><a href="#configChanges相关属性" class="headerlink" title="configChanges相关属性"></a>configChanges相关属性</h3><p><img src="https://leanote.com/api/file/getImage?fileId=59464bb1ab64413e9800127c" alt="config_changes"></p>
+<h1 id="二、Activity的启动模式"><a href="#二、Activity的启动模式" class="headerlink" title="二、Activity的启动模式"></a>二、Activity的启动模式</h1><h2 id="1-Activity的四种启动模式"><a href="#1-Activity的四种启动模式" class="headerlink" title="1.Activity的四种启动模式"></a>1.Activity的四种启动模式</h2><p>standard:标准模式，每次启动一个Activity都会重新创建一个新的实例，不管这个实例是否已经存在<br>singleTop:栈顶复用模式，如果新的Activity已经位于任务栈的栈顶，那么此Activity就不会被重新创建,同时他的onNewIntent方法会被回调<br>singleTask:栈内复用模式，如果一个Activity在一个任务栈内存在，那么多次启动这个Activity都不会重新创建实例，它的onNewIntent方法也会被回调<br>singleInstance：单实例模式，具有此种模式的Activity只能单独的位于一个任务栈中</p>
+<p>standard 和 singleTop都比较好理解，下面主要分析下singleTask和singleInstance的特点。会用到的调试命令：</p>
+<pre><code>adb shell dumpsys activity | grep com.example.sven.activitydemo
+</code></pre>
+<h2 id="2-singleTask的特点"><a href="#2-singleTask的特点" class="headerlink" title="2.singleTask的特点"></a>2.singleTask的特点</h2><p>​    </p>
+<h3 id="1-singleTask-和-taskAffinity"><a href="#1-singleTask-和-taskAffinity" class="headerlink" title="1.singleTask 和 taskAffinity"></a>1.singleTask 和 taskAffinity</h3><p><strong>1.launchMode=singleTask 的应用启动时是否会创建新的任务和taskAffinity属性有关</strong></p>
+<p>设置了”singleTask”启动模式的Activity，它在启动的时候，会先在系统中查找属性值affinity等于它的属值taskAffinity的任务存在；如果存在这样的任务，它就会在这个任务中启动，否则就会在新任务中启动。因此如果我们想要设置了”singleTask”启动模式的Activity在新的任务中启动，就要为它设置一个唯一的taskAffinity属性值。</p>
+<p>示例：A应用中，A0（表示启动界面，A1跳转的第二个界面，依次类推）A0-A1<br>(1)设置SecondActivity launchMode=”singleTask”，但不指定taskAffinity</p>
+<pre><code>TaskRecord&#123;576dbde #53 A=com.example.sven.activitydemo U=0 sz=2&#125;
+    Run #5: ActivityRecord&#123;dc04be8 u0 com.example.sven.activitydemo/.SecondActivity t53&#125;
+    Run #4: ActivityRecord&#123;bebf9d2 u0 com.example.sven.activitydemo/.MainActivity t53&#125;
+</code></pre>
+<p>可以看到，虽然设置了singleTask的lanuchModel，但是MainActivity和SecondActivity还是在同一个任务栈中</p>
+<p>(2)设置SecondActivity launchMode=”singleTask” ，同时指定taskAffinity = “com.example.sven.activitydemo.second”</p>
+<pre><code>TaskRecord&#123;705495 #55 A=com.example.sven.activitydemo.second U=0 sz=1&#125;
+    Run #5: ActivityRecord&#123;5a9b163 u0 com.example.sven.activitydemo/.SecondActivity t55&#125;
+TaskRecord&#123;9d799aa #54 A=com.example.sven.activitydemo U=0 sz=1&#125;
+    Run #4: ActivityRecord&#123;5e9adf5 u0 com.example.sven.activitydemo/.MainActivity t54&#125;
+</code></pre>
+<p>可以看到，设置了taskAffinity后，新的Activity就运行在新的任务栈里了</p>
+<h3 id="tips：-2"><a href="#tips：-2" class="headerlink" title="tips："></a>tips：</h3><p>默认情况下，所有Activity的所需任务栈名均为包名，所以说如果将上面的taskAffinity属性设置为包名，SecondActivity也是不会在新的任务栈中启动的</p>
+<p><strong>2.在同一个任务栈中具有唯一性</strong><br>    如果设置了”singleTask”启动模式的Activity不是在新的任务中启动时，它会在已有的任务中查看是否已经存在对应的Activity实例，如果存在，就会把位于这个Activity实例上面的Activity全部结束掉，最终这个Activity实例位于任务的堆栈顶端中。<br>示例：<br>MainActity SecondActivty ThirdActivty（以上3个Activity用A、B、C代表）在2种条件下执行如下过程 A -&gt; B -&gt;C -&gt; A -&gt;B</p>
+<p>(1) SecondActivty launchMode=”singleTask”，taskAffinity=包名，最终栈中的结果如下</p>
+<pre><code>TaskRecord&#123;8d620aa #62 A=com.example.sven.activitydemo U=0 sz=2&#125;
+    Run #5: ActivityRecord&#123;ab051c1 u0 com.example.sven.activitydemo/.SecondActivity t62&#125;
+    Run #4: ActivityRecord&#123;56fcc63 u0 com.example.sven.activitydemo/.MainActivity t62&#125;
+</code></pre>
+<p>(2) 设置SecondActivty 指定 taskAffinity = “com.example.sven.activitydemo.second”</p>
+<pre><code>  TaskRecord&#123;4e4a3bc #61 A=com.example.sven.activitydemo.second U=0 sz=1&#125;
+    Run #5: ActivityRecord&#123;f48dc2b u0 com.example.sven.activitydemo/.SecondActivity t61&#125;
+  TaskRecord&#123;ea52f45 #60 A=com.example.sven.activitydemo U=0 sz=1&#125;
+    Run #4: ActivityRecord&#123;9e4ab1 u0 com.example.sven.activitydemo/.MainActivity t60&#125;
+</code></pre>
+<p>   可以看到在2种情况下， 不论是否设定taskAffinity，在SecondActivity栈顶的实例都被清掉了</p>
+<p><strong>3.任务（Task）不仅可以跨应用（Application），还可以跨进程（Process）</strong></p>
+<p>示例：<br>    2个应用中A,B中，2个ActivityA1,B1的singleTask的Activity的taskAffinity设置为相同，执行如下过程 A0-&gt;A1，B0-&gt;B1</p>
+<pre><code>android:launchMode=&quot;singleTask&quot;
+android:taskAffinity=&quot;com.example.sven.activitydemo.second&quot;
+
+TaskRecord&#123;a412e6e #71 A=com.example.sven.activitydemo.second U=0 sz=2&#125;
+    Run #5: ActivityRecord&#123;12bc505 u0 com.example.sven.activitydemo2/.SecondActivityCopy t71&#125;
+  TaskRecord&#123;fa790f #72 A=com.example.sven.activitydemo2 U=0 sz=1&#125;
+    Run #4: ActivityRecord&#123;2610bd9 u0 com.example.sven.activitydemo2/.MainActivityCopy t72&#125;
+  TaskRecord&#123;a412e6e #71 A=com.example.sven.activitydemo.second U=0 sz=2&#125;
+    Run #3: ActivityRecord&#123;ca0064a u0 com.example.sven.activitydemo/.SecondActivity t71&#125;
+  TaskRecord&#123;c224d9c #70 A=com.example.sven.activitydemo U=0 sz=1&#125;
+    Run #2: ActivityRecord&#123;4257b8e u0 com.example.sven.activitydemo/.MainActivity t70&#125;
+</code></pre>
+<p>可以看到相同taskAffinity的Run#5和Run#3是在同一个任务栈a412e6e中的。</p>
+<h3 id="tips"><a href="#tips" class="headerlink" title="tips:"></a>tips:</h3><p>Application，Task和Process的区别与联系<br>application翻译成中文时一般称为“应用”或“应用程序”，在android中，总体来说一个应用就是一组组件的集合。<br>task是在程序运行时，只针对activity的概念。说白了，task是一组相互关联的activity的集合，它是存在于framework层的一个概念，控制界面的跳转和返回。这个task存在于一个称为backstack的数据结构中，也就是说，framework是以栈的形式管理用户开启的activity。这个栈的基本行为是，当用户在多个activity之间跳转时，执行压栈操作，当用户按返回键时，执行出栈操作。<br>process一般翻译成进程，进程是操作系统内核中的一个概念，表示直接受内核调度的执行单位。在应用程序的角度看，我们用java编写的应用程序，运行在dalvik虚拟机中，可以认为一个运行中的dalvik虚拟机实例占有一个进程，所以，在默认情况下，一个应用程序的所有组件运行在同一个进程中。但是这种情况也有例外，即，应用程序中的不同组件可以运行在不同的进程中。只需要在manifest中用process属性指定组件所运行的进程的名字。如下所示：</p>
+<pre><code> &lt;activity
+        android:name=&quot;.SecondActivityCopy&quot;
+       android:process=&quot;:remote&quot;
+        android:allowTaskReparenting=&quot;true&quot; /&gt;
+</code></pre>
+<p><strong>4.allowTaskReparenting</strong><br>    一个应用A启动另一个应用B的B1（standard模式）Activity，如果这个Activity的allowTaskReparenting属性为true的话，那么B启动后B1直接会转移到B的任务栈中。现象就是A启动B1，在启动B时，显示的就是B1，而不是B0</p>
+<pre><code>A -&gt; B1：
+
+TaskRecord&#123;fc84b0d #46 A=com.example.sven.activitydemo2 U=0 sz=1&#125;
+    Run #1: ActivityRecord&#123;8ebbcf3 u0 com.example.sven.activitydemo2/.SecondActivityCopy t46&#125;
+  TaskRecord&#123;137b068 #45 A=com.example.sven.activitydemo U=0 sz=1&#125;
+    Run #0: ActivityRecord&#123;b7827ad u0 com.example.sven.activitydemo/.MainActivity t45&#125;
+</code></pre>
+<p>​<br>​<br>​    启动B<br>​    TaskRecord{fc84b0d #46 A=com.example.sven.activitydemo2 U=0 sz=1}<br>​        Run #1: ActivityRecord{8ebbcf3 u0 com.example.sven.activitydemo2/.SecondActivityCopy t46}<br>​      TaskRecord{137b068 #45 A=com.example.sven.activitydemo U=0 sz=1}<br>​        Run #0: ActivityRecord{b7827ad u0 com.example.sven.activitydemo/.MainActivity t45}</p>
+<h2 id="4-SingleInstance的特点"><a href="#4-SingleInstance的特点" class="headerlink" title="4.SingleInstance的特点"></a>4.SingleInstance的特点</h2><p><strong>1.singleInstance模式启动的Activity具有全局唯一性</strong><br>    整个系统中只会存在一个这样的实例，如果在启动这样的Activity时，已经存在了一个实例，那么会把它所在的任务调度到前台，重用这个实例。</p>
+<p>示例：<br>2 个应用A，B，设置**B1 launchMode=”singleInstance”**， 执行如下过程，先B -&gt; B1， 再A0 -&gt;B1</p>
+<pre><code>TaskRecord&#123;9b9bb06 #108 A=com.example.sven.activitydemo2 U=0 sz=1&#125;
+    Run #3: ActivityRecord&#123;5520232 u0 com.example.sven.activitydemo2/.SecondActivityCopy t108&#125;
+TaskRecord&#123;7b4a5c7 #107 A=com.example.sven.activitydemo2 U=0 sz=1&#125;
+    Run #2: ActivityRecord&#123;6cf92f7 u0 com.example.sven.activitydemo2/.MainActivityCopy t107&#125;
+
+TaskRecord&#123;9b9bb06 #108 A=com.example.sven.activitydemo2 U=0 sz=1&#125;
+    Run #4: ActivityRecord&#123;5520232 u0 com.example.sven.activitydemo2/.SecondActivityCopy t108&#125;
+TaskRecord&#123;3cccdb5 #109 A=com.example.sven.activitydemo U=0 sz=1&#125;
+    Run #3: ActivityRecord&#123;facfdb u0 com.example.sven.activitydemo/.MainActivity t109&#125;
+TaskRecord&#123;7b4a5c7 #107 A=com.example.sven.activitydemo2 U=0 sz=1&#125;
+    Run #2: ActivityRecord&#123;6cf92f7 u0 com.example.sven.activitydemo2/.MainActivityCopy t107&#125;
+</code></pre>
+<p>可以看到 2 个过程中B1 的Taskrecord没有发生变化</p>
+<p><strong>2.singleInstance模式启动的Activity具有独占性</strong><br>它会独自占用一个任务，被它开启的任何activity都会运行在其他任务中，但是否能够开启一个新任务，要看当前系统中是不是已经有了一个和要开启的Activity的taskAffinity属性相同的任务。<br>示例：<br>   B0-&gt;B1 B1-&gt;A3（B0和B1又因为上个原则，所以是在不同的任务栈中）</p>
+<pre><code>  TaskRecord&#123;94de3cf #69 A=com.example.sven.activitydemo U=0 sz=1&#125;
+    Run #2: ActivityRecord&#123;89ba288 u0 com.example.sven.activitydemo/.ThirdActivity t69&#125;
+  TaskRecord&#123;2ad415c #68 A=com.example.sven.activitydemo2 U=0 sz=1&#125;
+    Run #1: ActivityRecord&#123;73d6ca u0 com.example.sven.activitydemo2/.SecondActivityCopy t68&#125;
+  TaskRecord&#123;6d70c65 #67 A=com.example.sven.activitydemo2 U=0 sz=1&#125;
+    Run #0: ActivityRecord&#123;3941c44 u0 com.example.sven.activitydemo2/.MainActivityCopy t67&#125;
+</code></pre>
+<p>先启动A0（A3和A0是运行在同一个栈中）  B0-&gt;B1 B1-&gt;A3</p>
+<pre><code>TaskRecord&#123;5db49f9 #71 A=com.example.sven.activitydemo U=0 sz=2&#125;
+  Run #3: ActivityRecord&#123;dfea174 u0 com.example.sven.activitydemo/.ThirdActivity t71&#125;
+TaskRecord&#123;e7e8d3e #73 A=com.example.sven.activitydemo2 U=0 sz=1&#125;
+  Run #2: ActivityRecord&#123;cb12857 u0 com.example.sven.activitydemo2/.SecondActivityCopy t73&#125;
+TaskRecord&#123;3f750ec #72 A=com.example.sven.activitydemo2 U=0 sz=1&#125;
+  Run #1: ActivityRecord&#123;2efad8b u0 com.example.sven.activitydemo2/.MainActivityCopy t72&#125;
+TaskRecord&#123;5db49f9 #71 A=com.example.sven.activitydemo U=0 sz=2&#125;
+  Run #0: ActivityRecord&#123;c39fdab u0 com.example.sven.activitydemo/.MainActivity t71&#125;
+</code></pre>
+<p>可以看到A3（Run #2）会在A0 （Run #5）的任务栈中46bac8a</p>
+<h3 id="tips：-3"><a href="#tips：-3" class="headerlink" title="tips："></a>tips：</h3><p>启动时是否开启任务栈，考虑3个点：1.被启动的Activity的launchModel，如果是singleTask要同时考虑它的taskAffinity<br>                                 2.启动Activity的launchmode(singleInstance)<br>                                 3.当前是否有被启动应用的任务栈</p>
+<h2 id="4-Activity的flag"><a href="#4-Activity的flag" class="headerlink" title="4.Activity的flag"></a>4.Activity的flag</h2><h3 id="1-Intent-FLAG-ACTIVITY-NEW-TASK"><a href="#1-Intent-FLAG-ACTIVITY-NEW-TASK" class="headerlink" title="1.Intent.FLAG_ACTIVITY_NEW_TASK"></a>1.Intent.FLAG_ACTIVITY_NEW_TASK</h3><p>等价于 launchMode = singleTask</p>
+<h3 id="2-Intent-FLAG-ACTIVITY-SINGLE-TOP"><a href="#2-Intent-FLAG-ACTIVITY-SINGLE-TOP" class="headerlink" title="2.Intent.FLAG_ACTIVITY_SINGLE_TOP"></a>2.Intent.FLAG_ACTIVITY_SINGLE_TOP</h3><p>等价于 launchMode = singleTop 设置singleTop 和一起使用taskAffinity ，只有singleTop的效果</p>
+<h3 id="3-Intent-FLAG-ACTIVITY-CLEAR-TOP"><a href="#3-Intent-FLAG-ACTIVITY-CLEAR-TOP" class="headerlink" title="3.Intent.FLAG_ACTIVITY_CLEAR_TOP"></a>3.Intent.FLAG_ACTIVITY_CLEAR_TOP</h3><p>检查目标栈中是否有对应的实例，如果有就会将该实例之上的所有栈都清掉<br>    A-&gt;B（正常启动）-&gt;C-&gt;A-&gt;B(clearTop方式启动)<br>    (1) B的launchmode 是standard</p>
+<pre><code>TaskRecord&#123;fec37c7 #134 A=com.example.sven.activitydemo U=0 sz=4&#125;
+    Run #5: ActivityRecord&#123;91e286b u0 com.example.sven.activitydemo/.MainActivity t134&#125;
+    Run #4: ActivityRecord&#123;775d8ae u0 com.example.sven.activitydemo/.ThirdActivity t134&#125;
+    Run #3: ActivityRecord&#123;20304d6 u0 com.example.sven.activitydemo/.SecondActivity t134&#125;
+    Run #2: ActivityRecord&#123;b049afa u0 com.example.sven.activitydemo/.MainActivity t134&#125;
+ 
+TaskRecord&#123;fec37c7 #134 A=com.example.sven.activitydemo U=0 sz=2&#125;
+   Run #3: ActivityRecord&#123;4fdc1db u0 com.example.sven.activitydemo/.SecondActivity t134&#125;
+    Run #2: ActivityRecord&#123;b049afa u0 com.example.sven.activitydemo/.MainActivity t134&#125;
+</code></pre>
+<p>可以看到，如果被启动的SecondActivity的启动模式是standard，那么B会重新创建新的实例并且之前的实例及实例之上的Activity都会出栈，recordid 发生了变化 20304d6 -&gt; 4fdc1db</p>
+<pre><code>(2) B的launchmode是singleTask
+
+TaskRecord&#123;249ecaa #135 A=com.example.sven.activitydemo U=0 sz=4&#125;
+    Run #5: ActivityRecord&#123;1116cb u0 com.example.sven.activitydemo/.MainActivity t135&#125;
+    Run #4: ActivityRecord&#123;92b068e u0 com.example.sven.activitydemo/.ThirdActivity t135&#125;
+    Run #3: ActivityRecord&#123;96bd6b6 u0 com.example.sven.activitydemo/.SecondActivity t135&#125;
+    Run #2: ActivityRecord&#123;44bf730 u0 com.example.sven.activitydemo/.MainActivity t135&#125;
+
+TaskRecord&#123;249ecaa #135 A=com.example.sven.activitydemo U=0 sz=2&#125;
+    Run #3: ActivityRecord&#123;96bd6b6 u0 com.example.sven.activitydemo/.SecondActivity t135&#125;
+    Run #2: ActivityRecord&#123;44bf730 u0 com.example.sven.activitydemo/.MainActivity t135&#125;
+</code></pre>
+<p>可以看到，如果被启动的SecondActivity的启动模式是SingleTask，那么B会清除实例之上的Activity，并且调用onNewIntent方法</p>
+<p><strong>总结：主要2个点，清除被启动Activity之上的实例，是否创建新的实例和被启动Activity的lanuchMode有关</strong></p>
+<h3 id="4-Intent-FLAG-ACTIVITY-EXCLUDE-FROM-RECENTS"><a href="#4-Intent-FLAG-ACTIVITY-EXCLUDE-FROM-RECENTS" class="headerlink" title="4. Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS"></a>4. Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS</h3><p>具有这个标记的Activity不会出现在历史Activity的记录中，和android:excludeFromRecents作用相同</p>
+<h3 id="tips：启动模式有2种设置方法，通过设置Intent的FLAG-和-AndroidManifest-xml-，第一种方式的优先级大于第二种方式"><a href="#tips：启动模式有2种设置方法，通过设置Intent的FLAG-和-AndroidManifest-xml-，第一种方式的优先级大于第二种方式" class="headerlink" title="tips：启动模式有2种设置方法，通过设置Intent的FLAG 和 AndroidManifest.xml ，第一种方式的优先级大于第二种方式"></a>tips：启动模式有2种设置方法，通过设置Intent的FLAG 和 AndroidManifest.xml ，第一种方式的优先级大于第二种方式</h3><h1 id="三、IntentFilter的匹配规则"><a href="#三、IntentFilter的匹配规则" class="headerlink" title="三、IntentFilter的匹配规则"></a>三、IntentFilter的匹配规则</h1><p>Activity的显示调用和隐式调用：<a target="_blank" rel="noopener" href="http://blog.csdn.net/xiao__gui/article/details/11392987">http://blog.csdn.net/xiao__gui/article/details/11392987</a></p>
+<p>一个activity可以有多个过滤器，每个过滤器均可以有多个action，category和data</p>
+<h2 id="1-action的匹配规则"><a href="#1-action的匹配规则" class="headerlink" title="1.action的匹配规则"></a>1.action的匹配规则</h2><p><strong>Intent 中的 action 只要有一个与过滤器（manifest中的intent-filter）的匹配，就可调用这个过滤器所在的组件。</strong></p>
+<h2 id="2-category的匹配规则"><a href="#2-category的匹配规则" class="headerlink" title="2.category的匹配规则"></a>2.category的匹配规则</h2><p>category 表示类别，最常见就是这2个</p>
+<pre><code>&lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; /&gt;
+ &lt;category android:name=&quot;android.intent.category.DEFAULT&quot; /&gt;
+</code></pre>
+<p><strong>1. 隐式启动时intent会自动的添加一个默认的category，所以隐式启动时，过滤器中默认的category必须要加</strong></p>
+<pre><code> &lt;category android:name=&quot;android.intent.category.DEFAULT&quot;/&gt;
+</code></pre>
+<p><strong>2. 隐式启动时，intent中添加的category必须包含在过滤器中</strong></p>
+<h2 id="3-data的匹配规则"><a href="#3-data的匹配规则" class="headerlink" title="3.data的匹配规则"></a>3.data的匹配规则</h2><p><strong>data 表示该组件可以支持的数据格式与类型，intent 至少可以匹配过滤器中的一个</strong></p>
+<p>主要由两部分组成：1.mimeType 2.URI ，语法如下：</p>
+<pre><code>&lt;data android:scheme=&quot;string&quot;
+    android:host=&quot;string&quot;
+    android:port=&quot;string&quot;
+    android:path=&quot;string&quot;
+    android:pathPattern=&quot;string&quot;
+    android:pathPrefix=&quot;string&quot;
+    android:mimeType=&quot;string&quot; /&gt;
+</code></pre>
+<p>(1) mimeType 指的是支持的数据类型与格式<br>    常见的有：1.text/plain 2.image/jpeg 3.video/* 4.audio/*<br>    / 号前面的是数据类型，后面是具体格式。</p>
+<p>(2) URI 格式：</p>
+<pre><code>&lt;scheme&gt;://&lt;host&gt;:&lt;port&gt;/[&lt;path&gt;]|[&lt;pathPrefix&gt;]|[pathPattern]
+</code></pre>
+<p>1.scheme、host、port、path分别表示URI的模式、主机名和端口号和路径</p>
+<pre><code>例如：http://www.baidu.com:80/search/info
+</code></pre>
+<p>2.如果scheme或者host未指定那么URI就无效</p>
+<p>3.URI 是有默认值的，content 和 file，这里不是很理解，不过发现这样一种情况：</p>
+<p>在intent-filter 中添加任意一种mimeType，不指定URI</p>
+<pre><code>&lt;data android:mimeType=&quot;image/jpeg&quot;/&gt;
+</code></pre>
+<p>intent启动时，设置URI为 content:.* 或 file:.* 均可启动</p>
+<pre><code>intent.setDataAndType(Uri.parse(&quot;content://abc&quot;), &quot;image/jpeg&quot;);
+</code></pre>
+<p>4.data 是有如下2种写法的，效果是一样的</p>
+<pre><code>&lt;data android:scheme=&quot;file&quot;
+      android:host=&quot;abc&quot;
+      android:mimeType=&quot;text/plain&quot;/&gt;
+
+&lt;data android:scheme=&quot;file&quot;/&gt;
+&lt;data android:host=&quot;abc&quot;/&gt;
+&lt;data android:mimeType=&quot;text/plain&quot;/&gt;
+</code></pre>
+<p>如果一个intent-filter 中有多个data 并且他们的URI均不同，建议用第一种。</p>
+<p>data 的匹配规则这里只列举的常用的一部分，还有些情况类似与如下，也可以匹配到，可以将URI 和MIMETYPE的关系理解为action和category的关系</p>
+<pre><code>&lt;data android:scheme=&quot;http&quot; android:host=&quot;abc&quot; android:mimeType=&quot;text/plain&quot;/&gt;
+&lt;data android:scheme=&quot;http&quot; android:host=&quot;abc2&quot; android:mimeType=&quot;image/png&quot;/&gt;
+
+intent.setDataAndType(Uri.parse(&quot;http://abc&quot;), &quot;image/png&quot;);
+</code></pre>
+<p>只能理解为 URI 和MIMETYPE 其实类似于 action 和 category的关系，采用如下的写法更能表现两者的关系，具体大家在实践中多多理解</p>
+<pre><code>  &lt;data android:scheme=&quot;file&quot; android:host=&quot;abc&quot; /&gt;
+  &lt;data android:scheme=&quot;file&quot; android:host=&quot;abc2&quot; /&gt;
+  &lt;data android:mimeType=&quot;text/plain&quot; /&gt;
+  &lt;data android:mimeType=&quot;image/png&quot; /&gt;
+</code></pre>
+<h3 id="tips-1"><a href="#tips-1" class="headerlink" title="tips:"></a>tips:</h3><p>1.如果要为Intent指定完整的data，必须要调用setDataAndType方法，不能先调用setData然后调用setType，因为这两个方法会彼此清除对方的值。<br>2.当我们启动Activity可以通过resolveActivity判断是否有对应的Activity</p>
+<pre><code>if(this.getPackageManager().resolveActivity(intent, 0) != null)&#123;
+    startActivity(intent);
+&#125;
+</code></pre>
+<p>3.特殊的一组action和category，标记应用启动时打开的Activity，少了任何一个都没有意义</p>
+<pre><code>&lt;intent-filter&gt;
+    &lt;action android:name=&quot;android.intent.action.MAIN&quot; /&gt;
+    &lt;category android:name=&quot;android.intent.category.LAUNCHER&quot; /&gt;
+&lt;/intent-filter&gt;
+</code></pre>
+<p>4.显示Component调用也是可以跨应用的，需要显示指定Activity属性 android:exported=”true” 或者添加一个intent-Filter，否则会报AndroidRuntime异常，通过Tip 2是不能检查出intent是否正常。</p>
+<p>以上这些自己写了个Demo，方便大家调试和学习：</p>
+<p><strong>问题：</strong></p>
+<ol>
+<li>onSaveInstanceState 为何会在跳转到别的Activity、Home键以及锁屏时调用？</li>
+<li>category 和 data 的更多用法？</li>
+</ol>
+<p><strong>参考资料：</strong><br><a target="_blank" rel="noopener" href="https://developer.android.com/reference/android/app/Activity.html">https://developer.android.com/reference/android/app/Activity.html</a><br><a target="_blank" rel="noopener" href="https://developer.android.com/guide/topics/manifest/activity-element.html?hl=zh-cn#config">https://developer.android.com/guide/topics/manifest/activity-element.html?hl=zh-cn#config</a><br><a target="_blank" rel="noopener" href="http://blog.csdn.net/u011240877/article/details/71305797">http://blog.csdn.net/u011240877/article/details/71305797</a><br>《Android 开发艺术之旅》</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/26/Notes/Android/NET_01_HTTP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/sven.jpeg">
+      <meta itemprop="name" content="sven">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sven's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/10/26/Notes/Android/NET_01_HTTP/" class="post-title-link" itemprop="url">NET_01_HTTP</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-10-26 00:54:48" itemprop="dateCreated datePublished" datetime="2021-10-26T00:54:48+08:00">2021-10-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">网络</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="NET-01-HTTP"><a href="#NET-01-HTTP" class="headerlink" title="NET_01_HTTP"></a>NET_01_HTTP</h1><h2 id="一、HTTP协议"><a href="#一、HTTP协议" class="headerlink" title="一、HTTP协议"></a>一、HTTP协议</h2><h3 id="1-1、请求方式"><a href="#1-1、请求方式" class="headerlink" title="1.1、请求方式"></a>1.1、请求方式</h3><h3 id="1-2、请求"><a href="#1-2、请求" class="headerlink" title="1.2、请求"></a>1.2、请求</h3><img src="/pics/image-20210704204122974.png" alt="image-20210704204122974" style="zoom:50%;" />
+
+<h3 id="1-3、响应"><a href="#1-3、响应" class="headerlink" title="1.3、响应"></a>1.3、响应</h3><h4 id="1-3-1、状态码"><a href="#1-3-1、状态码" class="headerlink" title="1.3.1、状态码"></a>1.3.1、状态码</h4><img src="/pics/image-20210704192743868.png" alt="image-20210704192743868" style="zoom:50%;" />
+
+<h4 id="1-3-2、响应头"><a href="#1-3-2、响应头" class="headerlink" title="1.3.2、响应头"></a>1.3.2、响应头</h4><img src="/pics/image-20210704204247914.png" alt="image-20210704204247914" style="zoom:50%;" />
+
+
+
+<img src="/pics/image-20210704220713953.png" alt="image-20210704220713953" style="zoom:50%;" />
+
+
+
+<h2 id="二、TCP"><a href="#二、TCP" class="headerlink" title="二、TCP"></a>二、TCP</h2><h3 id="2-1、什么是连接？"><a href="#2-1、什么是连接？" class="headerlink" title="2.1、什么是连接？"></a>2.1、什么是连接？</h3><p><strong>RFC 793 传输控制协议</strong></p>
+<ul>
+<li>防止连接时候混乱的问题，比如过期的连接，过期是由发送方来判断。</li>
+<li>弱网下，数据包丢失，顺序混乱，通过序列号，保证</li>
+</ul>
+<img src="/pics/image-20210704191205796.png" alt="image-20210704191205796" style="zoom:40%;" />
+
+
+
+<img src="/pics/image-20210704191406391.png" alt="image-20210704191205796" style="zoom:40%;" />
+
+<h3 id="2-2、TCP报文首部详解"><a href="#2-2、TCP报文首部详解" class="headerlink" title="2.2、TCP报文首部详解"></a>2.2、TCP报文首部详解</h3><img src="/pics/image-20210704224113783.png" alt="image-20210704224113783" style="zoom:50%;" />
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Source Port Number：源端口</span><br><span class="line">　　之所以占据16个bit位，是因为2的16次方正好可以标识65535个端口号</span><br><span class="line">Destination Port Number：目标端口</span><br><span class="line">Sequence Number：请求时附带的随机序列号</span><br><span class="line">Acknowledgement Number：应答时附带的序列号</span><br><span class="line">　　在对方请求时附带的序列号的基础上加1</span><br><span class="line">Header Length：报文首部的长度</span><br><span class="line">　　4个bits表示首部最长的长度为2个4次方，也就是可以标识15段，一段为4个字节，则最长长度为60个字节</span><br><span class="line">Reserved：报文的标识位，占据6bit，可表示6个flag　　URG：报文段中发送的数据是否包含紧急数据，值为1时表示有紧急数据（后面的紧急字段只有当URG值为1时才生效）</span><br><span class="line">　　ACK：表示是否前面的确认号字段是否有效，ACK=1，表示有效（TCP规定，连接建立后，ACK必须为1）</span><br><span class="line">　　PSH：告诉对方收到该报文段收是否应该立即把数据推送给上层，如果为1，则表示对方应该立即把数据提交给上层，而不是缓存起来</span><br><span class="line">　　RST：与主机的连接出现了严重错误（如主机奔溃），必须释放连接，然后再重新建立连接（或者说上次发送的数据有问题，主机拒绝响应）</span><br><span class="line">　　SYN：在建立连接时使用，用来同步序号</span><br><span class="line">　　　　当SYN为1，ACK为0时，表示这是一个请求连接的报文段</span><br><span class="line">　　　　当SYN为1，ACK为1时，表示对方同意建立连接</span><br><span class="line">　　　　SYN为1，说明这是一个请求建立连接或同意建立连接的报文，只有在前两次握手中SYN才置1</span><br><span class="line">　　FIN：标记数据是否发送完毕，如果FIN=1，将相当于告诉对方，自己的数据已经发送完毕，对方可以释放连接了</span><br><span class="line">Windows Size：滑动窗口的大小</span><br><span class="line">　　用以告知对方自己接受缓冲区的大小，以协商出一个合适的传输速率</span><br><span class="line">TCP Checksum：TCP的校验和，提供额外的可靠性</span><br><span class="line">Urgent Pointer：标记进制数据在字段中的位置</span><br><span class="line">Options：可选部分（这部分的最大长度为40Bytes）</span><br><span class="line">Data：数据部分</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3、三次握手"><a href="#2-3、三次握手" class="headerlink" title="2.3、三次握手"></a>2.3、三次握手</h3><img src="/pics/image-20210704192333642.png" alt="image-20210704192333642" style="zoom:50%;" />
+
+ 
+
+<img src="/pics/image-20210704190328897.png" alt="image-20210704190328897" style="zoom:30%;" />
+
+
+
+<p><code>SEQ</code> ：序列号</p>
+<p><code>ack</code> ：确认号，一般等于SEQ + 1</p>
+<p><code>SYN</code> ：同步位，SYN = 1 表示进行网络请求</p>
+<p><code>ACK</code>： 确认标记位</p>
+<p><code>FIN</code>：结束标记位</p>
+<h3 id="2-4、四次挥手"><a href="#2-4、四次挥手" class="headerlink" title="2.4、四次挥手"></a>2.4、四次挥手</h3><img src="/pics/image-20210705000512218.png" alt="image-20210705000512218" style="zoom:30%;" />
+
+<h3 id="2-5、流量控制"><a href="#2-5、流量控制" class="headerlink" title="2.5、流量控制"></a>2.5、流量控制</h3><p>滑动窗口（接收窗口）：接受方当前可用的缓存大小。</p>
+<h3 id="2-6、拥塞控制"><a href="#2-6、拥塞控制" class="headerlink" title="2.6、拥塞控制"></a>2.6、拥塞控制</h3><p>控制发送方的发送速率。</p>
+<h2 id="三、DNS-过程"><a href="#三、DNS-过程" class="headerlink" title="三、DNS 过程"></a>三、DNS 过程</h2><img src="/pics/image-20210704182114232.png" alt="image-20210704190328897" style="zoom:30%;" />
+
+<p>流量控制和</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/10/24/hello-world/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -528,7 +993,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/04/Notes/Android/NET_01_HTTP/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/07/24/Notes/Java/JUC/JUC04_Synchronized/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/sven.jpeg">
@@ -542,7 +1007,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2021/07/04/Notes/Android/NET_01_HTTP/" class="post-title-link" itemprop="url">NET_01_HTTP</a>
+            <a href="/2021/07/24/Notes/Java/JUC/JUC04_Synchronized/" class="post-title-link" itemprop="url">JUC_04_synchronized</a>
         </h2>
 
         <div class="post-meta">
@@ -552,7 +1017,20 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2021-07-04 18:59:33" itemprop="dateCreated datePublished" datetime="2021-07-04T18:59:33+08:00">2021-07-04</time>
+              <time title="创建时间：2021-07-24 15:36:40" itemprop="dateCreated datePublished" datetime="2021-07-24T15:36:40+08:00">2021-07-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/JUC/" itemprop="url" rel="index"><span itemprop="name">JUC</span></a>
+                </span>
             </span>
 
           
@@ -566,53 +1044,169 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="NET-01-HTTP"><a href="#NET-01-HTTP" class="headerlink" title="NET_01_HTTP"></a>NET_01_HTTP</h1><h2 id="一、HTTP协议"><a href="#一、HTTP协议" class="headerlink" title="一、HTTP协议"></a>一、HTTP协议</h2><h3 id="1-1、请求方式"><a href="#1-1、请求方式" class="headerlink" title="1.1、请求方式"></a>1.1、请求方式</h3><h3 id="1-2、请求"><a href="#1-2、请求" class="headerlink" title="1.2、请求"></a>1.2、请求</h3><img src="/pics/image-20210704204122974.png" alt="image-20210704204122974" style="zoom:50%;" />
+          <h1 id="JUC-03-synchronized"><a href="#JUC-03-synchronized" class="headerlink" title="JUC_03_synchronized"></a>JUC_03_synchronized</h1><p>Synchronized 是 Java 中解决并发问题的一种最常用的方法，也是最简单的一种方法。Synchronized 的作用主要有三个：</p>
+<ol>
+<li>原子性： <code>synchronized</code> 修饰的代码在同一时间只能被一个线程访问，在锁未释放之前，无法被其他线程访问到。因此，在Java中可以使用 <code>synchronized</code> 来保证方法和代码块内的操作是原子性的。</li>
+<li>可见性：保证共享变量的修改能够及时可见，其实是通过 Java 内存模型中的 “<strong>对一个变量unlock操作之前，必须要同步到主内存中；如果对一个变量进行lock操作，则将会清空工作内存中此变量的值，在执行引擎使用此变量前，需要重新从主内存中load操作或assign操作初始化变量值</strong>” 来保证的</li>
+<li>有序性：有效解决重排序问题，因为synchronized可以保证同一时间只有线程能访问代码块，虽然代码块中还是可能发生指令重排，但是因为synchronized可以保证只有一个线程执行，所以最后的执行结果还是正确的。</li>
+</ol>
+<h2 id="synchronized-分类"><a href="#synchronized-分类" class="headerlink" title="synchronized 分类"></a>synchronized 分类</h2><p>在 Java 代码中使用 synchronized 可以使用在代码块和方法中，根据 synchronized 用的位置可以有这些使用场景：</p>
+<img src="/pics/image-20210321203952031.png" alt="image-20210321203952031" style="zoom:50%;" />
 
-<h3 id="1-3、响应"><a href="#1-3、响应" class="headerlink" title="1.3、响应"></a>1.3、响应</h3><h4 id="1-3-1、状态码"><a href="#1-3-1、状态码" class="headerlink" title="1.3.1、状态码"></a>1.3.1、状态码</h4><img src="/pics/image-20210704192743868.png" alt="image-20210704192743868" style="zoom:50%;" />
-
-<h4 id="1-3-2、响应头"><a href="#1-3-2、响应头" class="headerlink" title="1.3.2、响应头"></a>1.3.2、响应头</h4><img src="/pics/image-20210704204247914.png" alt="image-20210704204247914" style="zoom:50%;" />
-
-
-
-<img src="/pics/image-20210704220713953.png" alt="image-20210704220713953" style="zoom:50%;" />
-
-
-
-<h2 id="二、TCP"><a href="#二、TCP" class="headerlink" title="二、TCP"></a>二、TCP</h2><h3 id="2-1、什么是连接？"><a href="#2-1、什么是连接？" class="headerlink" title="2.1、什么是连接？"></a>2.1、什么是连接？</h3><p><strong>RFC 793 传输控制协议</strong></p>
+<p>synchronized 可以用在<strong>方法</strong>上也可以使用在<strong>代码块</strong>中，其中方法是实例方法和静态方法分别锁的是该类的实例对象和该类(class)的对象。而使用在代码块中也可以分为三种，具体的可以看上面的表格。这里需要注意的是：<strong>如果锁的是类(class)对象的话，尽管 new 多个实例对象，但他们仍然是属于同一个类依然会被锁住，即线程之间保证同步关系</strong>。</p>
+<p>synchronized 锁的是对象而不是代码，锁方法锁的是 this，锁 static 方法锁的是 class，class也是一个对象。</p>
+<h2 id="Java对象内存布局"><a href="#Java对象内存布局" class="headerlink" title="Java对象内存布局"></a>Java对象内存布局</h2><p>在 JVM 中，Java对象保存在堆中时，由以下三部分组成：</p>
 <ul>
-<li>防止连接时候混乱的问题，比如过期的连接，过期是由发送方来判断。</li>
-<li>弱网下，数据包丢失，顺序混乱，通过序列号，保证</li>
+<li><p><strong>对象头（object header）</strong>：包括了关于堆对象的布局、类型、GC状态、同步状态和标识哈希码的基本信息。</p>
+</li>
+<li><p><strong>实例数据（Instance Data）</strong>：主要是存放类的数据信息，父类的信息，对象字段属性信息。</p>
+<p>如果对象有属性字段，则这里会有数据信息。如果对象无属性字段，则这里就不会有数据。根据字段类型的不同占不同的字节，例如boolean类型占1个字节，int类型占4个字节等等；</p>
+</li>
+<li><p><strong>对齐填充（Padding）</strong>：为了字节对齐，填充的数据，不是必须的。</p>
+<p>默认情况下，Java虚拟机堆中对象的起始地址需要对齐至8的倍数。如果一个对象用不到8N个字节则需要对其填充，以此来补齐对象头和实例数据占用内存之后剩余的空间大小。如果对象头和实例数据已经占满了JVM所分配的内存空间，那么就不用再进行对齐填充了。</p>
+<p>所有的对象分配的字节总SIZE需要是8的倍数，如果前面的对象头和实例数据占用的总SIZE不满足要求，则通过对齐数据来填满。</p>
+<p><strong>为什么要对齐数据</strong>？字段内存对齐的其中一个原因，是让字段只出现在同一CPU的缓存行中。如果字段不是对齐的，那么就有可能出现跨缓存行的字段。也就是说，该字段的读取可能需要替换两个缓存行，而该字段的存储也会同时污染两个缓存行。这两种情况对程序的执行效率而言都是不利的。其实对其填充的最终目的是为了计算机高效寻址。</p>
+</li>
 </ul>
-<img src="/pics/image-20210704191205796.png" alt="image-20210704191205796" style="zoom:40%;" />
+<img src="/pics/image-20210321211030868.png" alt="image-20210321211030868" style="zoom:50%;" />
+
+<h3 id="对象头"><a href="#对象头" class="headerlink" title="对象头"></a>对象头</h3><p>对象头中主要包含2部分数据：<strong>mark word</strong> 和 klass pointer，如果对象是数组的话，还包含纪录数组长度的数据。</p>
+<h4 id="klass-pointer"><a href="#klass-pointer" class="headerlink" title="klass pointer"></a>klass pointer</h4><p>即类型指针，是对象指向它的类元数据的<strong>指针</strong>，虚拟机通过这个指针来确定这个<strong>对象是哪个类的实</strong>例。</p>
+<p>该指针的位长度为<strong>JVM的一个字大小</strong>，即32位的JVM为<strong>32位（4字节）</strong>，64位的JVM为64位。4位JVM如果开启<code>+UseCompressedOops</code>选项，<strong>该区域长度也将由64位压缩至32位</strong>。</p>
+<h4 id="length-fileld"><a href="#length-fileld" class="headerlink" title="length fileld"></a>length fileld</h4><p>如果对象是一个数组，那么对象头还需要有额外的空间用于存储数组的长度，长度为JVM的一个字大小。这部分数据的长度也随着JVM架构的不同而不同：32位的JVM上，长度为32位；64位JVM则为64位。64位JVM如果开启<code>+UseCompressedOops</code>选项，<strong>该区域长度也将由64位压缩至32位</strong>。</p>
+<h4 id="Mark-Word"><a href="#Mark-Word" class="headerlink" title="Mark Word"></a>Mark Word</h4><p>用于存储对象自身的运行时数据，长度为JVM的一个字大小，Mark Word在32位JVM中的长度是32bit，在64位JVM中长度是64bit。存储的内容主要包含HashCode、GC分代年龄、锁状态标志、线程持有的锁、偏向线程ID、偏向时间戳等等。</p>
+<img src="/pics/image-20210324115401693.png" alt="image-20210324115401693" style="zoom:50%;" />
+
+<p>虽然它们在不同位数的JVM中长度不一样，但是基本组成内容是一致的。</p>
+<ul>
+<li><strong>锁标志位（lock）</strong>：<strong>区分锁状态，11时表示对象待GC回收状态, 只有最后2位锁标识(11)有效。</strong></li>
+<li><strong>biased_lock</strong>：是否偏向锁，<strong>由于无锁和偏向锁的锁标识都是 01，没办法区分，这里引入一位的偏向锁标识位</strong>。</li>
+<li><strong>分代年龄（age）</strong>：表示对象被GC的次数，当该次数到达阈值的时候，对象就会转移到老年代。</li>
+<li><strong>对象的hashcode（hash）</strong>：运<strong>行期间调用System.identityHashCode()来计算</strong>，延迟计算，并把结果赋值到这里。<strong>当对象加锁后</strong>，计算的结果31位不够表示，在偏向锁，轻量锁，重量锁，<strong>hashcode会被转移到Monitor中</strong>。</li>
+<li><strong>偏向锁的线程ID（JavaThread）</strong>：偏向模式的时候，当某个线程持有对象的时候，对象这里就会被置为该线程的ID。 在后面的操作中，就无需再进行尝试获取锁的动作。</li>
+<li><strong>epoch</strong>：偏向锁在CAS锁操作过程中，偏向性标识，表示对象更偏向哪个锁。</li>
+<li><strong>ptr_to_lock_record</strong>：轻量级锁状态下，指向栈中锁记录的指针。当锁获取是无竞争的时，JVM使用原子操作而不是OS互斥。这种技术称为轻量级锁定。在轻量级锁定的情况下，JVM通过CAS操作在对象的标题字中设置指向锁记录的指针。</li>
+<li><strong>ptr_to_heavyweight_monitor</strong>：重量级锁状态下，指向对象监视器Monitor的指针。如果两个不同的线程同时在同一个对象上竞争，则必须将轻量级锁定升级到Monitor以管理等待的线程。在重量级锁定的情况下，JVM在对象的ptr_to_heavyweight_monitor设置指向Monitor的指针。</li>
+</ul>
+<p>可以看到对象头中的 Mark Word 记录了对象和锁的有关信息，嗯，你没猜错，我们的 <strong>synchronized 和对象头息息相关</strong>。</p>
+<h4 id="JOL"><a href="#JOL" class="headerlink" title="JOL"></a>JOL</h4><p>JOL是openjdk 给我们提供了一个工具包，可以用来获取对象的信息和虚拟机的信息。需引入 jol-core 依赖，如下</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependency&gt;</span><br><span class="line">  &lt;groupId&gt;org.openjdk.jol&lt;/groupId&gt;</span><br><span class="line">  &lt;artifactId&gt;jol-core&lt;/artifactId&gt;</span><br><span class="line">  &lt;version&gt;<span class="number">0.8</span>&lt;/version&gt;</span><br><span class="line">&lt;/dependency&gt;</span><br></pre></td></tr></table></figure>
+
+<p>jol-core 常用的三个方法</p>
+<ul>
+<li><code>ClassLayout.parseInstance(object).toPrintable()</code>：查看对象内部信息.</li>
+<li><code>GraphLayout.parseInstance(object).toPrintable()</code>：查看对象外部信息，包括引用的对象.</li>
+<li><code>GraphLayout.parseInstance(object).totalSize()</code>：查看对象总大小.</li>
+</ul>
+<p><strong>测试代码：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SynchronizedTest</span> </span>&#123;</span><br><span class="line">    <span class="comment">//打印对应的对象头信息</span></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> i;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> A a = <span class="keyword">new</span> A();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> A[] arrays = <span class="keyword">new</span> A[]&#123;&#125;;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//打印JVM的详细信息</span></span><br><span class="line">        System.out.println(VM.current().details());</span><br><span class="line"></span><br><span class="line">        <span class="comment">//1.打印普通对象内存布局</span></span><br><span class="line">        System.out.println(<span class="string">&quot;=========普通对象内存布局========&quot;</span>);</span><br><span class="line">        System.out.println(ClassLayout.parseInstance(a).toPrintable());</span><br><span class="line">        <span class="comment">//2.打印数组对象内存布局</span></span><br><span class="line">        System.out.println(<span class="string">&quot;=========数组对象内存布局========&quot;</span>);</span><br><span class="line">        System.out.println(ClassLayout.parseInstance(arrays).toPrintable());</span><br><span class="line">        <span class="comment">//3.打印class对象内存布局</span></span><br><span class="line">        System.out.println(<span class="string">&quot;=========class对象内存布局========&quot;</span>);</span><br><span class="line">        System.out.println(ClassLayout.parseInstance(SynchronizedTest.class).toPrintable());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>打印结果：</strong></p>
+<img src="/pics/image-20210324094937651.png" alt="image-20210324094937651" style="zoom:70%;" />
+
+<p>打印结果中可以看到有 OFFSET、SIZE、TYPE DESCRIPTION、VALUE 这几个名词头，它们的含义分别是：</p>
+<ul>
+<li>OFFSET：偏移地址，单位字节；</li>
+<li>SIZE：占用的内存大小，单位为字节；</li>
+<li>TYPE DESCRIPTION：类型描述，其中object header为对象头；</li>
+<li>VALUE：对应内存中当前存储的值，二进制32位</li>
+</ul>
+<p>由于默认开启了<strong>指针压缩</strong> ，所以klass pointer 和 length filed被压缩为4字节，JDK8版本是默认开启指针压缩的，可以通过配置vm参数开启关闭指针压缩，**-XX:-UseCompressedOops**。</p>
+<h2 id="锁状态"><a href="#锁状态" class="headerlink" title="锁状态"></a>锁状态</h2><p>synchronized锁主要存在四种状态，依次是：<strong>无锁状态、偏向锁状态、轻量级锁状态、重量级锁状态</strong>，锁可以从偏向锁升级到轻量级锁，再升级的重量级锁。</p>
+<h3 id="无锁"><a href="#无锁" class="headerlink" title="无锁"></a><strong>无锁</strong></h3><p>无锁，创建对象时的状态有没有执行到synchronized代码块，偏向锁标志位为0。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">volatile</span> <span class="keyword">int</span> x = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">noLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    a = <span class="keyword">new</span> A();</span><br><span class="line">    beforeLock();</span><br><span class="line">    sync();</span><br><span class="line">    afterLock();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">beforeLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;=========beforeLock========&quot;</span>);</span><br><span class="line">    System.out.println(ClassLayout.parseInstance(a).toPrintable());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">afterLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;=========afterLock========&quot;</span>);</span><br><span class="line">    System.out.println(ClassLayout.parseInstance(a).toPrintable());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sync</span><span class="params">(String s)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (a) &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;=========locking========&quot;</span> + s);</span><br><span class="line">        System.out.println(ClassLayout.parseInstance(a).toPrintable());</span><br><span class="line">        x++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>偏向锁未启动时，无锁状态直接升级为轻量锁。</p>
+<img src="/pics/image-20210324105907436.png" alt="image-20210324105907436" style="zoom:70%;" />
 
 
 
-<img src="/pics/image-20210704191406391.png" alt="image-20210704191205796" style="zoom:40%;" />
+<h3 id="偏向锁"><a href="#偏向锁" class="headerlink" title="偏向锁"></a><strong>偏向锁</strong></h3><p>在大多数情况下，锁总是由同一线程多次获得，不存在多线程竞争，所以出现了偏向锁。其目标就是在只有一个线程执行同步代码块时能够提高性能。</p>
+<p>当对象状态为偏向锁（biasable）时，<code>mark word</code><strong>存储的是偏向的线程ID</strong>。引入偏向锁是为了在无多线程竞争的情况下尽量减少不必要的轻量级锁执行路径，<strong>因为轻量级锁的获取及释放依赖多次CAS原子指令</strong>，而偏向锁只需要<strong>在置换ThreadID的时候依赖一次CAS原子指令</strong>即可。</p>
+<p>虚拟机在启动的时候对于偏向锁有延迟，可以通过2种方式关闭偏向锁的延迟：</p>
+<ul>
+<li>第一种是加锁之前先让线程sleep5秒</li>
+<li>第二种加上JVM的运行参数，关闭偏向锁的延迟：**<code>-XX:+UseBiasedLocking -XX:BiasedLockingStartupDelay=0</code>**</li>
+</ul>
+<p>模拟偏向锁场景</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">testBiasLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// sleep开启偏向锁</span></span><br><span class="line">    sleep(<span class="number">5000</span>);</span><br><span class="line">    a = <span class="keyword">new</span> A();</span><br><span class="line">    beforeLock();</span><br><span class="line">    sync();</span><br><span class="line">    afterLock();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sleep</span><span class="params">(<span class="keyword">long</span> mills)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Thread.sleep(mills);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="2-2、TCP报文首部详解"><a href="#2-2、TCP报文首部详解" class="headerlink" title="2.2、TCP报文首部详解"></a>2.2、TCP报文首部详解</h3><img src="/pics/image-20210704224113783.png" alt="image-20210704224113783" style="zoom:50%;" />
+<p>关闭偏向延迟，新创建一个对象的时候mark word<code>将是可偏向状态，此时</code>mark word中<code>的thread id（参见上文偏向状态下的</code>mark word`格式）为0，表示未偏向任何线程，也叫做**匿名偏向(anonymously biased)**。</p>
+<p>同步代码块执行时，markword中写入threadId；偏向锁执行完成后，由于没有出现竞争，偏向锁状态没有升级到轻量锁或恢复成无锁，批量重偏向，线程不会主动释放偏向锁。</p>
+<img src="/pics/image-20210324114103144.png" alt="image-20210324114103144" style="zoom:70%;" />
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Source Port Number：源端口</span><br><span class="line">　　之所以占据16个bit位，是因为2的16次方正好可以标识65535个端口号</span><br><span class="line">Destination Port Number：目标端口</span><br><span class="line">Sequence Number：请求时附带的随机序列号</span><br><span class="line">Acknowledgement Number：应答时附带的序列号</span><br><span class="line">　　在对方请求时附带的序列号的基础上加1</span><br><span class="line">Header Length：报文首部的长度</span><br><span class="line">　　4个bits表示首部最长的长度为2个4次方，也就是可以标识15段，一段为4个字节，则最长长度为60个字节</span><br><span class="line">Reserved：报文的标识位，占据6bit，可表示6个flag　　URG：报文段中发送的数据是否包含紧急数据，值为1时表示有紧急数据（后面的紧急字段只有当URG值为1时才生效）</span><br><span class="line">　　ACK：表示是否前面的确认号字段是否有效，ACK=1，表示有效（TCP规定，连接建立后，ACK必须为1）</span><br><span class="line">　　PSH：告诉对方收到该报文段收是否应该立即把数据推送给上层，如果为1，则表示对方应该立即把数据提交给上层，而不是缓存起来</span><br><span class="line">　　RST：与主机的连接出现了严重错误（如主机奔溃），必须释放连接，然后再重新建立连接（或者说上次发送的数据有问题，主机拒绝响应）</span><br><span class="line">　　SYN：在建立连接时使用，用来同步序号</span><br><span class="line">　　　　当SYN为1，ACK为0时，表示这是一个请求连接的报文段</span><br><span class="line">　　　　当SYN为1，ACK为1时，表示对方同意建立连接</span><br><span class="line">　　　　SYN为1，说明这是一个请求建立连接或同意建立连接的报文，只有在前两次握手中SYN才置1</span><br><span class="line">　　FIN：标记数据是否发送完毕，如果FIN=1，将相当于告诉对方，自己的数据已经发送完毕，对方可以释放连接了</span><br><span class="line">Windows Size：滑动窗口的大小</span><br><span class="line">　　用以告知对方自己接受缓冲区的大小，以协商出一个合适的传输速率</span><br><span class="line">TCP Checksum：TCP的校验和，提供额外的可靠性</span><br><span class="line">Urgent Pointer：标记进制数据在字段中的位置</span><br><span class="line">Options：可选部分（这部分的最大长度为40Bytes）</span><br><span class="line">Data：数据部分</span><br></pre></td></tr></table></figure>
+<h4 id="偏向锁撤销"><a href="#偏向锁撤销" class="headerlink" title="偏向锁撤销"></a>偏向锁撤销</h4><p>当其他线程执行同步代码块时，持有偏向锁的线程才会释放锁，<strong>线程不会主动释放偏向锁</strong>。偏向锁的撤销，需要等待全局安全点，它会首先暂停拥有偏向锁的线程，判断锁对象是否处于被锁定状态。<strong>撤销偏向锁后恢复到无锁（标志位为“01”）或轻量级锁（标志位为“00”）的状态。</strong></p>
+<h4 id="批量重偏向（了解）"><a href="#批量重偏向（了解）" class="headerlink" title="批量重偏向（了解）"></a>批量重偏向（了解）</h4><p>一个线程创建了大量对象并执行了初始的同步操作，之后在另一个线程中将这些对象作为锁进行之后的操作。这种case下，会导致大量的偏向锁撤销操作。</p>
+<p>线程A创建了100个对象的MyLock的集合myLocks，分别对每次创建的MyLock对象进行加锁，这个时候MyLock就是偏向锁，当线程A结束后。创建线程B对集合myLocks每个MyLock对象进行加锁，这个时候前20个MyLock对象就是轻量锁，当达到20的时候，这个时候JVM会对后面的80个对象进行批量重偏向，就是让后面的80个对象偏向线程B。</p>
+<p>加上JVM的运行参数<code>-XX:+PrintFlagsInitial</code></p>
+<p><img src="/pics/image-20210324114802246.png" alt="image-20210324114802246"></p>
+<h3 id="轻量级锁"><a href="#轻量级锁" class="headerlink" title="轻量级锁"></a><strong>轻量级锁</strong></h3><p>是指当锁是偏向锁的时候，被另外的线程所访问，偏向锁就会升级为轻量级锁，<strong>其他线程会通过CAS操作获取锁，不会阻塞，从而提高性能。</strong></p>
+<p>当状态为轻量级锁（lightweight locked）时，<code>mark word</code>存储的是指向<strong>线程栈中<code>Lock Record</code>的指针</strong>。</p>
+<p>模拟线程交替执行的情况：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">lightLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    sleep(<span class="number">5000</span>);</span><br><span class="line">    a = <span class="keyword">new</span> A();</span><br><span class="line">    beforeLock();</span><br><span class="line">    Thread thread1 = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            sync(<span class="string">&quot;thread1&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    Thread thread2 = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            sync(<span class="string">&quot;thread2&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    thread1.start();</span><br><span class="line">    join(thread1);</span><br><span class="line">    thread2.start();</span><br><span class="line">    join(thread2);</span><br><span class="line">    afterLock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h3 id="2-3、三次握手"><a href="#2-3、三次握手" class="headerlink" title="2.3、三次握手"></a>2.3、三次握手</h3><img src="/pics/image-20210704192333642.png" alt="image-20210704192333642" style="zoom:50%;" />
+<p>线程交替执行时，第二个线程执行同步块时，偏向锁升级为匿名轻量锁，执行完解锁后恢复成无锁。</p>
+<img src="/pics/image-20210324111943588.png" alt="image-20210324111943588" style="zoom:80%;" />
 
- 
+<p>这里还存在一种情况，JVM匿名偏向未启动时，这个执行的结果是偏向锁，实际上是不准确的，有一种解释如下：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_36434742/article/details/106876862">https://blog.csdn.net/qq_36434742/article/details/106876862</a></p>
+<h3 id="重量级锁"><a href="#重量级锁" class="headerlink" title="重量级锁"></a><strong>重量级锁</strong></h3><p>向重量级锁的指针，<strong>此时等待锁的线程都会进入阻塞状态</strong>。</p>
+<p>当状态为重量级锁（inflated）时，为指向<strong>堆中的monitor对象的指针</strong>。</p>
+<p>模拟多个线程并发</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">heavyLock</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    sleep(<span class="number">5000</span>);</span><br><span class="line">    a = <span class="keyword">new</span> A();</span><br><span class="line">    beforeLock();</span><br><span class="line">    <span class="keyword">int</span> threadSize = <span class="number">2</span>;</span><br><span class="line">    CountDownLatch countDownLatch = <span class="keyword">new</span> CountDownLatch(threadSize);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; threadSize; i++) &#123;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">int</span> id = i;</span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                sync(<span class="string">&quot;thread_&quot;</span> + id);</span><br><span class="line">                countDownLatch.countDown();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;).start();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        countDownLatch.await();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    afterLock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<img src="/pics/image-20210704190328897.png" alt="image-20210704190328897" style="zoom:30%;" />
+<p>可以看懂多线程同时竞争时，升级到重量锁，执行完解锁后恢复成无锁。</p>
+<img src="/pics/image-20210324113023134.png" alt="image-20210324113023134" style="zoom:70%;" />
 
+<h4 id="阻塞vs自旋"><a href="#阻塞vs自旋" class="headerlink" title="阻塞vs自旋"></a>阻塞vs自旋</h4><p>阻塞是重量级锁的实现原理，自旋是轻量级锁的实现原理。那阻塞和自旋个是什么？</p>
+<p><strong>阻塞一个Java线程需要操作系统切换CPU状态来完成，这种状态转换需要耗费处理器时间</strong>。如果同步代码块中的内容过于简单，状态转换消耗的时间有可能比用户代码执行的时间还要长，不过阻塞线程是不消耗cpu资源的。</p>
+<p>自旋是让请求锁的线程“稍等一下”再请求锁，不放弃CPU的执行时间，避免了线程切换的开销。如果锁被占用的时间很短，自旋等待的效果就会非常好。反之<strong>，如果锁被占用的时间很长，那么自旋的线程只会白浪费处理器资源</strong>。</p>
+<h2 id="小节"><a href="#小节" class="headerlink" title="小节"></a>小节</h2><p>偏向锁、轻量级锁、重量级锁三种形式，分别对应了锁只被一个线程持有、不同线程交替持有锁、多线程竞争锁三种情况。状态转换图如下：</p>
+<p><img src="/pics/image-20210324093532176.png" alt="image-20210324093532176"></p>
+<h2 id="synchronized-的底层原理"><a href="#synchronized-的底层原理" class="headerlink" title="synchronized 的底层原理"></a>synchronized 的底层原理</h2><p>synchronized通过Monitor来实现线程同步，Monitor是依赖于底层的操作系统的<strong>Mutex Lock（互斥锁）</strong>来实现的线程同步。</p>
+<h3 id="synchronized代码块"><a href="#synchronized代码块" class="headerlink" title="synchronized代码块"></a>synchronized代码块</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SynchronizedTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (SynchronizedTest.class) &#123;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
 
+<p>通过命令<strong>javac SynchronizedTest.java</strong> 生成字节码文件，再使用命令  <strong>javap -c SynchronizedTest</strong>  查看字节码文件。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>;</span><br><span class="line">  descriptor: ()V</span><br><span class="line">  flags: ACC_PUBLIC</span><br><span class="line">  Code:</span><br><span class="line">    stack=<span class="number">2</span>, locals=<span class="number">3</span>, args_size=<span class="number">1</span></span><br><span class="line">       <span class="number">0</span>: ldc           #<span class="number">2</span>                  <span class="comment">// class SynchronizedTest</span></span><br><span class="line">       <span class="number">2</span>: dup</span><br><span class="line">       <span class="number">3</span>: astore_1</span><br><span class="line">       <span class="number">4</span>: monitorenter</span><br><span class="line">       <span class="number">5</span>: aload_1</span><br><span class="line">       <span class="number">6</span>: monitorexit</span><br><span class="line">       <span class="number">7</span>: goto          <span class="number">15</span></span><br><span class="line">      <span class="number">10</span>: astore_2</span><br><span class="line">      <span class="number">11</span>: aload_1</span><br><span class="line">      <span class="number">12</span>: monitorexit</span><br><span class="line">      <span class="number">13</span>: aload_2</span><br><span class="line">      <span class="number">14</span>: athrow</span><br><span class="line">      <span class="number">15</span>: <span class="keyword">return</span></span><br></pre></td></tr></table></figure>
 
-<p><code>SEQ</code> ：序列号</p>
-<p><code>ack</code> ：确认号，一般等于SEQ + 1</p>
-<p><code>SYN</code> ：同步位，SYN = 1 表示进行网络请求</p>
-<p><code>ACK</code>： 确认标记位</p>
-<p><code>FIN</code>：结束标记位</p>
-<h3 id="2-4、四次挥手"><a href="#2-4、四次挥手" class="headerlink" title="2.4、四次挥手"></a>2.4、四次挥手</h3><img src="/pics/image-20210705000512218.png" alt="image-20210705000512218" style="zoom:30%;" />
+<p>从字节码文件中可以看出，执行同步代码块后首先要先执行 <strong>monitorenter</strong> 指令，退出的时候执行 <strong>monitorexit</strong> 指令。</p>
+<ol>
+<li><strong>MonitorEnter 指令：插入在同步代码块的开始位置，当代码执行到该指令时，将会尝试获取该对象Monitor 的所有权，即尝试获得该对象的锁；</strong></li>
+<li><strong>MonitorExit 指令：插入在方法结束处和异常处，JVM 保证每个MonitorEnter 必须有对应的MonitorExit；</strong></li>
+</ol>
+<p>那什么是 Monitor？可以把它理解为 一个同步工具，也可以描述为一种同步机制，它通常被描述为一个对象。</p>
+<p>与万物皆对象一样，所有的 Java 对象是天生的 Monitor，每一个 Java 对象都有成为 Monitor 的潜质，因为在 Java 的设计中 ，<strong>每一个 Java 对象</strong>每个对象都存在着一个 monitor 与之关联，它叫做内部锁或者 Monitor 锁。</p>
+<img src="/pics/image-20210321224031758.png" alt="image-20210321224031758" style="zoom:40%;" />
 
-<h3 id="2-5、流量控制"><a href="#2-5、流量控制" class="headerlink" title="2.5、流量控制"></a>2.5、流量控制</h3><p>滑动窗口（接收窗口）：接受方当前可用的缓存大小。</p>
-<h3 id="2-6、拥塞控制"><a href="#2-6、拥塞控制" class="headerlink" title="2.6、拥塞控制"></a>2.6、拥塞控制</h3><p>控制发送方的发送速率。</p>
-<h2 id="三、DNS-过程"><a href="#三、DNS-过程" class="headerlink" title="三、DNS 过程"></a>三、DNS 过程</h2><img src="/pics/image-20210704182114232.png" alt="image-20210704190328897" style="zoom:30%;" />
+<h4 id="monitor"><a href="#monitor" class="headerlink" title="monitor"></a><strong>monitor</strong></h4><p>在 Java虚拟机(HotSpot)中，Monitor是基于C++实现的，由 <a target="_blank" rel="noopener" href="https://github.com/openjdk-mirror/jdk7u-hotspot/blob/50bdefc3afe944ca74c3093e7448d6b889cd20d1/src/share/vm/runtime/objectMonitor.cpp">ObjectMonitor (opens new window)</a>实现。</p>
+<p>ObjectMonitor中有两个队列， <code>_WaitSet</code>和<code>_EntryList</code>， 用来保存ObjectWaiter对象列表(每个等待锁的线程都会被封装成ObjectWaiter对象)， <code>_owner</code>指向持有ObjectMonitor对象的线程。</p>
+<p>当多个线程同时访问一段同步代码时，首先会进入<code>_EntryList</code>集合， 当线程获取到对象的monitor后，进入<code>_owner</code>区域， 并把monitor中到onwer变量设置为当前线程， 同时monitor中的计数器count+1。</p>
+<p>若线程调用wait()方法，将释放当前持有的monitor（锁）， owner=null， count-1, 同时该线程进入waitSet集合中等待被唤醒。若当前线程执行完毕也将释放锁，并复位变量的值，以便其他线程进入获取锁。 如下图所示：</p>
+<img src="/pics/image-20210321232934684.png" alt="image-20210321232934684" style="zoom:50%;" />
 
-<p>流量控制和</p>
+<h3 id="synchronized方法"><a href="#synchronized方法" class="headerlink" title="synchronized方法"></a>synchronized方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SynchronizedTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>字节码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>;</span><br><span class="line">   descriptor: ()V</span><br><span class="line">   flags: ACC_PUBLIC, ACC_SYNCHRONIZED --</span><br><span class="line">   Code:</span><br><span class="line">     stack=<span class="number">0</span>, locals=<span class="number">1</span>, args_size=<span class="number">1</span></span><br><span class="line">        <span class="number">0</span>: <span class="keyword">return</span></span><br><span class="line">     LineNumberTable:</span><br><span class="line">       line <span class="number">7</span>: <span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<p>从字节码中可以看出，synchronized修饰的方法并没有monitorenter指令和monitorexit指令，取得代之的确实是<strong>ACC_SYNCHRONIZED标识</strong>，该标识指明了该方法是一个同步方法，JVM通过该ACC_SYNCHRONIZED访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。</p>
+<h2 id="其他锁概念"><a href="#其他锁概念" class="headerlink" title="其他锁概念"></a>其他锁概念</h2><h3 id="锁消除"><a href="#锁消除" class="headerlink" title="锁消除"></a>锁消除</h3><p>为了保证数据的完整性，在进行操作时需要对这部分操作进行同步控制，但是在有些情况下，JVM 检测到不可能存在共享数据竞争，这时 JVM 就会对这些同步锁进行锁消除。</p>
+<p>如果不存在竞争，为什么还需要加锁呢？所以锁消除可以节省毫无意义的请求锁的时间。变量是否逃逸，对于虚拟机来说需要使用数据流分析来确定，但是对于程序员来说这还不清楚么？在明明知道不存在数据竞争的代码块前加上同步吗？但是有时候程序并不是我们所想的那样？虽然没有显示使用锁，但是在使用一些 JDK 的内置 API 时，如 StringBuffer、Vector、HashTable 等，这个时候会存在隐形的加锁操作。比如 StringBuffer 的 <code>append()</code> 方法，Vector的 <code>add()</code> 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">vectorTest</span><span class="params">()</span></span>&#123;</span><br><span class="line">    Vector&lt;String&gt; vector = <span class="keyword">new</span> Vector&lt;String&gt;();</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span> ; i &lt; <span class="number">10</span> ; i++)&#123;</span><br><span class="line">        vector.add(i + <span class="string">&quot;&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    System.out.println(vector);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在运行这段代码时，JVM 可以明显检测到变量 vector 没有逃逸出方法 vectorTest() 之外，所以 JVM可以大胆地将vector 内部的加锁操作消除。</p>
+<h3 id="锁粗化"><a href="#锁粗化" class="headerlink" title="锁粗化"></a>锁粗化</h3><p>很多时候，我们提倡尽量减小锁的粒度，可以避免不必要的阻塞。 让同步块的作用范围尽可能小，仅在共享数据的实际作用域中才进行同步，如果存在锁竞争，那么等待锁的线程也能尽快拿到锁。</p>
+<p>但是如果在一段代码中连续的用同一个监视器锁反复的加锁解锁，甚至加锁操作出现在循环体中的时候，就会导致不必要的性能损耗，这种情况就需要锁粗化。</p>
+<p>锁粗话概念比较好理解，就是将多个连续的加锁、解锁操作连接在一起，扩展成一个范围更大的锁</p>
+<p>举例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">100000</span>;i++)&#123;</span><br><span class="line">  <span class="keyword">synchronized</span>(<span class="keyword">this</span>)&#123;</span><br><span class="line">    <span class="keyword">do</span>();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>会被粗化成</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">synchronized</span>(<span class="keyword">this</span>)&#123;</span><br><span class="line">  <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;<span class="number">100000</span>;i++)&#123;</span><br><span class="line">    <span class="keyword">do</span>();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/jajian/p/13681781.html">https://www.cnblogs.com/jajian/p/13681781.html</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.starfish.ink/java/JUC/synchronized.html">http://www.starfish.ink/java/JUC/synchronized.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_36434742/article/details/106876862">https://blog.csdn.net/qq_36434742/article/details/106876862</a></p>
 
       
     </div>
@@ -1428,244 +2022,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/30/Notes/Android/Framework/FrameWork_01_Binder/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/sven.jpeg">
-      <meta itemprop="name" content="sven">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sven's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/05/30/Notes/Android/Framework/FrameWork_01_Binder/" class="post-title-link" itemprop="url">FrameWork_01_Binder</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-05-30 16:22:00" itemprop="dateCreated datePublished" datetime="2021-05-30T16:22:00+08:00">2021-05-30</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="FrameWork-01-Binder"><a href="#FrameWork-01-Binder" class="headerlink" title="FrameWork_01_Binder"></a>FrameWork_01_Binder</h1><h2 id="什么是Binder？"><a href="#什么是Binder？" class="headerlink" title="什么是Binder？"></a>什么是Binder？</h2><p>对于<code>Binder</code>的定义，在不同场景下其定义不同。</p>
-<ol>
-<li>从IPC角度来说：<strong>Binder是Android中的一种跨进程通信方式，该通信方式在linux中没有，是Android独有</strong>；</li>
-<li>从Android Driver层：<strong>Binder还可以理解为一种虚拟的物理设备，它的设备驱动是/dev/binder</strong>；</li>
-<li>从Android Native层：Binder是创建Service Manager以及BpBinder/BBinder模型，搭建与binder驱动的桥梁；</li>
-<li>从Android Framework层：Binder是各种Manager（ActivityManager、WindowManager等）和相应xxxManagerService的桥梁；</li>
-<li>从Android APP层：Binder是客户端和服务端进行通信的媒介，当bindService的时候，服务端会返回一个包含了服务端业务调用的 Binder对象，通过这个Binder对象，客户端就可以获取服务端提供的服务或者数据，这里的服务包括普通服务和基于AIDL的服务。</li>
-</ol>
-<h2 id="IPC-基本概念"><a href="#IPC-基本概念" class="headerlink" title="IPC 基本概念"></a>IPC 基本概念</h2><p><img src="/pics/image-20210530173422907.png" alt="image-20210530173422907" style="zoom:35%;" />..</p>
-<p>上图展示了传统进程通信的基本概念：</p>
-<ul>
-<li>进程隔离</li>
-<li>进程空间划分</li>
-<li>系统调用</li>
-</ul>
-<h3 id="进程隔离"><a href="#进程隔离" class="headerlink" title="进程隔离"></a>进程隔离</h3><p>为了保证 安全性 &amp; 独立性，一个进程 不能直接操作或者访问另一个进程，即<code>Android</code>的进程是<strong>相互独立、隔离的</strong>。2个进程之间内存可以随意访问的话，那基本上程序之间就没有任何安全性可言，若可以随意修改其他程序的数据，那计算机世界将陷入混乱。</p>
-<p>基于进程之间不可互相访问数据的基础上，为了实现进程间数据共享，这里就必须采用特殊的通信机制：<strong>进程间通信（IPC）</strong></p>
-<h3 id="进程空间划分"><a href="#进程空间划分" class="headerlink" title="进程空间划分"></a>进程空间划分</h3><p>一个进程空间分为 **用户空间 和内核空间（Kernel)**，二者区别：</p>
-<ul>
-<li>进程间，用户空间的数据不可共享</li>
-<li>进程间，内核空间的数据可共享</li>
-</ul>
-<blockquote>
-<p>所有进程共用1个内核空间</p>
-</blockquote>
-<h3 id="系统调用"><a href="#系统调用" class="headerlink" title="系统调用"></a>系统调用</h3><p>虽然从逻辑上进行了用户空间和内核空间的划分，但是不可避免的用户空间需要访问内核资源，比如文件操作、访问网络等等。为了突破隔离限制，就需要借助系统调用来实现。系统调用是用户空间访问内核空间的唯一方式，保证了所有的内核资源访问都是在内核的控制下进行的，避免了用户程序对系统资源的越权访问，提升系统安全性和稳定性。</p>
-<p>进程内 用户空间 &amp; 内核空间 进行交互 需通过 系统调用，主要通过函数：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">copy_from_user（）：将用户空间的数据拷贝到内核空间</span><br><span class="line">copy_to_user（）：将内核空间的数据拷贝到用户空间</span><br></pre></td></tr></table></figure>
-
-<h3 id="传统IPC通信的缺点"><a href="#传统IPC通信的缺点" class="headerlink" title="传统IPC通信的缺点"></a>传统IPC通信的缺点</h3><ol>
-<li>性能低下。一次数据传递需要经历：内存缓存区 –&gt; 内核缓存区 –&gt; 内存缓存区，需要 2 次数据拷贝；</li>
-<li>接收数据的缓存区由数据接收进程提供，但是接收进程并不知道需要多大的空间来存放将要传递过来的数据，因此只能开辟尽可能大的内存空间或者先调用 API 接收消息头来获取消息体的大小，这两种做法<strong>不是浪费空间就是浪费时间</strong>。</li>
-</ol>
-<h2 id="为什么选择Binder通信？"><a href="#为什么选择Binder通信？" class="headerlink" title="为什么选择Binder通信？"></a>为什么选择Binder通信？</h2><img src="/pics/image-20210606161417803.png" alt="image-20210606161417803" style="zoom:50%;" />
-
-<ul>
-<li><p>从性能的角度</p>
-<p>Binder数据拷贝只需要一次，而管道、消息队列、Socket都需要2次，但共享内存方式一次内存拷贝都不需要；从性能角度看，Binder性能仅次于共享内存。但共享内存控制复杂，难以使用。</p>
-<img src="/pics/image-20210606161436142.png" alt="image-20210606161436142" style="zoom:50%;" /></li>
-<li><p>从稳定性的角度<br>Binder 基于 C/S 架构，客户端（Client）有什么需求就丢给服务端（Server）去完成，架构清晰、职责明确又相互独立，自然稳定性更好。共享内存虽然无需拷贝，但是控制负责，难以使用。从稳定性的角度讲，Binder 机制是优于内存共享的。</p>
-</li>
-<li><p>从安全的角度<br>传统Linux IPC的接收方无法获得对方进程可靠的UID/PID，从而无法鉴别对方身份；传统Linux IPC无任何保护措施，完全由上层协议来确保。</p>
-<p>Android为每个安装好的应用程序分配了自己的UID，故进程的UID是鉴别进程身份的重要标志，前面提到C/S架构，Android系统中对外只暴露Client端，Client端将任务发送给Server端，Server端会根据权限控制策略，判断UID/PID是否满足访问权限，目前权限控制很多时候是通过弹出权限询问对话框，让用户选择是否运行。</p>
-<blockquote>
-<p>传统IPC只能由用户在数据包里填入UID/PID；另外，可靠的身份标记只有由IPC机制本身在内核中添加。其次传统IPC访问接入点是开放的，无法建立私有通道。从安全角度，Binder的安全性更高。</p>
-</blockquote>
-</li>
-</ul>
-<h2 id="Binder-IPC原理"><a href="#Binder-IPC原理" class="headerlink" title="Binder IPC原理"></a>Binder IPC原理</h2><h3 id="动态内核可加载模块"><a href="#动态内核可加载模块" class="headerlink" title="动态内核可加载模块"></a>动态内核可加载模块</h3><p>跨进程通信是需要内核空间做支持的。传统的 IPC 机制如管道、Socket 都是内核的一部分，因此通过内核支持来实现进程间通信自然是没问题的。但是 Binder 并不是 Linux 系统内核的一部分，那怎么办呢？</p>
-<p>这就得益于 Li<strong>nux 的动态内核可加载模块（Loadable Kernel Module，LKM）的机制</strong>；模块是具有独立功能的程序，它可以被单独编译，但是不能独立运行（可以简单类比成一个功能库）。模块在运行时被链接到内核作为内核的一部分运行。这样，Android 系统就可以通过动态添加一个内核模块运行在内核空间，用户进程之间通过这个内核模块作为桥梁来实现通信。</p>
-<p>在 Android 系统中，这个运行在内核空间，<strong>负责各个用户进程通过 Binder 实现通信的内核模块就叫 Binder 驱动（Binder Dirver）。</strong></p>
-<p>那么在 Android 系统中用户进程之间是如何通过这个内核模块（Binder 驱动）来实现通信的呢？这就不得不通道 Linux 下的另一个概念：内存映射。</p>
-<h3 id="内存映射（mmap）"><a href="#内存映射（mmap）" class="headerlink" title="内存映射（mmap）"></a>内存映射（mmap）</h3><p>Binder IPC 机制中涉及到的内存映射通过 mmap() 来实现，mmap() 是操作系统中一种内存映射的方法。</p>
-<p>内存映射简单的讲就是将<strong>用户空间的一块内存区域映射到内核空间</strong>。<strong>映射关系建立后，用户对这块内存区域的修改可以直接反应到内核空间；反之内核空间对这段区域的修改也能直接反应到用户空间</strong>。</p>
-<p>内存映射能减少数据拷贝次数，实现用户空间和内核空间的高效互动。两个空间各自的修改能直接反映在映射的内存区域，从而被对方空间及时感知。也正因为如此，内存映射能够提供对进程间通信的支持。</p>
-<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/719fc4758813">操作系统：图文详解 内存映射</a></p>
-<h3 id="Binder-IPC实现原理"><a href="#Binder-IPC实现原理" class="headerlink" title="Binder IPC实现原理"></a>Binder IPC实现原理</h3><img src="/pics/image-20210606153721575.png" alt="image-20210606153721575" style="zoom:40%;" />
-
-<p>一次完整的 Binder IPC 通信过程通常是这样：</p>
-<ol>
-<li>首先 Binder 驱动在内核空间创建一个<strong>数据接收缓存区</strong>；</li>
-<li>接着在内核空间开辟一块内核缓存区，建立<ol>
-<li><strong>内核缓存区 和 内核中数据接收缓存区之间</strong>的映射，</li>
-<li><strong>数据接收缓存区 和 接收进程用户空间地址</strong> 的映射关系；</li>
-</ol>
-</li>
-<li>发送方进程通过系统调用 copyfromuser() 将数据 copy 到内核中的内核缓存区，<strong>由于内核缓存区和接收进程的用户空间存在内存映射</strong>，因此也就<strong>相当于把数据发送到了接收进程的用户空间</strong>，这样便完成了一次进程间的通信。</li>
-</ol>
-<h2 id="Binder-通信模型"><a href="#Binder-通信模型" class="headerlink" title="Binder 通信模型"></a><strong>Binder 通信模型</strong></h2><p>一次完整的进程间通信必然至少包含两个进程，通常我们称通信的双方分别为客户端进程（Client）和服务端进程（Server），由于进程隔离机制的存在，通信双方必然需要借助 Binder 来实现。</p>
-<h3 id="Client-Server-ServiceManager-驱动"><a href="#Client-Server-ServiceManager-驱动" class="headerlink" title="Client/Server/ServiceManager/驱动"></a>Client/Server/ServiceManager/驱动</h3><p>前面我们介绍过，Binder 是基于 C/S 架构的。由一系列的组件组成，包括 Client、Server、ServiceManager、Binder 驱动。其中 Client、Server、Service Manager 运行在用户空间，Binder 驱动运行在内核空间。其中 Service Manager 和 Binder 驱动由系统提供，而 Client、Server 由应用程序来实现。Client、Server 和 ServiceManager 均是通过系统调用 open、mmap 和 ioctl 来访问设备文件 /dev/binder，从而实现与 Binder 驱动的交互来间接的实现跨进程通信。</p>
-<p><img src="https://pic3.zhimg.com/80/v2-729b3444cd784d882215a24067893d0e_1440w.jpg" alt="img"></p>
-<p>Client、Server、ServiceManager、Binder 驱动这几个组件在通信过程中扮演的角色就如同互联网中服务器（Server）、客户端（Client）、DNS域名服务器（ServiceManager）以及路由器（Binder 驱动）之前的关系。</p>
-<p><a href="https://link.zhihu.com/?target=http://blog.csdn.net/universus/article/details/6211589">Android Binder 设计与实现</a><em>一文中对 Client、Server、ServiceManager、Binder 驱动有很详细的描述，以下是部分摘录：</em></p>
-<blockquote>
-<p><strong>Binder 驱动</strong><br>Binder 驱动就如同路由器一样，是整个通信的核心；驱动负责进程之间 Binder 通信的建立，Binder 在进程之间的传递，Binder 引用计数管理，数据包在进程之间的传递和交互等一系列底层支持。</p>
-<p><strong>ServiceManager 与实名 Binder</strong><br>ServiceManager 和 DNS 类似，作用是将字符形式的 Binder 名字转化成 Client 中对该 Binder 的引用，使得 Client 能够通过 Binder 的名字获得对 Binder 实体的引用。注册了名字的 Binder 叫实名 Binder，就像网站一样除了除了有 IP 地址意外还有自己的网址。Server 创建了 Binder，并为它起一个字符形式，可读易记得名字，将这个 Binder 实体连同名字一起以数据包的形式通过 Binder 驱动发送给 ServiceManager ，通知 ServiceManager 注册一个名为“张三”的 Binder，它位于某个 Server 中。驱动为这个穿越进程边界的 Binder 创建位于内核中的实体节点以及 ServiceManager 对实体的引用，将名字以及新建的引用打包传给 ServiceManager。ServiceManger 收到数据后从中取出名字和引用填入查找表。</p>
-<p>细心的读者可能会发现，ServierManager 是一个进程，Server 是另一个进程，Server 向 ServiceManager 中注册 Binder 必然涉及到进程间通信。当前实现进程间通信又要用到进程间通信，这就好像蛋可以孵出鸡的前提却是要先找只鸡下蛋！Binder 的实现比较巧妙，就是预先创造一只鸡来下蛋。ServiceManager 和其他进程同样采用 Bidner 通信，ServiceManager 是 Server 端，有自己的 Binder 实体，其他进程都是 Client，需要通过这个 Binder 的引用来实现 Binder 的注册，查询和获取。ServiceManager 提供的 Binder 比较特殊，它没有名字也不需要注册。当一个进程使用 BINDER<em>SET</em>CONTEXT_MGR 命令将自己注册成 ServiceManager 时 Binder 驱动会自动为它创建 Binder 实体（<strong>这就是那只预先造好的那只鸡</strong>）。其次这个 Binder 实体的引用在所有 Client 中都固定为 0 而无需通过其它手段获得。也就是说，一个 Server 想要向 ServiceManager 注册自己的 Binder 就必须通过这个 0 号引用和 ServiceManager 的 Binder 通信。类比互联网，0 号引用就好比是域名服务器的地址，你必须预先动态或者手工配置好。要注意的是，这里说的 Client 是相对于 ServiceManager 而言的，一个进程或者应用程序可能是提供服务的 Server，但对于 ServiceManager 来说它仍然是个 Client。</p>
-<p><strong>Client 获得实名 Binder 的引用</strong><br>Server 向 ServiceManager 中注册了 Binder 以后， Client 就能通过名字获得 Binder 的引用了。Client 也利用保留的 0 号引用向 ServiceManager 请求访问某个 Binder: 我申请访问名字叫张三的 Binder 引用。ServiceManager 收到这个请求后从请求数据包中取出 Binder 名称，在查找表里找到对应的条目，取出对应的 Binder 引用作为回复发送给发起请求的 Client。从面向对象的角度看，Server 中的 Binder 实体现在有两个引用：一个位于 ServiceManager 中，一个位于发起请求的 Client 中。如果接下来有更多的 Client 请求该 Binder，系统中就会有更多的引用指向该 Binder ，就像 Java 中一个对象有多个引用一样。</p>
-</blockquote>
-<h3 id="Binder-通信过程"><a href="#Binder-通信过程" class="headerlink" title="Binder 通信过程"></a>Binder 通信过程</h3><p>至此，我们大致能总结出 Binder 通信过程：</p>
-<ol>
-<li>首先，一个进程使用 BINDER<em>SET</em>CONTEXT_MGR 命令通过 Binder 驱动将自己注册成为 ServiceManager；</li>
-<li>Server 通过驱动向 ServiceManager 中注册 Binder（Server 中的 Binder 实体），表明可以对外提供服务。驱动为这个 Binder 创建位于内核中的实体节点以及 ServiceManager 对实体的引用，将名字以及新建的引用打包传给 ServiceManager，ServiceManger 将其填入查找表。</li>
-<li>Client 通过名字，在 Binder 驱动的帮助下从 ServiceManager 中获取到对 Binder 实体的引用，通过这个引用就能实现和 Server 进程的通信。</li>
-</ol>
-<p>我们看到整个通信过程都需要 Binder 驱动的接入。下图能更加直观的展现整个通信过程(为了进一步抽象通信过程以及呈现上的方便，下图我们忽略了 Binder 实体及其引用的概念)：</p>
-<img src="https://pic4.zhimg.com/80/v2-67854cdf14d07a6a4acf9d675354e1ff_1440w.jpg" alt="img" style="zoom:50%;" />
-
-<h3 id="详细过程"><a href="#详细过程" class="headerlink" title="详细过程"></a>详细过程</h3><ol>
-<li>**<a target="_blank" rel="noopener" href="http://gityuan.com/2015/11/14/binder-add-service/">注册服务(addService)</a>**：Server进程要先注册Service到ServiceManager。该过程：Server是客户端，ServiceManager是服务端。</li>
-<li>**<a target="_blank" rel="noopener" href="http://gityuan.com/2015/11/15/binder-get-service/">获取服务(getService)</a>**：Client进程使用某个Service前，须先向ServiceManager中获取相应的Service。该过程：Client是客户端，ServiceManager是服务端。</li>
-<li><strong>使用服务</strong>：Client根据得到的Service信息建立与Service所在的Server进程通信的通路，然后就可以直接与Service交互。该过程：client是客户端，server是服务端。</li>
-</ol>
-<img src="/pics/image-20210530205550500.png" alt="image-20210530205550500" style="zoom:48%;" />
-
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/carson_ho/article/details/73560642">https://blog.csdn.net/carson_ho/article/details/73560642</a></p>
-<h2 id="Binder通信过程的代理模式"><a href="#Binder通信过程的代理模式" class="headerlink" title="Binder通信过程的代理模式"></a>Binder通信过程的代理模式</h2><p>跨进程通信的过程都有 Binder 驱动的参与，因此在数据流经 Binder 驱动的时候驱动会对数据做一层转换。当 A 进程想要获取 B 进程中的 object 时，驱动并不会真的把 object 返回给 A，<strong>而是返回了一个跟 object 看起来一模一样的代理对象 objectProxy</strong>，这个 objectProxy 具有和 object 一摸一样的方法，但是这些方法并没有 B 进程中 object 对象那些方法的能力，<strong>这些方法只需要把把请求参数交给驱动即可</strong>。对于 A 进程来说和直接调用 object 中的方法是一样的。</p>
-<p>当 Binder 驱动接收到 A 进程的消息后，发现这是个 objectProxy 就去查询自己维护的表单，一查发现这是 B 进程 object 的代理对象。<code>于是就会去通知</code> B 进程调用 object 的方法，并要求 B 进程把返回结果发给自己。当驱动拿到 B 进程的返回结果后就会转发给 A 进程，一次通信就完成了。</p>
-<img src="/pics/image-20210606150728973.png" alt="image-20210606150728973" style="zoom:40%;" />
-
-<h2 id="Binder进程与线程"><a href="#Binder进程与线程" class="headerlink" title="Binder进程与线程"></a>Binder进程与线程</h2><p>每个Server进程在启动时会创建一个binder线程池，用来处理Binder请求；Binder的线程管理由Binder驱动自身进行管理，<strong>而不是由Server进程来管理</strong>。</p>
-<p>对于一个Server进程有一个最大Binder线程数限制，默认为16个binder线程，例如Android的system_server进程就存在16个线程，超过的请求会被阻塞等待空闲的Binder线程。</p>
-<p>参考：</p>
-<p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/35519585">https://zhuanlan.zhihu.com/p/35519585</a></p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/carson_ho/article/details/73560642">https://blog.csdn.net/carson_ho/article/details/73560642</a></p>
-<p><a target="_blank" rel="noopener" href="http://gityuan.com/2015/11/28/binder-summary/">http://gityuan.com/2015/11/28/binder-summary/</a></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/05/14/Notes/Algorithm/ALG_01_%E7%90%86%E8%AE%BA/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/sven.jpeg">
-      <meta itemprop="name" content="sven">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Sven's blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/05/14/Notes/Algorithm/ALG_01_%E7%90%86%E8%AE%BA/" class="post-title-link" itemprop="url">未命名</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-05-14 19:54:57" itemprop="dateCreated datePublished" datetime="2021-05-14T19:54:57+08:00">2021-05-14</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="ALG-01-理论"><a href="#ALG-01-理论" class="headerlink" title="ALG_01_理论"></a>ALG_01_理论</h1><h2 id="复杂度分析"><a href="#复杂度分析" class="headerlink" title="复杂度分析"></a>复杂度分析</h2><h2 id="LeetCode顺序"><a href="#LeetCode顺序" class="headerlink" title="LeetCode顺序"></a>LeetCode顺序</h2><h2 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h2><h2 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h2><ol>
-<li><p>移除元素是虚节点的用处</p>
-</li>
-<li><p>链表操作</p>
-</li>
-<li><p>反转列表</p>
-</li>
-<li><p>删除链表倒数的第n个节点:</p>
-</li>
-</ol>
-<p>​         主要走的次数</p>
-<ol start="5">
-<li>142</li>
-</ol>
-<h2 id="哈希表"><a href="#哈希表" class="headerlink" title="哈希表"></a>哈希表</h2><h2 id="双指针"><a href="#双指针" class="headerlink" title="双指针"></a>双指针</h2><h2 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h2><h2 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h2><h2 id="回溯"><a href="#回溯" class="headerlink" title="回溯"></a>回溯</h2><h2 id="贪心算法"><a href="#贪心算法" class="headerlink" title="贪心算法"></a>贪心算法</h2><h2 id="动态规划"><a href="#动态规划" class="headerlink" title="动态规划"></a>动态规划</h2>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1732,20 +2092,20 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-count">58</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">23</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
