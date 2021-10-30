@@ -20,19 +20,18 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="Java集合_07_ConcurrentHashMap_JDK7我们知道HashMap不是线程安全的，并发操作时会出现问题，而ConcurrentHashMap则可以支持并发的读写，我们先来了解下JDK7版本ConcurrentHashMap的原理，非常经典的一个设计。 一、数据结构在 JDK1.7中，本质上还是采用链表+数组的形式存储键值对的。但是，为了提高并发，把原来的整个 table 划分为">
+  <meta name="description" content="Java集合_07_ConcurrentHashMap_JDK7">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java集合_07_ConcurrentHashMap_JDK7">
 <meta property="og:url" content="http://example.com/2021/04/21/Notes/Java/Collections/Java%E9%9B%86%E5%90%88_07_ConcurrentHashMap_JDK7/index.html">
 <meta property="og:site_name" content="Sven&#39;s blog">
-<meta property="og:description" content="Java集合_07_ConcurrentHashMap_JDK7我们知道HashMap不是线程安全的，并发操作时会出现问题，而ConcurrentHashMap则可以支持并发的读写，我们先来了解下JDK7版本ConcurrentHashMap的原理，非常经典的一个设计。 一、数据结构在 JDK1.7中，本质上还是采用链表+数组的形式存储键值对的。但是，为了提高并发，把原来的整个 table 划分为">
+<meta property="og:description" content="Java集合_07_ConcurrentHashMap_JDK7">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/pics/image-20210315231940864.png">
 <meta property="og:image" content="http://example.com/pics/image-20210316102451162.png">
 <meta property="article:published_time" content="2021-04-21T13:23:24.730Z">
-<meta property="article:modified_time" content="2021-10-25T16:41:20.119Z">
+<meta property="article:modified_time" content="2021-10-30T14:17:46.762Z">
 <meta property="article:author" content="sven">
-<meta property="article:tag" content="collection">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/pics/image-20210315231940864.png">
 
@@ -218,11 +217,11 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
                 </span>
                   ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/collection/" itemprop="url" rel="index"><span itemprop="name">collection</span></a>
+                  <a href="/categories/Java/Collection/" itemprop="url" rel="index"><span itemprop="name">Collection</span></a>
                 </span>
             </span>
 
@@ -244,7 +243,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="Java集合-07-ConcurrentHashMap-JDK7"><a href="#Java集合-07-ConcurrentHashMap-JDK7" class="headerlink" title="Java集合_07_ConcurrentHashMap_JDK7"></a>Java集合_07_ConcurrentHashMap_JDK7</h1><p>我们知道HashMap不是线程安全的，并发操作时会出现问题，而ConcurrentHashMap则可以支持并发的读写，我们先来了解下JDK7版本ConcurrentHashMap的原理，非常经典的一个设计。</p>
+        <h1 id="Java集合-07-ConcurrentHashMap-JDK7"><a href="#Java集合-07-ConcurrentHashMap-JDK7" class="headerlink" title="Java集合_07_ConcurrentHashMap_JDK7"></a>Java集合_07_ConcurrentHashMap_JDK7</h1><span id="more"></span>
+
+<p>我们知道HashMap不是线程安全的，并发操作时会出现问题，而ConcurrentHashMap则可以支持并发的读写，我们先来了解下JDK7版本ConcurrentHashMap的原理，非常经典的一个设计。</p>
 <h1 id="一、数据结构"><a href="#一、数据结构" class="headerlink" title="一、数据结构"></a>一、数据结构</h1><p>在 JDK1.7中，本质上还是采用链表+数组的形式存储键值对的。但是，为了提高并发，把原来的整个 table 划分为 n 个 Segment 。所以，从整体来看，它是一个由 Segment 组成的数组。然后，每个 Segment 里边是由 HashEntry 组成的数组，每个 HashEntry之间又可以形成链表。我们可以把每个 Segment 看成是一个小的 HashMap，其内部结构和 HashMap 是一模一样的。</p>
 <img src="/pics/image-20210315231940864.png" alt="image-20210315231940864" style="zoom:50%;" />
 
@@ -379,11 +380,27 @@
     
     
     
+      
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>sven
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://example.com/2021/04/21/Notes/Java/Collections/Java%E9%9B%86%E5%90%88_07_ConcurrentHashMap_JDK7/" title="Java集合_07_ConcurrentHashMap_JDK7">http://example.com/2021/04/21/Notes/Java/Collections/Java集合_07_ConcurrentHashMap_JDK7/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
 
       <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/collection/" rel="tag"># collection</a>
-          </div>
 
         
 
@@ -395,8 +412,8 @@
       <i class="fa fa-chevron-left"></i> Java集合_08_ConcurrentHashMap_JDK8
     </a></div>
       <div class="post-nav-item">
-    <a href="/2021/05/14/Notes/Algorithm/ALG_00_%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E7%AE%97%E6%B3%95/" rel="next" title="ALG_00_数据结构和算法之美">
-      ALG_00_数据结构和算法之美 <i class="fa fa-chevron-right"></i>
+    <a href="/2021/05/14/Notes/Algorithm/ALG_01_%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%92%8C%E7%AE%97%E6%B3%95/" rel="next" title="ALG_01_数据结构和算法之美">
+      ALG_01_数据结构和算法之美 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -471,20 +488,20 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">58</span>
+          <span class="site-state-item-count">73</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">26</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

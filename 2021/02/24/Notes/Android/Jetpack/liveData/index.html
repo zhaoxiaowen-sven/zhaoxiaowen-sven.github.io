@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Jetpack_02_LiveData">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jetpack_02_LiveData">
+<meta property="og:url" content="http://example.com/2021/02/24/Notes/Android/Jetpack/liveData/index.html">
+<meta property="og:site_name" content="Sven&#39;s blog">
+<meta property="og:description" content="Jetpack_02_LiveData">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/pics/image-20210223102440650.png">
+<meta property="og:image" content="http://example.com/pics/image-20210223102718742.png">
+<meta property="article:published_time" content="2021-02-24T15:08:49.494Z">
+<meta property="article:modified_time" content="2021-10-30T13:59:51.795Z">
+<meta property="article:author" content="sven">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/pics/image-20210223102440650.png">
+
+<link rel="canonical" href="http://example.com/2021/02/24/Notes/Android/Jetpack/liveData/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Jetpack_02_LiveData | Sven's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+      <a target="_blank" rel="noopener" href="https://github.com/zhaoxiaowen-sven" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Sven's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/24/Notes/Android/Jetpack/liveData/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/sven.jpeg">
+      <meta itemprop="name" content="sven">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sven's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Jetpack_02_LiveData
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-02-24 23:08:49" itemprop="dateCreated datePublished" datetime="2021-02-24T23:08:49+08:00">2021-02-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/Lifecycle/" itemprop="url" rel="index"><span itemprop="name">Lifecycle</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Jetpack-02-LiveData"><a href="#Jetpack-02-LiveData" class="headerlink" title="Jetpack_02_LiveData"></a>Jetpack_02_LiveData</h2><span id="more"></span>
+
+<h2 id="一、什么是LiveData"><a href="#一、什么是LiveData" class="headerlink" title="一、什么是LiveData"></a>一、什么是LiveData</h2><p>LiveData是一个数据持有类。它具有以下特点：</p>
+<ul>
+<li>数据可以被观察者订阅；</li>
+<li>能够感知组件（Fragment、Activity、Service）的生命周期；</li>
+<li>只有在组件出于激活状态才会通知观察者有数据更新；</li>
+</ul>
+<h2 id="二、LiveData能为我们做什么"><a href="#二、LiveData能为我们做什么" class="headerlink" title="二、LiveData能为我们做什么"></a>二、LiveData能为我们做什么</h2><ul>
+<li>能够保证数据和UI统一,LiveData采用了观察者模式，LiveData是被观察者，当数据有变化时会通知UI。</li>
+<li>减少内存泄漏,LiveData能够感知到组件的生命周期，当组件处于DESTROYED状态时，观察者对象会被清除,当Activity停止时不会导致Crash,因为组件处于非激活状态时，不会收到LiveData中数据变化的通知。</li>
+<li>不需要额外的手动处理来响应生命周期的变化，因为LiveData能够感知组件的生命周期，所以就完全不需要在代码中告诉LiveData组件的生命周期状态。</li>
+<li>组件和数据相关的内容能实时更新,组件在前台的时候能够实时收到数据改变的通知，当组件从后台到前台来时，LiveData能够将最新的数据通知组件，因此保证了组件中和数据相关的内容能够实时更新。<br>若果横竖屏切换（configuration change）时，不需要额外的处理来保存数据,当屏幕方向变化时，组件会被recreate，然而系统并不能保证你的数据能够被恢复的。当我们采用LiveData保存数据时，因为数据和组件分离了。当组件被recreate，数据还是存在LiveData中，并不会被销毁。</li>
+<li>资源共享。</li>
+</ul>
+<h2 id="三、工作原理"><a href="#三、工作原理" class="headerlink" title="三、工作原理"></a>三、工作原理</h2><p><img src="/pics/image-20210223102440650.png" alt="image-20210223102440650"></p>
+<p>添加observer有2种方式，分别对应2个不同的observer AlwaysActiveObserver 和 LifecycleBoundObserver<br>1.observeForever() -&gt;  AlwaysActiveObserver<br>如果是observeForever方式，当数据改变时不管组件处于什么状态都会收到回调。</p>
+<pre><code>@MainThread
+public void observeForever(@NonNull Observer&lt;T&gt; observer) &#123;
+    AlwaysActiveObserver wrapper = new AlwaysActiveObserver(observer);
+    ObserverWrapper existing = mObservers.putIfAbsent(observer, wrapper);
+    if (existing != null &amp;&amp; existing instanceof LiveData.LifecycleBoundObserver) &#123;
+        throw new IllegalArgumentException(&quot;Cannot add the same observer&quot;
+                + &quot; with different lifecycles&quot;);
+    &#125;
+    if (existing != null) &#123;
+        return;
+    &#125;
+    wrapper.activeStateChanged(true);
+&#125;
+
+private class AlwaysActiveObserver extends ObserverWrapper &#123;
+    AlwaysActiveObserver(Observer&lt;T&gt; observer) &#123;
+        super(observer);
+    &#125;
+    @Override
+    boolean shouldBeActive() &#123;
+        return true;
+    &#125;
+&#125;
+</code></pre>
+<p>第20行：无论组件是什么状态，都认为组件是活跃的。considerNotify中会使用到这个判断</p>
+<h3 id="3-2-observe-gt-LifecycleBoundObserver"><a href="#3-2-observe-gt-LifecycleBoundObserver" class="headerlink" title="3.2 observe() -&gt; LifecycleBoundObserver"></a>3.2 observe() -&gt; LifecycleBoundObserver</h3><p>加入到对应的组件的生命周期管理类中管理，当组件的生命周期发生变化时，会回调给liveData；当组件的生命周期结束后，移除对应的observer监听。</p>
+<pre><code>@MainThread
+public void observe(@NonNull LifecycleOwner owner, @NonNull Observer&lt;T&gt; observer) &#123;
+    if (owner.getLifecycle().getCurrentState() == DESTROYED) &#123;
+        // ignore
+        return;
+    &#125;
+    LifecycleBoundObserver wrapper = new LifecycleBoundObserver(owner, observer);
+    ObserverWrapper existing = mObservers.putIfAbsent(observer, wrapper);
+    if (existing != null &amp;&amp; !existing.isAttachedTo(owner)) &#123;
+        throw new IllegalArgumentException(&quot;Cannot add the same observer&quot;
+                + &quot; with different lifecycles&quot;);
+    &#125;
+    if (existing != null) &#123;
+        return;
+    &#125;
+    // owner就是对应的Activity或者Fragment 
+    owner.getLifecycle().addObserver(wrapper);
+&#125;
+</code></pre>
+<p>##5. LifecycleBoundObserver工作原理<br>5.1 onStateChanged</p>
+<pre><code>class LifecycleBoundObserver extends ObserverWrapper implements GenericLifecycleObserver &#123;
+   ...
+   @Override
+    boolean shouldBeActive() &#123;
+       // 判断 state 是不是 &gt;= 0
+       return mOwner.getLifecycle().getCurrentState().isAtLeast(STARTED);
+    &#125;
+    @Override
+    public void onStateChanged(LifecycleOwner source, Lifecycle.Event event) &#123;
+        if (mOwner.getLifecycle().getCurrentState() == DESTROYED) &#123;
+            removeObserver(mObserver);
+            return;
+        &#125;
+        activeStateChanged(shouldBeActive());
+    &#125;
+    ...
+&#125;
+</code></pre>
+<p>第6行：如果组件当前的状态是活跃的，那么就分发状态。<br>第10行：当组件生命周期发生变化时，如果组件被销毁了，移除当前的监听器。</p>
+<p>4.3 activeStateChanged</p>
+<pre><code>void activeStateChanged(boolean newActive) &#123;
+    // 新状态和之前的状态相同，不处理
+    if (newActive == mActive) &#123;
+        return;
+    &#125;
+    // immediately set active state, so we&#39;d never dispatch anything to inactive
+    // owner
+    mActive = newActive;
+    boolean wasInactive = LiveData.this.mActiveCount == 0;
+    LiveData.this.mActiveCount += mActive ? 1 : -1;
+    if (wasInactive &amp;&amp; mActive) &#123;
+        onActive();
+    &#125;
+    if (LiveData.this.mActiveCount == 0 &amp;&amp; !mActive) &#123;
+        onInactive();
+    &#125;
+    if (mActive) &#123;
+        dispatchingValue(this);
+    &#125;
+&#125;
+</code></pre>
+<p>第18行：如果当前的组件的状态是活跃的，没有被destroy，那么调用dispatchingValue。ps：onActive()和onInactive()都是空实现的方法，继承类可以选择去实现。</p>
+<p>4.3 dispatchingValue</p>
+<pre><code>private void dispatchingValue(@Nullable ObserverWrapper initiator) &#123;
+    if (mDispatchingValue) &#123;
+        mDispatchInvalidated = true;
+        return;
+    &#125;
+    mDispatchingValue = true;
+    do &#123;
+        mDispatchInvalidated = false;
+        if (initiator != null) &#123;
+            considerNotify(initiator);
+            initiator = null;
+        &#125; else &#123;
+            for (Iterator&lt;Map.Entry&lt;Observer&lt;T&gt;, ObserverWrapper&gt;&gt; iterator =
+                    mObservers.iteratorWithAdditions(); iterator.hasNext()considerNotify; ) &#123;
+                considerNotify(iterator.next().getValue());
+                if (mDispatchInvalidated) &#123;
+                    break;
+                &#125;
+            &#125;
+        &#125;
+    &#125; while (mDispatchInvalidated);
+    mDispatchingValue = false;
+&#125;
+</code></pre>
+<p>第9行：如果当前的observer不为空，那么尝试将状态分发给这个observer；如果为空，遍历所有的observer列表分发该状态。ps在setValue时 会传递一个空的observer，这样就会将状态分发给所有监听这个Livedata的对象。</p>
+<p>4.4 considerNotify</p>
+<pre><code>private void considerNotify(ObserverWrapper observer) &#123;
+    if (!observer.mActive) &#123;
+        return;
+    &#125;
+    // Check latest state b4 dispatch. Maybe it changed state but we didn&#39;t get the event yet.
+    //
+    // we still first check observer.active to keep it as the entrance for events. So even if
+    // the observer moved to an active state, if we&#39;ve not received that event, we better not
+    // notify for a more predictable notification order.
+    if (!observer.shouldBeActive()) &#123;
+        observer.activeStateChanged(false);
+        return;
+    &#125;
+    if (observer.mLastVersion &gt;= mVersion) &#123;
+        return;
+    &#125;
+    observer.mLastVersion = mVersion;
+    //noinspection unchecked
+    observer.mObserver.onChanged((T) mData);
+&#125;
+</code></pre>
+<p>对于LiveData，其初始的version是-1，当我们调用了其setValue或者postValue，其vesion会+1；对于每一个观察者的封装ObserverWrapper，其初始version也为-1，也就是说，每一个新注册的观察者，其version为-1；当LiveData设置这个ObserverWrapper的时候，如果LiveData的version大于ObserverWrapper的version，LiveData就会强制把当前value推送给Observer。所以LiveDataBus每注册一个新的订阅者，这个订阅者立刻会收到一个回调，即使这个设置的动作发生在订阅之前。<br>##五、改变数据<br>LiveData提供了两种改变数据的方法：setValue()和postValue()。setValue()在主线程中调用，而postValue()既可在主线程也可在子线程中调用。</p>
+<h3 id="5-1-PostValue"><a href="#5-1-PostValue" class="headerlink" title="5.1 PostValue"></a>5.1 PostValue</h3><p>postValue 最终会在主线程中调用setValue方法</p>
+<pre><code>protected void postValue(T value) &#123;
+    boolean postTask;
+    synchronized (mDataLock) &#123;
+        postTask = mPendingData == NOT_SET;
+        mPendingData = value;
+    &#125;
+    if (!postTask) &#123;
+        return;
+    &#125;
+    ArchTaskExecutor.getInstance().postToMainThread(mPostValueRunnable);
+&#125;
+
+private final Runnable mPostValueRunnable = new Runnable() &#123;
+     @Override
+     public void run() &#123;
+         Object newValue;
+         synchronized (mDataLock) &#123;
+             newValue = mPendingData;
+             mPendingData = NOT_SET;
+         &#125;
+         //noinspection unchecked
+         setValue((T) newValue);
+     &#125;
+&#125;;
+</code></pre>
+<h3 id="5-2-setValue"><a href="#5-2-setValue" class="headerlink" title="5.2 setValue"></a>5.2 setValue</h3><pre><code>@MainThread
+protected void setValue(T value) &#123;
+    assertMainThread(&quot;setValue&quot;);
+    mVersion++;
+    mData = value;
+    dispatchingValue(null);
+&#125;
+</code></pre>
+<p>第6行：调用到dispatchingValue </p>
+<p>总结：<br>Livedata通过observe()方法将数据源的生命周期和组件（Fragment/Activity）关联起来。当组件的生命周期发生变化或者数据源发生变化（调用postValue或者setValue），onStateChanged()方法会被调用。</p>
+<p><img src="/pics/image-20210223102718742.png" alt="image-20210223102718742"></p>
+<h2 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h2><p><a target="_blank" rel="noopener" href="http://www.10tiao.com/html/244/201807/2651748475/4.html">LiveDataBus</a><br><a target="_blank" rel="noopener" href="http://www.10tiao.com/html/597/201809/2651943621/1.html">liveData源码分析</a></p>
+
+    </div>
+
+    
+    
+    
+      
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>sven
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://example.com/2021/02/24/Notes/Android/Jetpack/liveData/" title="Jetpack_02_LiveData">http://example.com/2021/02/24/Notes/Android/Jetpack/liveData/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/02/24/Notes/Android/Jetpack/Lifecycle/" rel="prev" title="Jetpack_01_Lifecycle">
+      <i class="fa fa-chevron-left"></i> Jetpack_01_Lifecycle
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/02/24/Notes/Android/open/open_03_ARouter%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="next" title="Open_03_ARouter源码分析">
+      Open_03_ARouter源码分析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Jetpack-02-LiveData"><span class="nav-number">1.</span> <span class="nav-text">Jetpack_02_LiveData</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AFLiveData"><span class="nav-number">2.</span> <span class="nav-text">一、什么是LiveData</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81LiveData%E8%83%BD%E4%B8%BA%E6%88%91%E4%BB%AC%E5%81%9A%E4%BB%80%E4%B9%88"><span class="nav-number">3.</span> <span class="nav-text">二、LiveData能为我们做什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">三、工作原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-observe-gt-LifecycleBoundObserver"><span class="nav-number">4.1.</span> <span class="nav-text">3.2 observe() -&gt; LifecycleBoundObserver</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-PostValue"><span class="nav-number">4.2.</span> <span class="nav-text">5.1 PostValue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-setValue"><span class="nav-number">4.3.</span> <span class="nav-text">5.2 setValue</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%EF%BC%9A"><span class="nav-number">5.</span> <span class="nav-text">参考：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="sven"
+      src="/images/sven.jpeg">
+  <p class="site-author-name" itemprop="name">sven</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">73</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhaoxiaowen-sven" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhaoxiaowen-sven" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhaoxiaowen-sven@gmail.com" title="E-Mail → mailto:zhaoxiaowen-sven@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sven</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

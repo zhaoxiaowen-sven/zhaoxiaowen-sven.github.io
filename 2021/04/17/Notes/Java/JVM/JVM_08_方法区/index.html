@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="JVM_08_方法区方法区主要存放的是 Class，而堆中主要存放的是实例化的对象，方法区可以看作是一块独立于Java堆的内存空间。  方法区（Method Area）与Java堆一样，是各个线程共享的内存区域 多个线程同时加载统一个类时，只能有一个线程能加载该类，其他线程只能等等待该线程加载完毕，然后直接使用该类，即类只能加载一次 方法区在JVM启动的时候被创建，并且它的实际物理内存空间和Jav">
+  <meta name="description" content="JVM_08_方法区">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JVM_08_方法区">
 <meta property="og:url" content="http://example.com/2021/04/17/Notes/Java/JVM/JVM_08_%E6%96%B9%E6%B3%95%E5%8C%BA/index.html">
 <meta property="og:site_name" content="Sven&#39;s blog">
-<meta property="og:description" content="JVM_08_方法区方法区主要存放的是 Class，而堆中主要存放的是实例化的对象，方法区可以看作是一块独立于Java堆的内存空间。  方法区（Method Area）与Java堆一样，是各个线程共享的内存区域 多个线程同时加载统一个类时，只能有一个线程能加载该类，其他线程只能等等待该线程加载完毕，然后直接使用该类，即类只能加载一次 方法区在JVM启动的时候被创建，并且它的实际物理内存空间和Jav">
+<meta property="og:description" content="JVM_08_方法区">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/pics/image-20210416100231841.png">
 <meta property="og:image" content="http://example.com/pics/image-20210416100432888.png">
@@ -38,9 +38,8 @@
 <meta property="og:image" content="http://example.com/pics/image-20210417184336117.png">
 <meta property="og:image" content="http://example.com/pics/image-20210418203012633.png">
 <meta property="article:published_time" content="2021-04-17T02:05:36.925Z">
-<meta property="article:modified_time" content="2021-10-25T16:38:15.550Z">
+<meta property="article:modified_time" content="2021-10-30T13:48:53.833Z">
 <meta property="article:author" content="sven">
-<meta property="article:tag" content="JVM">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/pics/image-20210416100231841.png">
 
@@ -252,7 +251,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="JVM-08-方法区"><a href="#JVM-08-方法区" class="headerlink" title="JVM_08_方法区"></a>JVM_08_方法区</h1><p><strong>方法区主要存放的是 Class</strong>，<strong>而堆中主要存放的是实例化的对象</strong>，<strong>方法区可以看作是一块独立于Java堆的内存空间</strong>。</p>
+        <h1 id="JVM-08-方法区"><a href="#JVM-08-方法区" class="headerlink" title="JVM_08_方法区"></a>JVM_08_方法区</h1><span id="more"></span>
+
+<p><strong>方法区主要存放的是 Class</strong>，<strong>而堆中主要存放的是实例化的对象</strong>，<strong>方法区可以看作是一块独立于Java堆的内存空间</strong>。</p>
 <ul>
 <li>方法区（Method Area）与Java堆一样，是各个线程共享的内存区域</li>
 <li>多个线程同时加载统一个类时，只能有一个线程能加载该类，其他线程只能等等待该线程加载完毕，然后直接使用该类，即类只能加载一次</li>
@@ -385,11 +386,27 @@
     
     
     
+      
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>sven
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://example.com/2021/04/17/Notes/Java/JVM/JVM_08_%E6%96%B9%E6%B3%95%E5%8C%BA/" title="JVM_08_方法区">http://example.com/2021/04/17/Notes/Java/JVM/JVM_08_方法区/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
 
       <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/JVM/" rel="tag"># JVM</a>
-          </div>
 
         
 
@@ -477,20 +494,20 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">58</span>
+          <span class="site-state-item-count">73</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">26</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

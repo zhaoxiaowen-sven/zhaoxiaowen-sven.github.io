@@ -20,18 +20,18 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="JVM_04_PC寄存器PC寄存器（Program Counter Register）或称为程序计数器，记录正在执行的虚拟机字节码指令地址。Register 的命名源于 CPU 的寄存器，寄存器存储指令相关的线程信息，寄存器存储指令相关的现场信息。CPU只有把数据装载到寄存器（CPU寄存器，不是我们程PCRegister）才能够运行 这里，并非是广义上所指的物理寄存器，叫程序计数器（或PC计数器或">
+  <meta name="description" content="JVM_04_PC寄存器">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JVM_04_PC寄存器">
 <meta property="og:url" content="http://example.com/2021/04/17/Notes/Java/JVM/JVM_04_PC%E5%AF%84%E5%AD%98%E5%99%A8/index.html">
 <meta property="og:site_name" content="Sven&#39;s blog">
-<meta property="og:description" content="JVM_04_PC寄存器PC寄存器（Program Counter Register）或称为程序计数器，记录正在执行的虚拟机字节码指令地址。Register 的命名源于 CPU 的寄存器，寄存器存储指令相关的线程信息，寄存器存储指令相关的现场信息。CPU只有把数据装载到寄存器（CPU寄存器，不是我们程PCRegister）才能够运行 这里，并非是广义上所指的物理寄存器，叫程序计数器（或PC计数器或">
+<meta property="og:description" content="JVM_04_PC寄存器">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/pics/image-20210411210734629.png">
 <meta property="og:image" content="http://example.com/pics/image-20210411212618773.png">
 <meta property="og:image" content="http://example.com/pics/image-20210411210630941.png">
 <meta property="article:published_time" content="2021-04-17T02:05:36.923Z">
-<meta property="article:modified_time" content="2021-10-25T16:38:34.748Z">
+<meta property="article:modified_time" content="2021-10-30T13:48:43.360Z">
 <meta property="article:author" content="sven">
 <meta property="article:tag" content="JVM">
 <meta name="twitter:card" content="summary">
@@ -245,7 +245,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="JVM-04-PC寄存器"><a href="#JVM-04-PC寄存器" class="headerlink" title="JVM_04_PC寄存器"></a>JVM_04_PC寄存器</h1><p>PC寄存器（<strong>Program Counter Register</strong>）或称为程序计数器，<code>记录正在执行的虚拟机字节码指令地址</code>。Register 的命名源于 CPU 的寄存器，寄存器存储指令相关的线程信息，寄存器存储指令相关的现场信息。CPU只有把数据装载到寄存器（CPU寄存器，不是我们程PCRegister）才能够运行</p>
+        <h1 id="JVM-04-PC寄存器"><a href="#JVM-04-PC寄存器" class="headerlink" title="JVM_04_PC寄存器"></a>JVM_04_PC寄存器</h1><span id="more"></span>
+
+<p>PC寄存器（<strong>Program Counter Register</strong>）或称为程序计数器，<code>记录正在执行的虚拟机字节码指令地址</code>。Register 的命名源于 CPU 的寄存器，寄存器存储指令相关的线程信息，寄存器存储指令相关的现场信息。CPU只有把数据装载到寄存器（CPU寄存器，不是我们程PCRegister）才能够运行</p>
 <p>这里，并非是广义上所指的物理寄存器，叫程序计数器（或PC计数器或指令计数器）会更加贴切，并且也不容易引起一些不必要的误会。<strong>JVM 中的 PC 寄存器是对物理 PC 寄存器的一种抽象模拟</strong>。</p>
 <blockquote>
 <p>PC寄存器的作用有2种定义：</p>
@@ -305,6 +307,31 @@
     
     
     
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+      <div class="popular-posts-title"><a href="/2021/07/24/Notes/Java/JVM/JVM_09_JVM_GC/" rel="bookmark">JVM_09_JVM_GC</a></div>
+    </li>
+  </ul>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>sven
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://example.com/2021/04/17/Notes/Java/JVM/JVM_04_PC%E5%AF%84%E5%AD%98%E5%99%A8/" title="JVM_04_PC寄存器">http://example.com/2021/04/17/Notes/Java/JVM/JVM_04_PC寄存器/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
 
       <footer class="post-footer">
           <div class="post-tags">
@@ -397,20 +424,20 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">58</span>
+          <span class="site-state-item-count">73</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">26</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
