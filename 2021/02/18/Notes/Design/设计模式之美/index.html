@@ -17,50 +17,50 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"zhaoxiaowen-sven.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="设计模式之美">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Design01_设计模式之美">
-<meta property="og:url" content="http://example.com/2021/02/18/Notes/Design/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%BE%8E/index.html">
+<meta property="og:url" content="https://zhaoxiaowen-sven.github.io/2021/02/18/Notes/Design/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%BE%8E/index.html">
 <meta property="og:site_name" content="Sven&#39;s blog">
 <meta property="og:description" content="设计模式之美">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/pics/image-20200417165625730.png">
-<meta property="og:image" content="http://example.com/pics/34c51d1eb44ffc099d448ad10bcda82b.jpg">
-<meta property="og:image" content="http://example.com/pics/f4ce06502a9782d200e8e10a90bf2ce7.jpg">
-<meta property="og:image" content="http://example.com/pics/fbf1ae0ce08d4ea890b80944c2b8309f-1593607047324.jpg">
-<meta property="og:image" content="http://example.com/pics/fc56f7c2b348d324c93a09dd0dee538a.jpg">
-<meta property="og:image" content="http://example.com/pics/image-20200529101403310.png">
-<meta property="og:image" content="http://example.com/pics/image-20200506180721332.png">
-<meta property="og:image" content="http://example.com/pics/image-20200506201358048.png">
-<meta property="og:image" content="http://example.com/pics/image-20200508201754929.png">
-<meta property="og:image" content="http://example.com/pics/image-20200507195435427.png">
-<meta property="og:image" content="http://example.com/pics/image-20200507210406322.png">
-<meta property="og:image" content="http://example.com/pics/image-20200507211617343.png">
-<meta property="og:image" content="http://example.com/pics/image-20200507211926651.png">
-<meta property="og:image" content="http://example.com/pics/image-20200508204121839.png">
-<meta property="og:image" content="http://example.com/pics/image-20200508210024521.png">
-<meta property="og:image" content="http://example.com/pics/image-20200508210435722.png">
-<meta property="og:image" content="http://example.com/pics/image-20200520103154468.png">
-<meta property="og:image" content="http://example.com/pics/image-20200520103312533.png">
-<meta property="og:image" content="http://example.com/pics/image-20200521111434498.png">
-<meta property="og:image" content="http://example.com/pics/image-20200523101842144.png">
-<meta property="og:image" content="http://example.com/pics/image-20200523110010170.png">
-<meta property="og:image" content="http://example.com/pics/image-20200523110337991.png">
-<meta property="og:image" content="http://example.com/pics/image-20200525115550212.png">
-<meta property="og:image" content="http://example.com/pics/image-20200528103452763.png">
-<meta property="og:image" content="http://example.com/pics/image-20200528205840204.png">
-<meta property="og:image" content="http://example.com/pics/image-20200528214630390.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200417165625730.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/34c51d1eb44ffc099d448ad10bcda82b.jpg">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/f4ce06502a9782d200e8e10a90bf2ce7.jpg">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/fbf1ae0ce08d4ea890b80944c2b8309f-1593607047324.jpg">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/fc56f7c2b348d324c93a09dd0dee538a.jpg">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200529101403310.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200506180721332.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200506201358048.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200508201754929.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200507195435427.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200507210406322.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200507211617343.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200507211926651.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200508204121839.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200508210024521.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200508210435722.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200520103154468.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200520103312533.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200521111434498.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200523101842144.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200523110010170.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200523110337991.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200525115550212.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200528103452763.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200528205840204.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200528214630390.png">
 <meta property="article:published_time" content="2021-02-18T14:51:10.450Z">
-<meta property="article:modified_time" content="2021-10-30T13:43:30.247Z">
+<meta property="article:modified_time" content="2021-10-30T14:50:43.767Z">
 <meta property="article:author" content="sven">
-<meta property="article:tag" content="design">
+<meta property="article:tag" content="Design">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/pics/image-20200417165625730.png">
+<meta name="twitter:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200417165625730.png">
 
-<link rel="canonical" href="http://example.com/2021/02/18/Notes/Design/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%BE%8E/">
+<link rel="canonical" href="https://zhaoxiaowen-sven.github.io/2021/02/18/Notes/Design/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%BE%8E/">
 
 
 <script id="page-configurations">
@@ -211,7 +211,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/18/Notes/Design/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%BE%8E/">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaowen-sven.github.io/2021/02/18/Notes/Design/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%BE%8E/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/sven.jpeg">
@@ -242,7 +242,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/design/" itemprop="url" rel="index"><span itemprop="name">design</span></a>
+                  <a href="/categories/Design/" itemprop="url" rel="index"><span itemprop="name">Design</span></a>
                 </span>
             </span>
 
@@ -828,7 +828,7 @@
   </li>
   <li class="post-copyright-link">
     <strong>本文链接：</strong>
-    <a href="http://example.com/2021/02/18/Notes/Design/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%BE%8E/" title="Design01_设计模式之美">http://example.com/2021/02/18/Notes/Design/设计模式之美/</a>
+    <a href="https://zhaoxiaowen-sven.github.io/2021/02/18/Notes/Design/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%BE%8E/" title="Design01_设计模式之美">https://zhaoxiaowen-sven.github.io/2021/02/18/Notes/Design/设计模式之美/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -839,7 +839,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/design/" rel="tag"># design</a>
+              <a href="/tags/Design/" rel="tag"># Design</a>
           </div>
 
         
@@ -928,20 +928,20 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">73</span>
+          <span class="site-state-item-count">74</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
