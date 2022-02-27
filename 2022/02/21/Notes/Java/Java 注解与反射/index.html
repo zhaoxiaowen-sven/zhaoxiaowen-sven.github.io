@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20220223213945355.png">
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20220223222902328.png">
 <meta property="article:published_time" content="2022-02-21T14:45:50.442Z">
-<meta property="article:modified_time" content="2022-02-23T14:52:57.430Z">
+<meta property="article:modified_time" content="2022-02-23T14:56:32.821Z">
 <meta property="article:author" content="sven">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20220223214439779.png">
@@ -455,7 +455,7 @@
 <h1 id="五、反射与注解"><a href="#五、反射与注解" class="headerlink" title="五、反射与注解"></a>五、反射与注解</h1><p>通过反射获取注解主要使用是<code>getAnnotation</code>方法，这个方法可以作用于 <code>Class</code>，<code>Method</code>，<code>Field</code>, <code>Constructor</code>。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Retention(value = RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Target(value = &#123;ElementType.FIELD&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation &#123;</span><br><span class="line">    <span class="function">String <span class="title">address</span><span class="params">()</span> <span class="keyword">default</span> &quot;cn&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">    <span class="meta">@MyAnnotation(address = &quot;ru&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> address;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Class&lt;?&gt; c6 = Class.forName(<span class="string">&quot;bean.Person&quot;</span>);</span><br><span class="line">Field f = c6.getDeclaredField(<span class="string">&quot;address&quot;</span>);</span><br><span class="line">MyAnnotation annotation = f.getAnnotation(MyAnnotation.class);</span><br><span class="line">System.out.println(annotation.address());</span><br></pre></td></tr></table></figure>
 
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>反射技术广泛应用于各种大型框架，这里介绍api都是比较基础的，如果要深入了解的话还是要多看官方文档，多实践。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>注解和反射技术广泛应用于各种大型框架，这里介绍api都是比较基础的，如果要深入了解的话还是要多看官方文档，多实践。</p>
 <h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1p4411P7V3?p=16">https://www.bilibili.com/video/BV1p4411P7V3?p=16</a></p>
 <p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/baiqiantao/category/2098862.html?page=5">https://www.cnblogs.com/baiqiantao/category/2098862.html?page=5</a></p>
 <p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6979844000312213541">https://juejin.cn/post/6979844000312213541</a></p>
@@ -497,8 +497,8 @@
       <i class="fa fa-chevron-left"></i> open_09_GLIDE
     </a></div>
       <div class="post-nav-item">
-    <a href="/2022/02/21/Notes/Java/Java%20%E6%B3%9B%E5%9E%8B/" rel="next" title="Java 泛型">
-      Java 泛型 <i class="fa fa-chevron-right"></i>
+    <a href="/2022/02/27/Notes/Java/Java%E6%B3%9B%E5%9E%8B/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -580,7 +580,7 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
