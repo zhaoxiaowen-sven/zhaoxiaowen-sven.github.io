@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20220302225438226.png">
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20220307231703179.png">
 <meta property="article:published_time" content="2022-03-02T14:06:19.253Z">
-<meta property="article:modified_time" content="2022-03-07T15:17:09.745Z">
+<meta property="article:modified_time" content="2022-03-08T15:41:27.717Z">
 <meta property="article:author" content="sven">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20220302225438226.png">
@@ -318,12 +318,19 @@
 <p>底层实现：lock指令 </p>
 <h2 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h2><p>分类：</p>
 <ul>
-<li>乐观 + 悲观</li>
-<li>公平 + 非公平</li>
-<li>重入 + 非可重入</li>
-<li> 独占锁 + 共享锁</li>
+<li><p>乐观 （CAS）+ 悲观（synchronized）</p>
+</li>
+<li><p>自旋锁 VS 适应性自旋锁</p>
+<p>如果对于某个锁，自旋很少成功获得过，那在以后尝试获取这个锁时将可能省略掉自旋过程，直接阻塞线程，避免浪费处理器资源。</p>
+</li>
+<li><p>公平 + 非公平：</p>
+</li>
+<li><p>重入 + 非可重入：同一个线程多次重入</p>
+</li>
+<li><p>独占锁 + 共享锁</p>
+</li>
 </ul>
-<h3 id="CAS（自旋）：compare-And-swap"><a href="#CAS（自旋）：compare-And-swap" class="headerlink" title="CAS（自旋）：compare And swap"></a>CAS（自旋）：compare And swap</h3><ol>
+<h2 id="CAS（自旋）：compare-And-swap"><a href="#CAS（自旋）：compare-And-swap" class="headerlink" title="CAS（自旋）：compare And swap"></a>CAS（自旋）：compare And swap</h2><ol>
 <li>原理：UnSafe类（C 实现） </li>
 <li>应用：Atomic XXX</li>
 <li> 问题：</li>
@@ -406,7 +413,37 @@
 <td>aqs + volatile(JDK)</td>
 </tr>
 </tbody></table>
-<h2 id=""><a href="#" class="headerlink" title=""></a></h2>
+<h2 id="AQS"><a href="#AQS" class="headerlink" title="AQS"></a>AQS</h2><p>抽象队列同步器，JUC 包的基石，ReentrantLock + ReentrantReadWriteLock + Countdownlaunch + Semaphore等都是基于AQS的；包括线程池 Worker也是继承AQS。</p>
+<p><strong>核心思想</strong>：如果被请求的共享资源空闲，那么就将当前请求资源的线程设置为有效的工作线程，将共享资源设置为锁定状态；如果共享资源被占用，就需要一定的阻塞等待唤醒机制来保证锁分配。</p>
+<p><strong>核心原理</strong>：</p>
+<ol>
+<li><p>互斥变量的设计和如何保证互斥变量的线程安全性？</p>
+<p>通过volatile + cas。ivolatile state值表示锁状态，&gt;0 表示被锁定，=0表示无锁。一个线程获取锁时，如果state=0 ，会被更新为1，表示被占用。</p>
+<p>当多个线程同时获取锁时，为保证共享变量更新的原子性，需要CAS机制更新。</p>
+</li>
+<li><p>线程阻塞和唤醒</p>
+<p>多个线程同时获取锁时，没有获取到锁的线程会被阻塞，在锁被释放后再进行竞争。</p>
+<p> 线程阻塞和唤醒基于的是同步队列，同步队列是一个FIFO双向队列，当出现资源竞争需要阻塞时，就会将竞争的线程包装成一个Node节点，放入同步队列中。同时会调用UnSafe#park将线程阻塞；当锁被释放后，在通过UnSafe#unpark 会唤醒同步队列中的下一个线程节点，再次获取锁。</p>
+</li>
+<li><p>公平和非公平性</p>
+<p>AQS在获取锁时，公平锁会去判断当前同步队列是不是为空，如果不为空，则需要加入同步队列进行等待； AQS在获取锁时，公平锁会去判断当前同步队列是不是为空，如果不为空，则需要加入同步队列进行等待；</p>
+<p>而非公平锁会不管同步队列中是否有阻塞的线程，都先通过cas获取一下锁，如果获取到了就先执行，否则就加入同步队列。</p>
+</li>
+<li><p>独占共享：</p>
+<p>ReentrantLock 是独占锁，state&gt;0 时判断当前的持有锁线程和要获取锁的线程是不是一个</p>
+<p> ReentrantReadWriteLock ：读锁是共享锁获取读锁的时候会判断写锁的状态，如有写锁没有被持有</p>
+<p>写锁是排他锁</p>
+<p>共享锁：CountDownlaunch + Semaphore</p>
+<p> 中断的原理：AQS中，检测到中断时，是否抛异常，自旋获取锁的方法中</p>
+</li>
+<li><p>超时的原理：UnSafe类park超时返回</p>
+</li>
+<li><p>等待唤醒机制：condition 队列，await或notify时线程已经获取到锁了。</p>
+<p>await：释放Node节点的锁，挂起节点线程（当前线程），创建新节点加入到条件队列中</p>
+<p>notify：将条件队列中的节点移动到同步队列中，唤醒节点线程竞争锁。      </p>
+</li>
+</ol>
+
     </div>
 
     
@@ -502,7 +539,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="nav-text">Java 面试题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81HashMap"><span class="nav-text">一、HashMap</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hash%E8%A7%84%E5%88%99-1-8"><span class="nav-text">Hash规则(1.8)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E8%BF%B0%E6%89%A9%E5%AE%B9%E8%BF%87%E7%A8%8B%EF%BC%9F"><span class="nav-text">简述扩容过程？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hashMap-%E5%B9%B6%E5%8F%91%E7%9A%84%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="nav-text">hashMap 并发的安全问题？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81ConcurrentHashMap"><span class="nav-text">二、ConcurrentHashMap</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-1"><span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hash-%E8%AE%A1%E7%AE%97%E8%A7%84%E5%88%99"><span class="nav-text">Hash 计算规则?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E8%AE%BE%E8%AE%A1"><span class="nav-text">并发设计?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%AE%B9%E8%A7%84%E5%88%99"><span class="nav-text">扩容规则?</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81JUC"><span class="nav-text">三、JUC</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#volatile"><span class="nav-text">volatile</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%81"><span class="nav-text">锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CAS%EF%BC%88%E8%87%AA%E6%97%8B%EF%BC%89%EF%BC%9Acompare-And-swap"><span class="nav-text">CAS（自旋）：compare And swap</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#synchronized"><span class="nav-text">synchronized</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80"><span class="nav-text">对象内存布局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%94%81%E7%8A%B6%E6%80%81"><span class="nav-text">锁状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#volatile-vs-synchronized"><span class="nav-text">volatile   vs   synchronized</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#synchrionized-VS-ReentrantLock"><span class="nav-text">synchrionized VS ReentrantLock</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text"></span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-%E9%9D%A2%E8%AF%95%E9%A2%98"><span class="nav-text">Java 面试题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81HashMap"><span class="nav-text">一、HashMap</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hash%E8%A7%84%E5%88%99-1-8"><span class="nav-text">Hash规则(1.8)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%80%E8%BF%B0%E6%89%A9%E5%AE%B9%E8%BF%87%E7%A8%8B%EF%BC%9F"><span class="nav-text">简述扩容过程？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hashMap-%E5%B9%B6%E5%8F%91%E7%9A%84%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="nav-text">hashMap 并发的安全问题？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81ConcurrentHashMap"><span class="nav-text">二、ConcurrentHashMap</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-1"><span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hash-%E8%AE%A1%E7%AE%97%E8%A7%84%E5%88%99"><span class="nav-text">Hash 计算规则?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E8%AE%BE%E8%AE%A1"><span class="nav-text">并发设计?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%AE%B9%E8%A7%84%E5%88%99"><span class="nav-text">扩容规则?</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81JUC"><span class="nav-text">三、JUC</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#volatile"><span class="nav-text">volatile</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%81"><span class="nav-text">锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CAS%EF%BC%88%E8%87%AA%E6%97%8B%EF%BC%89%EF%BC%9Acompare-And-swap"><span class="nav-text">CAS（自旋）：compare And swap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#synchronized"><span class="nav-text">synchronized</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E8%B1%A1%E5%86%85%E5%AD%98%E5%B8%83%E5%B1%80"><span class="nav-text">对象内存布局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%94%81%E7%8A%B6%E6%80%81"><span class="nav-text">锁状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#volatile-vs-synchronized"><span class="nav-text">volatile   vs   synchronized</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#synchrionized-VS-ReentrantLock"><span class="nav-text">synchrionized VS ReentrantLock</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AQS"><span class="nav-text">AQS</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -517,7 +554,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">73</span>
+          <span class="site-state-item-count">71</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -530,7 +567,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
