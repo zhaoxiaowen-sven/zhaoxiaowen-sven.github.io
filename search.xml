@@ -3147,7 +3147,9 @@
   <entry>
     <title>Java 生产者消费</title>
     <url>/2022/03/27/Notes/Java/%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%BC%8F/</url>
-    <content><![CDATA[<h1 id="Java-生产者和消费者的四种实现"><a href="#Java-生产者和消费者的四种实现" class="headerlink" title="Java 生产者和消费者的四种实现"></a>Java 生产者和消费者的四种实现</h1><p>生产者 - 消费者模型 <code>Producer-consumer problem</code> 是一个非常经典的多线程并发协作的模型，也是JUC 面试中高频的问题。</p>
+    <content><![CDATA[<h1 id="Java-生产者和消费者的四种实现"><a href="#Java-生产者和消费者的四种实现" class="headerlink" title="Java 生产者和消费者的四种实现"></a>Java 生产者和消费者的四种实现</h1><span id="more"></span>
+
+<p>生产者 - 消费者模型 <code>Producer-consumer problem</code> 是一个非常经典的多线程并发协作的模型，也是JUC 面试中高频的问题。</p>
 <p>简单来说，这个模型是由3个角色：</p>
 <ul>
 <li><p>缓冲区：生产者和消费者的公共存储空间。</p>
