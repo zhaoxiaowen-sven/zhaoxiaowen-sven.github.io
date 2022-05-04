@@ -10566,7 +10566,7 @@ private void updateTrackedJobs(int uid) &#123;
 <li><code>Lifecycle.Event.ON_PAUSE</code>, <code>Lifecycle.Event.ON_STOP</code>，将在最后一个<code>Activit</code>退出后后延迟分发。</li>
 </ol>
 <p>利用 2、3 我们可以比较方便的监听应用前后台的切换。</p>
-<h1 id="三、Lifecycle-组成"><a href="#三、Lifecycle-组成" class="headerlink" title="三、Lifecycle 组成"></a>三、Lifecycle 组成</h1><p>Lifecycle 中的角色有三个：</p>
+<h1 id="三、原理分析"><a href="#三、原理分析" class="headerlink" title="三、原理分析"></a>三、原理分析</h1><p>Lifecycle 中的角色有三个：</p>
 <ol>
 <li><p>Lifecycle/LifycycleRegistry</p>
 <p><strong>持有组件生命周期状态</strong>（如<code>Activity</code>或<code>Fragment</code>）的信息的类，并允许其他对象观察此状态。</p>
@@ -10689,7 +10689,7 @@ private void updateTrackedJobs(int uid) &#123;
 <li>将当前<code>Lifecycle</code>的<code>State</code>和所有<code>Observer</code>的<code>State</code>比较，判断执行<code>backwardpass</code>还是<code>forwardPass</code>方法。</li>
 </ol>
 <p>看一下<code>isSynced()</code>和<code>forwardPass()</code>方法</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">isSynced</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mObserverMap.size() == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// mObserverMap 保存着注册到这个组件上的所有observer</span></span><br><span class="line">    <span class="comment">// 如果第一个Observer 和 最后一个 Obsever的state 和 mState相同，说明所有observer的生命周期都已经分发过了</span></span><br><span class="line">    State eldestObserverState = mObserverMap.eldest().getValue().mState;</span><br><span class="line">    State newestObserverState = mObserverMap.newest().getValue().mState;</span><br><span class="line">    <span class="keyword">return</span> eldestObserverState == newestObserverState &amp;&amp; mState == newestObserverState;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">forwardPass</span><span class="params">(LifecycleOwner lifecycleOwner)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//获取一个按添加Observer顺序的迭代器</span></span><br><span class="line">    Iterator&lt;Map.Entry&lt;LifecycleObserver, ObserverWithState&gt;&gt; ascendingIterator =</span><br><span class="line">        mObserverMap.iteratorWithAdditions();</span><br><span class="line">    <span class="comment">//遍历所有Observer</span></span><br><span class="line">    <span class="keyword">while</span> (ascendingIterator.hasNext() &amp;&amp; !mNewEventOccurred) &#123;</span><br><span class="line">        Map.Entry&lt;LifecycleObserver, ObserverWithState&gt; entry = ascendingIterator.next();</span><br><span class="line">        ObserverWithState observer = entry.getValue();</span><br><span class="line">        <span class="comment">//如果当前Observer的State小于mState,则递增当前状态，</span></span><br><span class="line">        <span class="keyword">while</span> ((observer.mState.compareTo(mState) &lt; <span class="number">0</span> &amp;&amp; !mNewEventOccurred</span><br><span class="line">                &amp;&amp; mObserverMap.contains(entry.getKey()))) &#123;</span><br><span class="line">            pushParentState(observer.mState);</span><br><span class="line">            <span class="comment">//递增当前状态</span></span><br><span class="line">            <span class="keyword">final</span> Event event = Event.upFrom(observer.mState);</span><br><span class="line">            <span class="keyword">if</span> (event == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">&quot;no event up from &quot;</span> + observer.mState);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//分发事件</span></span><br><span class="line">            observer.dispatchEvent(lifecycleOwner, event);</span><br><span class="line">            popParentState();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">isSynced</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mObserverMap.size() == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// mObserverMap 保存着注册到这个组件上的所有observer</span></span><br><span class="line">    <span class="comment">// 如果第一个Observer 和 最后一个 Obsever的state 和 mState相同，说明所有observer的生命周期都已经分发过了</span></span><br><span class="line">    State eldestObserverState = mObserverMap.eldest().getValue().mState;</span><br><span class="line">    State newestObserverState = mObserverMap.newest().getValue().mState;</span><br><span class="line">    <span class="keyword">return</span> eldestObserverState == newestObserverState &amp;&amp; mState == newestObserverState;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">forwardPass</span><span class="params">(LifecycleOwner lifecycleOwner)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//获取一个按添加Observer顺序的迭代器</span></span><br><span class="line">    Iterator&lt;Map.Entry&lt;LifecycleObserver, ObserverWithState&gt;&gt; ascendingIterator =</span><br><span class="line">        mObserverMap.iteratorWithAdditions();</span><br><span class="line">    <span class="comment">//遍历所有Observer</span></span><br><span class="line">    <span class="keyword">while</span> (ascendingIterator.hasNext() &amp;&amp; !mNewEventOccurred) &#123;</span><br><span class="line">        Map.Entry&lt;LifecycleObserver, ObserverWithState&gt; entry = ascendingIterator.next();</span><br><span class="line">        ObserverWithState observer = entry.getValue();</span><br><span class="line">        <span class="comment">//如果当前Observer的State小于mState,则递增当前状态，</span></span><br><span class="line">        <span class="keyword">while</span> ((observer.mState.compareTo(mState) &lt; <span class="number">0</span> &amp;&amp; !mNewEventOccurred</span><br><span class="line">                &amp;&amp; mObserverMap.contains(entry.getKey()))) &#123;</span><br><span class="line">            pushParentState(observer.mState);</span><br><span class="line">            <span class="comment">// 递增当前状态</span></span><br><span class="line">            <span class="keyword">final</span> Event event = Event.upFrom(observer.mState);</span><br><span class="line">            <span class="keyword">if</span> (event == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">&quot;no event up from &quot;</span> + observer.mState);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 分发事件，ObserverWithState#dispatchEvent</span></span><br><span class="line">            observer.dispatchEvent(lifecycleOwner, event);</span><br><span class="line">            popParentState();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p><code>forwardPass()</code>方法：</p>
 <ol>
@@ -10756,7 +10756,7 @@ private void updateTrackedJobs(int uid) &#123;
 <p>引入依赖</p>
 <figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    <span class="keyword">def</span> lifecycle_version = <span class="string">&quot;2.4.1&quot;</span></span><br><span class="line">    <span class="comment">// ViewModel</span></span><br><span class="line">    implementation <span class="string">&quot;androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version&quot;</span></span><br><span class="line">    <span class="comment">// LiveData</span></span><br><span class="line">    implementation <span class="string">&quot;androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version&quot;</span></span><br><span class="line">    <span class="comment">// Lifecycles only (without ViewModel or LiveData)</span></span><br><span class="line">    implementation <span class="string">&quot;androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Saved state module for ViewModel</span></span><br><span class="line">    implementation <span class="string">&quot;androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Annotation processor</span></span><br><span class="line">    kapt <span class="string">&quot;androidx.lifecycle:lifecycle-compiler:$lifecycle_version&quot;</span></span><br><span class="line">    <span class="comment">// alternately - if using Java8, use the following instead of lifecycle-compiler</span></span><br><span class="line">    implementation <span class="string">&quot;androidx.lifecycle:lifecycle-common-java8:$lifecycle_version&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h2 id="3-1、简单使用"><a href="#3-1、简单使用" class="headerlink" title="3.1、简单使用"></a>3.1、简单使用</h2><p><code>ViewModel</code>类主要负责为界面准备数据，并在配置更改期间自动保留<code>ViewModel</code>对象。</p>
+<h2 id="2-1、简单使用"><a href="#2-1、简单使用" class="headerlink" title="2.1、简单使用"></a>2.1、简单使用</h2><p><code>ViewModel</code>类主要负责为界面准备数据，并在配置更改期间自动保留<code>ViewModel</code>对象。</p>
 <p>例如：在<code>ViewModel</code>中获取和存储用户信息</p>
 <p>定义一个<code>User</code>数据类</p>
 <figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span></span>(<span class="keyword">var</span> age:<span class="built_in">Int</span>,<span class="keyword">var</span> name:String)</span><br></pre></td></tr></table></figure>
@@ -10776,7 +10776,7 @@ private void updateTrackedJobs(int uid) &#123;
 <li><code>ViewModel</code>对象存在的时间比视图或<code>LifecycleOwner</code>的特定实例存在的时间长。如果<code>ViewModel</code>需要<code>Application</code>上下文，可以扩展<code>AndroidViewModel</code>类并设置用于接收<code>Application</code>的构造函数。</li>
 <li><a href="https://www.youtube.com/watch?v=5qlIPTDE274&t=30s">ViewModel 不可以替代 onSaveInstanceState。</a></li>
 </ul>
-<h2 id="3-2、Fragment间通信"><a href="#3-2、Fragment间通信" class="headerlink" title="3.2、Fragment间通信"></a>3.2、Fragment间通信</h2><p><code>Activity</code> 中的两个或更多 <code>Fragment</code> 需要相互通信是一种很常见的现象。<code>Activity</code>和<code>Fragment</code>可以通过共享一个<code>ViewModel</code>解决这一通信问题，因为<code>Fragment</code>是依附在<code>Activity</code>上。</p>
+<h2 id="2-2、Fragment间通信"><a href="#2-2、Fragment间通信" class="headerlink" title="2.2、Fragment间通信"></a>2.2、Fragment间通信</h2><p><code>Activity</code> 中的两个或更多 <code>Fragment</code> 需要相互通信是一种很常见的现象。<code>Activity</code>和<code>Fragment</code>可以通过共享一个<code>ViewModel</code>解决这一通信问题，因为<code>Fragment</code>是依附在<code>Activity</code>上。</p>
 <p>实例化<code>ViewModel</code>时，将该<code>Activity</code>传入<code>ViewModelProvider</code>，会给你一个该Activity创建好的<code>ViewModel</code>。两个 <code>Fragment</code> 可以使用其 <code>Activity</code> 范围共享 <a href="https://developer.android.com/reference/androidx/lifecycle/ViewModel?hl=zh-cn"><code>ViewModel</code></a> 来处理此类通信。</p>
 <figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SharedViewModel</span>: <span class="type">ViewModel</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> selected: MutableLiveData&lt;<span class="built_in">Int</span>&gt; = MutableLiveData(<span class="number">1</span>)</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">add</span><span class="params">()</span></span>&#123;</span><br><span class="line">        selected.value = selected.value?.plus(<span class="number">1</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">get</span><span class="params">()</span></span>: LiveData&lt;<span class="built_in">Int</span>&gt; &#123;</span><br><span class="line">        <span class="keyword">return</span> selected</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainFragment</span> : <span class="type">Fragment</span></span>() &#123;</span><br><span class="line">    <span class="keyword">var</span> bt : Button ?= <span class="literal">null</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> model: SharedViewModel? = <span class="literal">null</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        <span class="comment">//获取依附的Activity的ViewModel</span></span><br><span class="line">        model = activity?.let &#123; ViewModelProvider(it)[SharedViewModel::<span class="keyword">class</span>.java] &#125;</span><br><span class="line">        model?.<span class="keyword">get</span>()?.observe(<span class="keyword">this</span>,&#123;</span><br><span class="line">            <span class="comment">//更新UI</span></span><br><span class="line">            bt?.setText(<span class="string">&quot;新的值是 &quot;</span> + it)</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreateView</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">        inflater: <span class="type">LayoutInflater</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">        container: <span class="type">ViewGroup</span>?,</span></span></span><br><span class="line"><span class="params"><span class="function">        savedInstanceState: <span class="type">Bundle</span>?</span></span></span><br><span class="line"><span class="params"><span class="function">    )</span></span>: View? &#123;</span><br><span class="line">        <span class="keyword">val</span> view = inflater.inflate(R.layout.fragment_main, container, <span class="literal">false</span>);</span><br><span class="line">        bt = view.findViewById(R.id.main_bt)</span><br><span class="line">        bt?.setOnClickListener &#123;</span><br><span class="line">            model?.add()</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> view</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DetailFragment</span>: <span class="type">Fragment</span></span>()&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> model:SharedViewModel? = <span class="literal">null</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> bt : Button ?= <span class="literal">null</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        <span class="comment">//获取依附的Activity的ViewModel</span></span><br><span class="line">        model = activity?.let &#123; ViewModelProvider(it)[SharedViewModel::<span class="keyword">class</span>.java] &#125;</span><br><span class="line">        model?.<span class="keyword">get</span>()?.observe(<span class="keyword">this</span>,&#123;</span><br><span class="line">            <span class="comment">//更新UI</span></span><br><span class="line">            bt?.setText(<span class="string">&quot;新的值是 &quot;</span> + it)</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreateView</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">        inflater: <span class="type">LayoutInflater</span>,</span></span></span><br><span class="line"><span class="params"><span class="function">        container: <span class="type">ViewGroup</span>?,</span></span></span><br><span class="line"><span class="params"><span class="function">        savedInstanceState: <span class="type">Bundle</span>?</span></span></span><br><span class="line"><span class="params"><span class="function">    )</span></span>: View? &#123;</span><br><span class="line">        <span class="keyword">val</span> view = inflater.inflate(R.layout.fragment_detail, container, <span class="literal">false</span>);</span><br><span class="line">        bt = view.findViewById(R.id.detailButton)</span><br><span class="line">        bt?.setOnClickListener &#123;</span><br><span class="line">            model?.add()</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> view</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -10921,207 +10921,6 @@ private void updateTrackedJobs(int uid) &#123;
 <p>上述<code>AViewModel onCleared</code>原因是 <code>aViewModel</code> 和 <code>bViewModel</code> 使用了同个<code>key</code>，但是又不是同一个<code>ViewModel</code>类型，导致初始化<code>bViewModel</code> 时，会将<code>HashMap</code>中的 <code>aViewModel</code>覆盖并回收旧值。</p>
 <h1 id="五、参考"><a href="#五、参考" class="headerlink" title="五、参考"></a>五、参考</h1><p><a href="https://juejin.cn/post/6844904079265644551">https://juejin.cn/post/6844904079265644551</a></p>
 <p><a href="https://juejin.cn/post/7066390258950078500#heading-11">https://juejin.cn/post/7066390258950078500#heading-11</a></p>
-]]></content>
-      <categories>
-        <category>Android</category>
-        <category>Lifecycle</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>Jetpack_02_LiveData</title>
-    <url>/2021/02/24/Notes/Android/Jetpack/liveData/</url>
-    <content><![CDATA[<h1 id="Jetpack-02-LiveData"><a href="#Jetpack-02-LiveData" class="headerlink" title="Jetpack_02_LiveData"></a>Jetpack_02_LiveData</h1><span id="more"></span>
-
-<h2 id="一、什么是LiveData"><a href="#一、什么是LiveData" class="headerlink" title="一、什么是LiveData"></a>一、什么是LiveData</h2><p>LiveData是一个数据持有类。它具有以下特点：</p>
-<ul>
-<li>数据可以被观察者订阅；</li>
-<li>能够感知组件（Fragment、Activity、Service）的生命周期；</li>
-<li>只有在组件出于激活状态才会通知观察者有数据更新；</li>
-</ul>
-<h2 id="二、LiveData能为我们做什么"><a href="#二、LiveData能为我们做什么" class="headerlink" title="二、LiveData能为我们做什么"></a>二、LiveData能为我们做什么</h2><ul>
-<li>能够保证数据和UI统一,LiveData采用了观察者模式，LiveData是被观察者，当数据有变化时会通知UI。</li>
-<li>减少内存泄漏,LiveData能够感知到组件的生命周期，当组件处于DESTROYED状态时，观察者对象会被清除,当Activity停止时不会导致Crash,因为组件处于非激活状态时，不会收到LiveData中数据变化的通知。</li>
-<li>不需要额外的手动处理来响应生命周期的变化，因为LiveData能够感知组件的生命周期，所以就完全不需要在代码中告诉LiveData组件的生命周期状态。</li>
-<li>组件和数据相关的内容能实时更新,组件在前台的时候能够实时收到数据改变的通知，当组件从后台到前台来时，LiveData能够将最新的数据通知组件，因此保证了组件中和数据相关的内容能够实时更新。<br>若果横竖屏切换（configuration change）时，不需要额外的处理来保存数据,当屏幕方向变化时，组件会被recreate，然而系统并不能保证你的数据能够被恢复的。当我们采用LiveData保存数据时，因为数据和组件分离了。当组件被recreate，数据还是存在LiveData中，并不会被销毁。</li>
-<li>资源共享。</li>
-</ul>
-<h2 id="三、工作原理"><a href="#三、工作原理" class="headerlink" title="三、工作原理"></a>三、工作原理</h2><p><img src="/pics/image-20210223102440650.png" alt="image-20210223102440650"></p>
-<p>添加observer有2种方式，分别对应2个不同的observer AlwaysActiveObserver 和 LifecycleBoundObserver<br>1.observeForever() -&gt;  AlwaysActiveObserver<br>如果是observeForever方式，当数据改变时不管组件处于什么状态都会收到回调。</p>
-<pre><code>@MainThread
-public void observeForever(@NonNull Observer&lt;T&gt; observer) &#123;
-    AlwaysActiveObserver wrapper = new AlwaysActiveObserver(observer);
-    ObserverWrapper existing = mObservers.putIfAbsent(observer, wrapper);
-    if (existing != null &amp;&amp; existing instanceof LiveData.LifecycleBoundObserver) &#123;
-        throw new IllegalArgumentException(&quot;Cannot add the same observer&quot;
-                + &quot; with different lifecycles&quot;);
-    &#125;
-    if (existing != null) &#123;
-        return;
-    &#125;
-    wrapper.activeStateChanged(true);
-&#125;
-
-private class AlwaysActiveObserver extends ObserverWrapper &#123;
-    AlwaysActiveObserver(Observer&lt;T&gt; observer) &#123;
-        super(observer);
-    &#125;
-    @Override
-    boolean shouldBeActive() &#123;
-        return true;
-    &#125;
-&#125;
-</code></pre>
-<p>第20行：无论组件是什么状态，都认为组件是活跃的。considerNotify中会使用到这个判断</p>
-<h3 id="3-2-observe-gt-LifecycleBoundObserver"><a href="#3-2-observe-gt-LifecycleBoundObserver" class="headerlink" title="3.2 observe() -&gt; LifecycleBoundObserver"></a>3.2 observe() -&gt; LifecycleBoundObserver</h3><p>加入到对应的组件的生命周期管理类中管理，当组件的生命周期发生变化时，会回调给liveData；当组件的生命周期结束后，移除对应的observer监听。</p>
-<pre><code>@MainThread
-public void observe(@NonNull LifecycleOwner owner, @NonNull Observer&lt;T&gt; observer) &#123;
-    if (owner.getLifecycle().getCurrentState() == DESTROYED) &#123;
-        // ignore
-        return;
-    &#125;
-    LifecycleBoundObserver wrapper = new LifecycleBoundObserver(owner, observer);
-    ObserverWrapper existing = mObservers.putIfAbsent(observer, wrapper);
-    if (existing != null &amp;&amp; !existing.isAttachedTo(owner)) &#123;
-        throw new IllegalArgumentException(&quot;Cannot add the same observer&quot;
-                + &quot; with different lifecycles&quot;);
-    &#125;
-    if (existing != null) &#123;
-        return;
-    &#125;
-    // owner就是对应的Activity或者Fragment 
-    owner.getLifecycle().addObserver(wrapper);
-&#125;
-</code></pre>
-<p>##5. LifecycleBoundObserver工作原理<br>5.1 onStateChanged</p>
-<pre><code>class LifecycleBoundObserver extends ObserverWrapper implements GenericLifecycleObserver &#123;
-   ...
-   @Override
-    boolean shouldBeActive() &#123;
-       // 判断 state 是不是 &gt;= 0
-       return mOwner.getLifecycle().getCurrentState().isAtLeast(STARTED);
-    &#125;
-    @Override
-    public void onStateChanged(LifecycleOwner source, Lifecycle.Event event) &#123;
-        if (mOwner.getLifecycle().getCurrentState() == DESTROYED) &#123;
-            removeObserver(mObserver);
-            return;
-        &#125;
-        activeStateChanged(shouldBeActive());
-    &#125;
-    ...
-&#125;
-</code></pre>
-<p>第6行：如果组件当前的状态是活跃的，那么就分发状态。<br>第10行：当组件生命周期发生变化时，如果组件被销毁了，移除当前的监听器。</p>
-<p>4.3 activeStateChanged</p>
-<pre><code>void activeStateChanged(boolean newActive) &#123;
-    // 新状态和之前的状态相同，不处理
-    if (newActive == mActive) &#123;
-        return;
-    &#125;
-    // immediately set active state, so we&#39;d never dispatch anything to inactive
-    // owner
-    mActive = newActive;
-    boolean wasInactive = LiveData.this.mActiveCount == 0;
-    LiveData.this.mActiveCount += mActive ? 1 : -1;
-    if (wasInactive &amp;&amp; mActive) &#123;
-        onActive();
-    &#125;
-    if (LiveData.this.mActiveCount == 0 &amp;&amp; !mActive) &#123;
-        onInactive();
-    &#125;
-    if (mActive) &#123;
-        dispatchingValue(this);
-    &#125;
-&#125;
-</code></pre>
-<p>第18行：如果当前的组件的状态是活跃的，没有被destroy，那么调用dispatchingValue。ps：onActive()和onInactive()都是空实现的方法，继承类可以选择去实现。</p>
-<p>4.3 dispatchingValue</p>
-<pre><code>private void dispatchingValue(@Nullable ObserverWrapper initiator) &#123;
-    if (mDispatchingValue) &#123;
-        mDispatchInvalidated = true;
-        return;
-    &#125;
-    mDispatchingValue = true;
-    do &#123;
-        mDispatchInvalidated = false;
-        if (initiator != null) &#123;
-            considerNotify(initiator);
-            initiator = null;
-        &#125; else &#123;
-            for (Iterator&lt;Map.Entry&lt;Observer&lt;T&gt;, ObserverWrapper&gt;&gt; iterator =
-                    mObservers.iteratorWithAdditions(); iterator.hasNext()considerNotify; ) &#123;
-                considerNotify(iterator.next().getValue());
-                if (mDispatchInvalidated) &#123;
-                    break;
-                &#125;
-            &#125;
-        &#125;
-    &#125; while (mDispatchInvalidated);
-    mDispatchingValue = false;
-&#125;
-</code></pre>
-<p>第9行：如果当前的observer不为空，那么尝试将状态分发给这个observer；如果为空，遍历所有的observer列表分发该状态。ps在setValue时 会传递一个空的observer，这样就会将状态分发给所有监听这个Livedata的对象。</p>
-<p>4.4 considerNotify</p>
-<pre><code>private void considerNotify(ObserverWrapper observer) &#123;
-    if (!observer.mActive) &#123;
-        return;
-    &#125;
-    // Check latest state b4 dispatch. Maybe it changed state but we didn&#39;t get the event yet.
-    //
-    // we still first check observer.active to keep it as the entrance for events. So even if
-    // the observer moved to an active state, if we&#39;ve not received that event, we better not
-    // notify for a more predictable notification order.
-    if (!observer.shouldBeActive()) &#123;
-        observer.activeStateChanged(false);
-        return;
-    &#125;
-    if (observer.mLastVersion &gt;= mVersion) &#123;
-        return;
-    &#125;
-    observer.mLastVersion = mVersion;
-    //noinspection unchecked
-    observer.mObserver.onChanged((T) mData);
-&#125;
-</code></pre>
-<p>对于LiveData，其初始的version是-1，当我们调用了其setValue或者postValue，其vesion会+1；对于每一个观察者的封装ObserverWrapper，其初始version也为-1，也就是说，每一个新注册的观察者，其version为-1；当LiveData设置这个ObserverWrapper的时候，如果LiveData的version大于ObserverWrapper的version，LiveData就会强制把当前value推送给Observer。所以LiveDataBus每注册一个新的订阅者，这个订阅者立刻会收到一个回调，即使这个设置的动作发生在订阅之前。<br>##五、改变数据<br>LiveData提供了两种改变数据的方法：setValue()和postValue()。setValue()在主线程中调用，而postValue()既可在主线程也可在子线程中调用。</p>
-<h3 id="5-1-PostValue"><a href="#5-1-PostValue" class="headerlink" title="5.1 PostValue"></a>5.1 PostValue</h3><p>postValue 最终会在主线程中调用setValue方法</p>
-<pre><code>protected void postValue(T value) &#123;
-    boolean postTask;
-    synchronized (mDataLock) &#123;
-        postTask = mPendingData == NOT_SET;
-        mPendingData = value;
-    &#125;
-    if (!postTask) &#123;
-        return;
-    &#125;
-    ArchTaskExecutor.getInstance().postToMainThread(mPostValueRunnable);
-&#125;
-
-private final Runnable mPostValueRunnable = new Runnable() &#123;
-     @Override
-     public void run() &#123;
-         Object newValue;
-         synchronized (mDataLock) &#123;
-             newValue = mPendingData;
-             mPendingData = NOT_SET;
-         &#125;
-         //noinspection unchecked
-         setValue((T) newValue);
-     &#125;
-&#125;;
-</code></pre>
-<h3 id="5-2-setValue"><a href="#5-2-setValue" class="headerlink" title="5.2 setValue"></a>5.2 setValue</h3><pre><code>@MainThread
-protected void setValue(T value) &#123;
-    assertMainThread(&quot;setValue&quot;);
-    mVersion++;
-    mData = value;
-    dispatchingValue(null);
-&#125;
-</code></pre>
-<p>第6行：调用到dispatchingValue </p>
-<p>总结：<br>Livedata通过observe()方法将数据源的生命周期和组件（Fragment/Activity）关联起来。当组件的生命周期发生变化或者数据源发生变化（调用postValue或者setValue），onStateChanged()方法会被调用。</p>
-<p><img src="/pics/image-20210223102718742.png" alt="image-20210223102718742"></p>
-<h2 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h2><p><a href="http://www.10tiao.com/html/244/201807/2651748475/4.html">LiveDataBus</a><br><a href="http://www.10tiao.com/html/597/201809/2651943621/1.html">liveData源码分析</a></p>
 ]]></content>
       <categories>
         <category>Android</category>
@@ -12686,6 +12485,192 @@ android &#123;
       <categories>
         <category>Android</category>
         <category>开源</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Jetpack_03_LiveData</title>
+    <url>/2021/02/24/Notes/Android/Jetpack/Jetpack_03_LiveData/</url>
+    <content><![CDATA[<h1 id="Jetpack-03-LiveData"><a href="#Jetpack-03-LiveData" class="headerlink" title="Jetpack_03_LiveData"></a>Jetpack_03_LiveData</h1><span id="more"></span>
+
+<h1 id="一、为什么使用LiveData？"><a href="#一、为什么使用LiveData？" class="headerlink" title="一、为什么使用LiveData？"></a>一、为什么使用LiveData？</h1><p><a href="https://developer.android.google.cn/reference/androidx/lifecycle/LiveData?hl=zh-cn"><code>LiveData</code></a> 是一种可观察的数据存储器类。与常规的可观察类不同，LiveData 具有生命周期感知能力，意指它遵循其他应用组件（如 Activity、Fragment 或 Service）的生命周期。这种感知能力可确保 LiveData 仅更新处于活跃生命周期状态的应用组件观察者。</p>
+<p>如果观察者的生命周期处于<code>STARTED</code>或<code>RESUMED</code>状态，则<code>LiveData</code>会认为观察者处于活跃状态。LiveData通知观察者时会检查其实时状态，仅会通知处于活跃状态的观察者。一个观察者处于 <code>PAUSED</code> 或 <code>DESTROYED</code> 状态，它将不会收到通知。一旦观察者重新恢复 <code>RESUMED</code> 状态，它将会重新收到 <code>LiveData</code> 的最新数据。</p>
+<p><code>LiveData</code>可以注册和实现<code>LifecycleOwner</code>接口的对象配对的观察者，当相应的<code>Lifecycle</code>对象状态变为<code>DESTROYED</code>，便可移除此观察者，这样就可以防止内存泄漏问题（当 <code>Activity</code> 和 <code>Fragment</code> 的生命周期被销毁时，系统会立即退订它们）</p>
+<h3 id="使用-LiveData-的优势"><a href="#使用-LiveData-的优势" class="headerlink" title="使用 LiveData 的优势"></a>使用 LiveData 的优势</h3><p>使用 LiveData 具有以下优势：</p>
+<ul>
+<li><p><strong>确保界面符合数据状态</strong></p>
+<p>LiveData 遵循观察者模式。当底层数据发生变化时，LiveData 会通知 <a href="https://developer.android.google.cn/reference/androidx/lifecycle/Observer?hl=zh-cn"><code>Observer</code></a> 对象。您可以整合代码以在这些 <code>Observer</code> 对象中更新界面。这样一来，您无需在每次应用数据发生变化时更新界面，因为观察者会替您完成更新。</p>
+</li>
+<li><p><strong>不会发生内存泄漏</strong></p>
+<p>观察者会绑定到 <a href="https://developer.android.google.cn/reference/androidx/lifecycle/Lifecycle?hl=zh-cn"><code>Lifecycle</code></a> 对象，生命周期结束时立刻解除对数据的订阅，从而避免内存泄漏等问题。</p>
+</li>
+<li><p><strong>不会因 Activity 停止而导致崩溃</strong></p>
+<p>如果观察者的生命周期处于非活跃状态（如返回栈中的 Activity），则它不会接收任何 LiveData 事件。</p>
+</li>
+<li><p><strong>不再需要手动处理生命周期</strong></p>
+<p>界面组件只是观察相关数据，不会停止或恢复观察。LiveData 将自动管理所有这些操作，因为它在观察时可以感知相关的生命周期状态变化。</p>
+</li>
+<li><p><strong>数据始终保持最新状态</strong></p>
+<p>如果生命周期变为非活跃状态，它会在再次变为活跃状态时接收最新的数据。例如，曾经在后台的 Activity 会在返回前台后立即接收最新的数据。</p>
+</li>
+<li><p><strong>配置更改</strong></p>
+<p>如果由于配置更改（如设备旋转）而重新创建了 Activity 或 Fragment，它会立即接收最新的可用数据。</p>
+</li>
+<li><p><strong>共享资源</strong></p>
+<p>您可以使用单例模式扩展 <a href="https://developer.android.google.cn/reference/androidx/lifecycle/LiveData?hl=zh-cn"><code>LiveData</code></a> 对象以封装系统服务，以便在应用中共享它们。<code>LiveData</code> 对象连接到系统服务一次，然后需要相应资源的任何观察者只需观察 <code>LiveData</code> 对象。如需了解详情，请参阅<a href="https://developer.android.google.cn/topic/libraries/architecture/livedata?hl=zh-cn#extend_livedata">扩展 LiveData</a>。</p>
+</li>
+</ul>
+<h1 id="二、基本使用"><a href="#二、基本使用" class="headerlink" title="二、基本使用"></a>二、基本使用</h1><p>引入依赖</p>
+<figure class="highlight groovy"><table><tr><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    <span class="keyword">def</span> lifecycle_version = <span class="string">&quot;2.4.1&quot;</span></span><br><span class="line">    <span class="comment">// ViewModel</span></span><br><span class="line">    implementation <span class="string">&quot;androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version&quot;</span></span><br><span class="line">    <span class="comment">// LiveData</span></span><br><span class="line">    implementation <span class="string">&quot;androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version&quot;</span></span><br><span class="line">    <span class="comment">// Lifecycles only (without ViewModel or LiveData)</span></span><br><span class="line">    implementation <span class="string">&quot;androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Saved state module for ViewModel</span></span><br><span class="line">    implementation <span class="string">&quot;androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Annotation processor</span></span><br><span class="line">    kapt <span class="string">&quot;androidx.lifecycle:lifecycle-compiler:$lifecycle_version&quot;</span></span><br><span class="line">    <span class="comment">// alternately - if using Java8, use the following instead of lifecycle-compiler</span></span><br><span class="line">    implementation <span class="string">&quot;androidx.lifecycle:lifecycle-common-java8:$lifecycle_version&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-1、简单使用"><a href="#2-1、简单使用" class="headerlink" title="2.1、简单使用"></a>2.1、简单使用</h2><figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LiveDataActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">companion</span> <span class="keyword">object</span> &#123;</span><br><span class="line">       <span class="keyword">const</span> <span class="keyword">val</span> TAG = <span class="string">&quot;LiveDataActivity&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        setContentView(R.layout.activity_livedata)</span><br><span class="line">        <span class="comment">// 1、创建 mutableLiveData</span></span><br><span class="line">        <span class="keyword">val</span> mutableLiveData = MutableLiveData&lt;String&gt;()</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2、observer，需要传入 LifecycleOwner 对象，这里使用的是this</span></span><br><span class="line">        mutableLiveData.observe(</span><br><span class="line">            <span class="keyword">this</span>,</span><br><span class="line">            <span class="keyword">object</span> : Observer&lt;String&gt; &#123;</span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onChanged</span><span class="params">(it: <span class="type">String</span>?)</span></span> &#123;</span><br><span class="line">                    Log.d(TAG,<span class="string">&quot;onChanged:<span class="variable">$it</span>&quot;</span> )</span><br><span class="line">                    Toast.makeText(<span class="keyword">this</span><span class="symbol">@LiveDataActivity</span>,it,Toast.LENGTH_LONG).show()</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 3、更新源数据</span></span><br><span class="line">        mutableLiveData.postValue(<span class="string">&quot;Hello LiveData&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>observer</code>方法有两个参数：</p>
+<ol>
+<li><code>LifecycleOwner</code>，<code>LiveData</code> 观察活跃状态的能力就来自于此</li>
+<li><code>Observer&lt;T&gt;</code>, value发生变化时，在<code>onChange</code>方法中回调</li>
+</ol>
+<h3 id="创建-LiveData-对象"><a href="#创建-LiveData-对象" class="headerlink" title="创建 LiveData 对象"></a>创建 LiveData 对象</h3><p>LiveData 是一种可用于任何数据的封装容器，其中包括可实现 <code>Collections</code> 的对象，如 <code>List</code>。<a href="https://developer.android.google.cn/reference/androidx/lifecycle/LiveData?hl=zh-cn"><code>LiveData</code></a> 对象通常存储在 <a href="https://developer.android.google.cn/reference/androidx/lifecycle/ViewModel?hl=zh-cn"><code>ViewModel</code></a> 对象中，并可通过 getter 方法进行访问，如以下示例中所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NameViewModel</span> : <span class="type">ViewModel</span></span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Create a LiveData with a String</span></span><br><span class="line">    <span class="keyword">val</span> currentName: MutableLiveData&lt;String&gt; <span class="keyword">by</span> lazy &#123;</span><br><span class="line">        MutableLiveData&lt;String&gt;()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Rest of the ViewModel...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>存储在<code>ViewModel</code>对象主要原因如下：</p>
+<ul>
+<li>避免 Activity 和 Fragment 过于庞大。现在，这些界面控制器负责显示数据，但不负责存储数据状态。</li>
+<li>将 <code>LiveData</code> 实例与特定的 Activity 或 Fragment 实例分离开，并使 <code>LiveData</code> 对象在配置更改后继续存在。</li>
+</ul>
+<h3 id="观察-LiveData-对象"><a href="#观察-LiveData-对象" class="headerlink" title="观察 LiveData 对象"></a>观察 LiveData 对象</h3><p>在大多数情况下，应用组件的 <code>onCreate()</code> 方法是开始观察 <a href="https://developer.android.google.cn/reference/androidx/lifecycle/LiveData?hl=zh-cn"><code>LiveData</code></a> 对象的，原因如下：</p>
+<ul>
+<li>确保系统不会从 Activity 或 Fragment 的 <code>onResume()</code> 方法进行冗余调用。</li>
+<li>确保 Activity 或 Fragment 变为活跃状态后具有可以立即显示的数据。一旦应用组件处于 <a href="https://developer.android.google.cn/reference/androidx/lifecycle/Lifecycle.State?hl=zh-cn#STARTED"><code>STARTED</code></a> 状态，就会从它正在观察的 <code>LiveData</code> 对象接收最新值。只有在设置了要观察的 <code>LiveData</code> 对象时，才会发生这种情况。</li>
+</ul>
+<p><code>LiveData </code>更新数据情况如下：</p>
+<ol>
+<li>活跃状态下，数据发生更改时更新，并且仅发送给活跃观察者。</li>
+<li>观察者从非活跃状态更改为活跃状态时也会收到更新。</li>
+<li>观察者第二次从非活跃状态更改为活跃状态，则只有在自上次变为活跃状态以来值发生了更改时，它才会收到更新。</li>
+</ol>
+<p><code>LiveData</code>还提供了一个<code>observeForever()</code>方法，与<code>observe()</code>的区别在于当<code>LiveData</code>包装的数据发生变化时，无论页面处于什么状态，<code>observeForever()</code>都能收到通知。使用完成后，要记得调用<code>removeObserver()</code>来停止对<code>LiveData</code>的观察，否则<code>LiveData</code>会一直处于激活状态，<code>Activity</code>永远不会被系统自动回收。</p>
+<h3 id="更新-LiveData-对象"><a href="#更新-LiveData-对象" class="headerlink" title="更新 LiveData 对象"></a>更新 LiveData 对象</h3><p><code>LiveData</code> 没有公开可用的方法来更新存储的数据。通常情况下会在 <a href="https://developer.android.google.cn/reference/androidx/lifecycle/ViewModel?hl=zh-cn"><code>ViewModel</code></a> 中使用 <code>MutableLiveData</code>，然后 <code>ViewModel</code> 只会向观察者公开不可变的 <code>LiveData</code> 对象，然后使用<a href="https://developer.android.google.cn/reference/androidx/lifecycle/MutableLiveData?hl=zh-cn"><code>MutableLiveData</code></a> 通过 <a href="https://developer.android.google.cn/reference/androidx/lifecycle/MutableLiveData?hl=zh-cn#setValue(T)"><code>setValue(T)</code></a> 和 <a href="https://developer.android.google.cn/reference/androidx/lifecycle/MutableLiveData?hl=zh-cn#postValue(T)"><code>postValue(T)</code></a> 更新数据。</p>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line">button.setOnClickListener &#123;</span><br><span class="line">    <span class="keyword">val</span> anotherName = <span class="string">&quot;John Doe&quot;</span></span><br><span class="line">    model.currentName.setValue(anotherName)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果在主线程中更新数据可以使用<a href="https://developer.android.google.cn/reference/androidx/lifecycle/MutableLiveData?hl=zh-cn#setValue(T)"><code>setValue(T)</code></a> 更新。</p>
+<p>如果在工作器线程中执行代码，可以改用 <a href="https://developer.android.google.cn/reference/androidx/lifecycle/MutableLiveData?hl=zh-cn#postValue(T)"><code>postValue(T)</code></a> 。</p>
+<h2 id="2-2、扩展LiveData"><a href="#2-2、扩展LiveData" class="headerlink" title="2.2、扩展LiveData"></a>2.2、扩展LiveData</h2><p><a href="https://developer.android.google.cn/topic/libraries/architecture/livedata?hl=zh-cn#extend_livedata">官方案例</a>，可以将<code>LiveData</code>类实现为一个单例，然后在多个 <code>Activity</code>、<code>Fragment</code> 和 <code>Service</code> 之间共享这个对象，仅当一个或多个页面处于活跃状态时，<code>LiveData</code> 才会连接服务并更新数据。如果观察者的生命周期处于 <a href="https://developer.android.google.cn/reference/androidx/lifecycle/Lifecycle.State?hl=zh-cn#STARTED"><code>STARTED</code></a> 或 <a href="https://developer.android.google.cn/reference/androidx/lifecycle/Lifecycle.State?hl=zh-cn#RESUMED"><code>RESUMED</code></a> 状态，则 LiveData 会认为该观察者处于活跃状态。</p>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StockLiveData</span></span>(symbol: String) : LiveData&lt;BigDecimal&gt;() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> stockManager: StockManager = StockManager(symbol)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> listener = &#123; price: BigDecimal -&gt;</span><br><span class="line">        <span class="comment">// 官方案例                    </span></span><br><span class="line">        value = price</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onActive</span><span class="params">()</span></span> &#123;</span><br><span class="line">        stockManager.requestPriceUpdates(listener)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onInactive</span><span class="params">()</span></span> &#123;</span><br><span class="line">        stockManager.removeUpdates(listener)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">companion</span> <span class="keyword">object</span> &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> sInstance: StockLiveData</span><br><span class="line"></span><br><span class="line">        <span class="meta">@MainThread</span></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">get</span><span class="params">(symbol: <span class="type">String</span>)</span></span>: StockLiveData &#123;</span><br><span class="line">            sInstance = <span class="keyword">if</span> (::sInstance.isInitialized) sInstance <span class="keyword">else</span> StockLiveData(symbol)</span><br><span class="line">            <span class="keyword">return</span> sInstance</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-3、转换-LiveData"><a href="#2-3、转换-LiveData" class="headerlink" title="2.3、转换 LiveData"></a>2.3、<a href="https://developer.android.google.cn/topic/libraries/architecture/livedata?hl=zh-cn#transform_livedata">转换 LiveData</a></h2><p><a href="https://developer.android.google.cn/topic/libraries/architecture/livedata?hl=zh-cn#transform_livedata">官方案例</a>，如果要在 <a href="https://developer.android.google.cn/reference/androidx/lifecycle/LiveData?hl=zh-cn"><code>LiveData</code></a> 对象分派给观察者之前对存储在其中的值进行更改。</p>
+<p>[<code>Transformations.map()</code>](<a href="https://developer.android.google.cn/reference/androidx/lifecycle/Transformations?hl=zh-cn#map">https://developer.android.google.cn/reference/androidx/lifecycle/Transformations?hl=zh-cn#map</a>(android.arch.lifecycle.LiveData, android.arch.core.util.Function))</p>
+<p>对存储在 <code>LiveData</code> 对象中的值应用函数，并将结果传播到下游。</p>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> mutableLiveData = MutableLiveData&lt;String&gt;()</span><br><span class="line">    mutableLiveData.observe(<span class="keyword">this</span>) &#123;</span><br><span class="line">        Log.d(TAG, <span class="string">&quot;onChanged:<span class="variable">$it</span>&quot;</span>)</span><br><span class="line">        Toast.makeText(<span class="keyword">this</span>, it, Toast.LENGTH_LONG).show()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//LiveData返回值实例转换</span></span><br><span class="line">    <span class="keyword">val</span> transformedLiveData = Transformations.map(mutableLiveData) &#123; name -&gt;</span><br><span class="line">        <span class="string">&quot;<span class="subst">$&#123;name&#125;</span>LiveData is great&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    transformedLiveData.observe(<span class="keyword">this</span>)&#123;</span><br><span class="line">        Log.d(TAG,<span class="string">&quot;onChange2<span class="variable">$it</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    mutableLiveData.postValue(<span class="string">&quot;Hello LiveData &quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>[<code>Transformations.switchMap()</code>](<a href="https://developer.android.google.cn/reference/androidx/lifecycle/Transformations?hl=zh-cn#switchMap">https://developer.android.google.cn/reference/androidx/lifecycle/Transformations?hl=zh-cn#switchMap</a>(android.arch.lifecycle.LiveData, android.arch.core.util.Function&gt;))</p>
+<p>与 <code>map()</code> 类似，对存储在 <code>LiveData</code> 对象中的值<strong>应用函数</strong>，并将结果解封和分派到下游。传递给 <code>switchMap()</code> 的函数必须返回 <code>LiveData</code> 对象，如以下示例中所示：</p>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line"> 	</span><br><span class="line">    <span class="keyword">val</span> userId: MutableLiveData&lt;String&gt; = MutableLiveData&lt;String&gt;()</span><br><span class="line">    <span class="keyword">val</span> user = Transformations.switchMap(userId) &#123; id -&gt; getUser(id) &#125;</span><br><span class="line">    userId.observe(<span class="keyword">this</span>) &#123;</span><br><span class="line">        Toast.makeText(<span class="keyword">this</span>, it, Toast.LENGTH_SHORT).show()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    user.observe(<span class="keyword">this</span>) &#123;</span><br><span class="line">        Toast.makeText(<span class="keyword">this</span><span class="symbol">@LiveDataActivity</span>, it.toString(), Toast.LENGTH_SHORT).show()</span><br><span class="line">    &#125;</span><br><span class="line">    userId.value = <span class="string">&quot;id10&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">getUser</span><span class="params">(id: <span class="type">String</span>)</span></span>: LiveData&lt;User&gt; &#123;</span><br><span class="line">    <span class="keyword">return</span> MutableLiveData(User(<span class="string">&quot;zxw&quot;</span>, <span class="number">20</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-4、合并多个-LiveData-源"><a href="#2-4、合并多个-LiveData-源" class="headerlink" title="2.4、合并多个 LiveData 源"></a>2.4、合并多个 LiveData 源</h2><p><a href="https://developer.android.google.cn/reference/androidx/lifecycle/MediatorLiveData?hl=zh-cn"><code>MediatorLiveData</code></a> 是 <a href="https://developer.android.google.cn/reference/androidx/lifecycle/LiveData?hl=zh-cn"><code>LiveData</code></a> 的子类，允许您合并多个 LiveData 源。只要任何一个<code>LiveData</code> 对象发生更改，就会触发 <code>MediatorLiveData</code> 对象的观察者。</p>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">		<span class="keyword">val</span> mediatorLiveData : MediatorLiveData&lt;String&gt; = MediatorLiveData()</span><br><span class="line">    <span class="keyword">val</span> livedata1 = MutableLiveData&lt;String&gt;()</span><br><span class="line">    <span class="keyword">val</span> livedata2 = MutableLiveData&lt;String&gt;()</span><br><span class="line"></span><br><span class="line">    mediatorLiveData.addSource(livedata1) &#123;</span><br><span class="line">        Log.i(TAG, <span class="string">&quot;livedata1 change <span class="variable">$it</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    mediatorLiveData.addSource(livedata2) &#123;</span><br><span class="line">        Log.i(TAG, <span class="string">&quot;livedata2 change <span class="variable">$it</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    mediatorLiveData.observe(<span class="keyword">this</span>) &#123;</span><br><span class="line">        Log.i(TAG,<span class="string">&quot;onChanged:<span class="variable">$it</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    livedata1.value = <span class="string">&quot;1&quot;</span></span><br><span class="line">    livedata2.value = <span class="string">&quot;2&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 输出：</span></span><br><span class="line">I/LiveDataActivity: livedata1 change <span class="number">1</span></span><br><span class="line">I/LiveDataActivity: livedata2 change <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="三、原理分析"><a href="#三、原理分析" class="headerlink" title="三、原理分析"></a>三、原理分析</h1><p><strong><code>LiveData</code>的实现原理，简单总结为</strong>：</p>
+<ol>
+<li>添加观察者：将<code>LifecycleOwner</code>和<code>observer</code>进行包装成可感知生命周期的包装类，添加到<code>LifecycleObserver</code>中，它将在<code>LifecycleOwner</code>更改状态时得到通知</li>
+<li>事件回调：收到<code>LifecycleOwner</code>状态更改通知时，进行状态判断等处理，通知观察者对象</li>
+<li>数据更新：当数据发生变化时，进行状态判断，通知观察者对象</li>
+<li>数据更新：遍历观察者对象，分发状态，更新数据版本号</li>
+</ol>
+<img src="/pics/9329ebbd854443a3a09a527712a11151~tplv-k3u1fbpfcp-zoom-in-crop-mark:1304:0:0:0.awebp" alt="livedata原理" style="zoom:67%;" />
+
+<h2 id="3-1、添加Observer"><a href="#3-1、添加Observer" class="headerlink" title="3.1、添加Observer"></a>3.1、添加Observer</h2><p><code>LiveData</code>通过<code>observer()</code>方法来注册观察者</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@MainThread</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">observe</span><span class="params">(<span class="meta">@NonNull</span> LifecycleOwner owner, <span class="meta">@NonNull</span> Observer&lt;? <span class="keyword">super</span> T&gt; observer)</span> </span>&#123;</span><br><span class="line">    assertMainThread(<span class="string">&quot;observe&quot;</span>);</span><br><span class="line">    <span class="comment">// 1、当前绑定的组件（activity或fragment)状态为为DESTROYED的时候，则会忽视当前的订阅请求</span></span><br><span class="line">    <span class="keyword">if</span> (owner.getLifecycle().getCurrentState() == DESTROYED) &#123;</span><br><span class="line">        <span class="comment">// ignore</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 2、创建生命周期感知的观察者包装类 LifecycleBoundObserver</span></span><br><span class="line">    LifecycleBoundObserver wrapper = <span class="keyword">new</span> LifecycleBoundObserver(owner, observer);</span><br><span class="line">    <span class="comment">// 3、如果指定的键尚未与某个值关联，则将其与给定的值关联</span></span><br><span class="line">    ObserverWrapper existing = mObservers.putIfAbsent(observer, wrapper);</span><br><span class="line">    <span class="comment">// 4、同一个Observer只能与一个owner绑定</span></span><br><span class="line">    <span class="keyword">if</span> (existing != <span class="keyword">null</span> &amp;&amp; !existing.isAttachedTo(owner)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;Cannot add the same observer&quot;</span></span><br><span class="line">                                           + <span class="string">&quot; with different lifecycles&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (existing != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 5、添加一个LifecycleObserver，它将在LifecycleOwner更改状态时得到通知</span></span><br><span class="line">    owner.getLifecycle().addObserver(wrapper);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>以上逻辑主要是创建<code>Observer</code>并和<code>LifeCycleOwner</code>绑定，后续的流程和<code>Lifecycle</code>添加<code>Observer</code>过程基本相同。</p>
+<h2 id="3-2、数据更新"><a href="#3-2、数据更新" class="headerlink" title="3.2、数据更新"></a>3.2、数据更新</h2><p>我们知道，通过<code>setValue</code>或者<code>postValue</code>改变<code>LiveData</code>的数据是，<code>Observer</code>中会接收到相关的变化，那么数据更新是如何通知到Observer的呢？</p>
+<h3 id="3-2-1、setValue过程"><a href="#3-2-1、setValue过程" class="headerlink" title="3.2.1、setValue过程"></a>3.2.1、setValue过程</h3><h4 id="1、LiveData-setValue"><a href="#1、LiveData-setValue" class="headerlink" title="1、LiveData#setValue"></a>1、LiveData#setValue</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@MainThread</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">setValue</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    assertMainThread(<span class="string">&quot;setValue&quot;</span>);	<span class="comment">//检查是否在主线程</span></span><br><span class="line">    mVersion++;	<span class="comment">//默认值是-1，每次更新数据都会自增</span></span><br><span class="line">    mData = value;	<span class="comment">//更新的数据赋值给mData</span></span><br><span class="line">		<span class="comment">// 分发数据</span></span><br><span class="line">    dispatchingValue(<span class="keyword">null</span>);	</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p> 调用 <code>dispatchingValue</code>方法并传入null，将数据分发给所有观察者。如果是具体的<code>ObserverWrapper</code>对象，则通知到具体的Observer。</p>
+<h4 id="2、LiveData-dispatchingValue"><a href="#2、LiveData-dispatchingValue" class="headerlink" title="2、LiveData#dispatchingValue"></a>2、LiveData#dispatchingValue</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dispatchingValue</span><span class="params">(<span class="meta">@Nullable</span> ObserverWrapper initiator)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mDispatchingValue) &#123;</span><br><span class="line">        mDispatchInvalidated = <span class="keyword">true</span>;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    mDispatchingValue = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        mDispatchInvalidated = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">if</span> (initiator != <span class="keyword">null</span>) &#123;</span><br><span class="line">            considerNotify(initiator);</span><br><span class="line">            initiator = <span class="keyword">null</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (Iterator&lt;Map.Entry&lt;Observer&lt;? <span class="keyword">super</span> T&gt;, ObserverWrapper&gt;&gt; iterator =</span><br><span class="line">                    mObservers.iteratorWithAdditions(); iterator.hasNext(); ) &#123;</span><br><span class="line">                <span class="comment">// 通知所有的 观察者     </span></span><br><span class="line">                considerNotify(iterator.next().getValue());</span><br><span class="line">                <span class="keyword">if</span> (mDispatchInvalidated) &#123;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">while</span> (mDispatchInvalidated);</span><br><span class="line">    mDispatchingValue = <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3、LiveData-considerNotify"><a href="#3、LiveData-considerNotify" class="headerlink" title="3、LiveData#considerNotify"></a>3、LiveData#considerNotify</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">considerNotify</span><span class="params">(ObserverWrapper observer)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!observer.mActive) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">		<span class="comment">// 1、如果是活跃状态则回调</span></span><br><span class="line">    <span class="keyword">if</span> (!observer.shouldBeActive()) &#123;</span><br><span class="line">        observer.activeStateChanged(<span class="keyword">false</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 2、obserer的verson &gt;= LiveData version 时，直接return</span></span><br><span class="line">    <span class="keyword">if</span> (observer.mLastVersion &gt;= mVersion) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 2、更新数据版本号</span></span><br><span class="line">    observer.mLastVersion = mVersion; </span><br><span class="line">    <span class="comment">// 3、回调到Observer#onChanged方法中</span></span><br><span class="line">    observer.mObserver.onChanged((T) mData);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>setValue</code>总体的流程如下：<code>setValue</code> ——&gt; <code>dispatchingValue(null)</code> ——&gt; <code>considerNotify</code>——&gt; <code>onChanged</code>。</p>
+<p><code>LiveData</code>中，其初始的<code>version</code>是-1，当我们调用了其<code>setValue</code>或者<code>postValue</code>，其<code>version</code>会+1</p>
+<p>对于每一个观察者<code>ObserverWrapper</code>，其初始version也为-1，也就是说，每一个新注册的观察者，其<code>version</code>为-1；<code>LiveData</code>每注册一个新的订阅者，这个订阅者立刻会收到一个回调，即使这个设置的动作发生在订阅之前。</p>
+<h3 id="3-2-2、postValue"><a href="#3-2-2、postValue" class="headerlink" title="3.2.2、postValue"></a>3.2.2、postValue</h3><h4 id="1、LiveData-postValue"><a href="#1、LiveData-postValue" class="headerlink" title="1、LiveData#postValue"></a>1、LiveData#postValue</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">postValue</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> postTask;</span><br><span class="line">    <span class="keyword">synchronized</span> (mDataLock) &#123;</span><br><span class="line">        postTask = mPendingData == NOT_SET;</span><br><span class="line">        mPendingData = value;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!postTask) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 通过线程池 post 到主线程</span></span><br><span class="line">    ArchTaskExecutor.getInstance().postToMainThread(mPostValueRunnable);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Runnable mPostValueRunnable = <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">    <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Object newValue;</span><br><span class="line">        <span class="keyword">synchronized</span> (mDataLock) &#123;</span><br><span class="line">            newValue = mPendingData;</span><br><span class="line">            mPendingData = NOT_SET;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// runnable 中调用到 主线程</span></span><br><span class="line">        setValue((T) newValue);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><code>postValue</code>是将消息通过线程池分发到主线程去处理，调用的也是主线程。</p>
+<h2 id="3-3、事件驱动"><a href="#3-3、事件驱动" class="headerlink" title="3.3、事件驱动"></a>3.3、事件驱动</h2><p>我们知道<code>LiveData</code>还有一个变化生命周期变化时会触发数据的更新，当组件（<code>Activity/Fragment</code>）生命周期变化时，会回调到<code>Observer#onStateChanged</code>中。<code>LiveData</code>中<code>Observer</code>的实现类是<code>LifecycleBoundObserver</code>，下面具体来看下。</p>
+<h3 id="3-3-1、LifecycleBoundObserver"><a href="#3-3-1、LifecycleBoundObserver" class="headerlink" title="3.3.1、LifecycleBoundObserver"></a>3.3.1、LifecycleBoundObserver</h3><p><code>LifecycleBoundObserver</code>是<code>LiveData</code>内部封装的<code>Observer</code>监听类</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LifecycleBoundObserver</span> <span class="keyword">extends</span> <span class="title">ObserverWrapper</span> <span class="keyword">implements</span> <span class="title">LifecycleEventObserver</span> </span>&#123;</span><br><span class="line">    <span class="meta">@NonNull</span></span><br><span class="line">    <span class="keyword">final</span> LifecycleOwner mOwner;</span><br><span class="line"></span><br><span class="line">    LifecycleBoundObserver(<span class="meta">@NonNull</span> LifecycleOwner owner, Observer&lt;? <span class="keyword">super</span> T&gt; observer) &#123;</span><br><span class="line">        <span class="keyword">super</span>(observer);</span><br><span class="line">        mOwner = owner;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="comment">// 1、是否是活跃状态</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">shouldBeActive</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mOwner.getLifecycle().getCurrentState().isAtLeast(STARTED);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="comment">// 2、组件生命周期变化时，会触发到 lifecycle 状态变化</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onStateChanged</span><span class="params">(<span class="meta">@NonNull</span> LifecycleOwner source,</span></span></span><br><span class="line"><span class="params"><span class="function">            <span class="meta">@NonNull</span> Lifecycle.Event event)</span> </span>&#123;</span><br><span class="line">        Lifecycle.State currentState = mOwner.getLifecycle().getCurrentState();</span><br><span class="line">        <span class="keyword">if</span> (currentState == DESTROYED) &#123;</span><br><span class="line">            removeObserver(mObserver);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        Lifecycle.State prevState = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">while</span> (prevState != currentState) &#123;</span><br><span class="line">            prevState = currentState;</span><br><span class="line">            <span class="comment">// 3、调用到 ObserverWrapper#activeStateChanged</span></span><br><span class="line">            activeStateChanged(shouldBeActive());</span><br><span class="line">            currentState = mOwner.getLifecycle().getCurrentState();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isAttachedTo</span><span class="params">(LifecycleOwner owner)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mOwner == owner;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">detachObserver</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        mOwner.getLifecycle().removeObserver(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-2、ObserverWrapper"><a href="#3-3-2、ObserverWrapper" class="headerlink" title="3.3.2、ObserverWrapper"></a>3.3.2、ObserverWrapper</h3><p><code>ObserverWrapper#activeStateChanged</code>  </p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">ObserverWrapper</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Observer&lt;? <span class="keyword">super</span> T&gt; mObserver;</span><br><span class="line">    <span class="keyword">boolean</span> mActive;</span><br><span class="line">    <span class="comment">// 这里注意 version</span></span><br><span class="line">    <span class="keyword">int</span> mLastVersion = START_VERSION;</span><br><span class="line"></span><br><span class="line">    ObserverWrapper(Observer&lt;? <span class="keyword">super</span> T&gt; observer) &#123;</span><br><span class="line">        mObserver = observer;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">abstract</span> <span class="keyword">boolean</span> <span class="title">shouldBeActive</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isAttachedTo</span><span class="params">(LifecycleOwner owner)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">detachObserver</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">activeStateChanged</span><span class="params">(<span class="keyword">boolean</span> newActive)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 1、活跃状态没有变化</span></span><br><span class="line">        <span class="keyword">if</span> (newActive == mActive) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// immediately set active state, so we&#x27;d never dispatch anything to inactive</span></span><br><span class="line">        <span class="comment">// owner</span></span><br><span class="line">        mActive = newActive;</span><br><span class="line">        changeActiveCounter(mActive ? <span class="number">1</span> : -<span class="number">1</span>);</span><br><span class="line">        <span class="comment">// 2、分发值，下面介绍</span></span><br><span class="line">        <span class="keyword">if</span> (mActive) &#123;</span><br><span class="line">            dispatchingValue(<span class="keyword">this</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="四、常见问题"><a href="#四、常见问题" class="headerlink" title="四、常见问题"></a>四、常见问题</h1><h2 id="4-1、数据倒灌"><a href="#4-1、数据倒灌" class="headerlink" title="4.1、数据倒灌"></a>4.1、数据倒灌</h2><p>使用<code>LiveData</code>的一个常见问题是数据倒灌，表现为用户在页面没有做任何操作，却进行了页面跳转，数据请求等操作。<code>LiveData</code>在页面重建时，会自动推送最后一次数据。对于页面重建，常见的场景有：</p>
+<ol>
+<li>屏幕旋转</li>
+<li>系统语言切换</li>
+<li>内存不足，应用在后台被系统杀死。之后用户再重新进入应用</li>
+<li>……</li>
+</ol>
+<p>这里我们讨论的数据倒灌跟前两种场景相关。下面通过一个示例演示一下数据倒灌问题</p>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line"><span class="comment">// LiveDataActivity</span></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">				<span class="comment">// ...</span></span><br><span class="line">      </span><br><span class="line">				<span class="keyword">val</span> lvModel: LiveDataVModel = ViewModelProvider(<span class="keyword">this</span>)[LiveDataVModel::<span class="keyword">class</span>.java]</span><br><span class="line">        lvModel.lvData.observe(<span class="keyword">this</span>) &#123;</span><br><span class="line">            Thread&#123;</span><br><span class="line">                SystemClock.sleep(<span class="number">3000</span>)</span><br><span class="line">                <span class="keyword">val</span> intent = Intent(<span class="symbol">LiveDataActivity@</span><span class="keyword">this</span>, ViewModelActivity::<span class="keyword">class</span>.java);</span><br><span class="line">                startActivity(intent)</span><br><span class="line">            &#125;.start()</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        findViewById&lt;Button&gt;(R.id.bt01).setOnClickListener &#123;</span><br><span class="line">            lvModel.lvData.value = <span class="number">3</span></span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LiveDataVModel</span> </span>() : ViewModel()&#123;</span><br><span class="line">    <span class="keyword">val</span> lvData = MutableLiveData&lt;<span class="built_in">Int</span>&gt;()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述代码示例，如果用户在<code>LiveDataActivity</code>中点击按钮，会将<code>ViewModel</code>中的<code>lvData</code>的值置为3，然后延迟3S后会跳转到下一个页面。如果用户返回当前页面，在当前页面旋转屏幕，发现会自动跳转到下一个页面。这就是数据倒灌导致的。</p>
+<p>前述页面旋转重建了，会自动推送最后一次数据。<code>LiveData</code>的事件回调过程是：<code>observe</code> ——&gt; <code>onStateChanged</code> ——&gt; <code>activeStateChanged</code> ——&gt; <code>dispatchingValue</code> ——&gt; <code>considerNotify</code> ——&gt; <code>onChanged</code>。通过断点调试，可将问题定位在<code>considerNotify</code></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">considerNotify</span><span class="params">(ObserverWrapper observer)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//观察者非活跃，直接return</span></span><br><span class="line">    <span class="keyword">if</span> (!observer.mActive) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//观察者状态活跃，但是当前变为了不可见状态，再调用activeStateChanged方法，并传入false，其内部会再次判断</span></span><br><span class="line">    <span class="keyword">if</span> (!observer.shouldBeActive()) &#123;</span><br><span class="line">        observer.activeStateChanged(<span class="keyword">false</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 此处判断无效导致数据倒灌</span></span><br><span class="line">    <span class="keyword">if</span> (observer.mLastVersion &gt;= mVersion) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//修改数据版本</span></span><br><span class="line">    observer.mLastVersion = mVersion;</span><br><span class="line">    observer.mObserver.onChanged((T) mData);<span class="comment">//回调真正的mObserver的onChanged方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>LiveData</code>在前述屏幕旋转中也执行了事件分发，其原因是<code>if (observer.mLastVersion &gt;= mVersion)</code> 没有生效。</p>
+<h3 id="LiveData-mVersion"><a href="#LiveData-mVersion" class="headerlink" title="LiveData#mVersion"></a><strong><code>LiveData#mVersion</code></strong></h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// LiveData.java   </span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> START_VERSION = -<span class="number">1</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">int</span> mVersion;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">LiveData</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    mData = NOT_SET;</span><br><span class="line">    mVersion = START_VERSION;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>mVersion</code>是<code>LiveData</code>的成员变量，一个<code>LiveData</code>维护一份实例对象</p>
+<p>在初始化<code>LiveData</code>时，<code>mVersion</code>设置为-1，之后每次调用<code>setValue</code>等方法，会执行<code>mVersion++</code>自增方法。</p>
+<h3 id="ObserverWrapper-mLastVersion"><a href="#ObserverWrapper-mLastVersion" class="headerlink" title="ObserverWrapper#mLastVersion"></a><strong><code>ObserverWrapper#mLastVersion</code></strong></h3><p><code>mLastVersion</code>默认值也是-1。如果分发事件成功，将当前<code>LiveData</code>的<code>mVersion</code>赋值给<code>mLastVersion</code>。</p>
+<p>也就是说当屏幕旋转后，该值重新变为-1，导致了数据倒灌问题发生。为什么 mLastVersion 会变成-1呢？</p>
+<p>回看一下<code>LiveData</code>的<code>observer()</code>方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@MainThread</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">observe</span><span class="params">(<span class="meta">@NonNull</span> LifecycleOwner owner, <span class="meta">@NonNull</span> Observer&lt;? <span class="keyword">super</span> T&gt; observer)</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    ......</span><br><span class="line">    LifecycleBoundObserver wrapper = <span class="keyword">new</span> LifecycleBoundObserver(owner, observer);</span><br><span class="line">    ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><code>Activity</code>等页面重建后，<code>LiveData</code>调用<code>observe()</code>，方法内会new一个新的<code>LifecycleBoundObserver</code>对象，该对象继承<code>ObserverWrapper</code>类</li>
+<li><code>ObserverWrapper</code>类初始化会重新初始化 <code>int mLastVersion = START_VERSION;</code>将<code>mLastVersion</code>赋值为<code>-1</code></li>
+<li>因为<code>observer.mLasterVersion &lt; mVersion</code> ,<code>considerNotify()</code>方法中的判断失效，重新分发事件，导致数据倒灌</li>
+</ol>
+<p>第二个问题，为什么页面重建会触发到<code>considerNotify()</code>方法？</p>
+<p>其实这个问题 <code>3.3 节</code>已经解释过了，当组件的生命周期发生变化时，会触发到<code>LifecycleBoundObserver#onStateChanged</code></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">@Override</span><br><span class="line">public void onStateChanged(@NonNull LifecycleOwner source,</span><br><span class="line">                           @NonNull Lifecycle.Event event) &#123;</span><br><span class="line">    //如果当前Activity的状态是onDestory,移除</span><br><span class="line">    Lifecycle.State currentState = mOwner.getLifecycle().getCurrentState();</span><br><span class="line">    if (currentState == DESTROYED) &#123;</span><br><span class="line">        removeObserver(mObserver);</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    Lifecycle.State prevState = null;</span><br><span class="line">    // 上一次的state跟当前的不同时，执行事件分发</span><br><span class="line">    while (prevState != currentState) &#123;</span><br><span class="line">        prevState = currentState;</span><br><span class="line">        activeStateChanged(shouldBeActive());</span><br><span class="line">        currentState = mOwner.getLifecycle().getCurrentState();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果生命周期变为非活跃状态，它会在再次变为活跃状态时接收最新的数据。</p>
+<p><strong>简单小结</strong>：</p>
+<ol>
+<li>页面异常销毁重建，<code>ViewModel</code>会保存销毁之前的数据，在Activity重建完成后进行数据回复，所以<code>LiveData</code>成员变量中的<code>mVersion</code>会恢复到重建之前的值</li>
+<li>页面重建后会调用<code>LiveData</code>的<code>observe()</code>方法，方法内部会重新<code>new</code>一个实例，会将<code>mLastVersion</code>恢复到初始值。</li>
+<li>由于<code>LiveData</code>本身的特性，<code>Activity</code>的生命周期由非活跃变成活跃时，<code>LiveData</code>会触发事件分发，导致屏幕旋转或者切换系统语言后出现数据倒灌</li>
+</ol>
+<p><strong>数据倒灌解决方法</strong>：</p>
+<ul>
+<li><a href="https://link.juejin.cn/?target=https://github.com/android/architecture-samples/blob/dev-todo-mvvm-live/todoapp/app/src/main/java/com/example/android/architecture/blueprints/todoapp/SingleLiveEvent.java">官方扩展的SingleLiveEvent</a></li>
+<li><a href="https://link.juejin.cn/?target=https://tech.meituan.com/2018/07/26/android-livedatabus.html">美团反射修改mVersion</a></li>
+<li><a href="https://link.juejin.cn/?target=https://github.com/KunMinX/UnPeek-LiveData">UnPeek-LiveData</a></li>
+</ul>
+<h2 id="4-2、postValue数据丢失"><a href="#4-2、postValue数据丢失" class="headerlink" title="4.2、postValue数据丢失"></a>4.2、postValue数据丢失</h2><p><code>postValue</code>数据丢失的典型表现就是使用<code>LiveData</code>时，连续<code>postValue</code>两次，发现第一次的值会丢失。</p>
+<figure class="highlight kotlin"><table><tr><td class="code"><pre><span class="line">lvModel.lvData.observe(<span class="keyword">this</span>) &#123;</span><br><span class="line">    Log.i(TAG, <span class="string">&quot;ret = <span class="variable">$it</span>&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line">lvModel.lvData.postValue(<span class="number">100</span>)</span><br><span class="line">lvModel.lvData.postValue(<span class="number">200</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">/**实际只会打印第二次postValue的值**/</span></span><br><span class="line">LiveDataActivity: ret = <span class="number">200</span></span><br></pre></td></tr></table></figure>
+
+<p>看一下<code>postValue</code>的内部实现</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">volatile</span> Object mPendingData = NOT_SET;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">postValue</span><span class="params">(T value)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">boolean</span> postTask;</span><br><span class="line">    <span class="keyword">synchronized</span> (mDataLock) &#123;</span><br><span class="line">        <span class="comment">// 标记任务是否被执行</span></span><br><span class="line">        postTask = mPendingData == NOT_SET;</span><br><span class="line">        mPendingData = value;	<span class="comment">//暂存数据，后面的数据会覆盖前面的</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!postTask) &#123;	<span class="comment">//保证只抛一个mPostValueRunnabl</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    ArchTaskExecutor.getInstance().postToMainThread(mPostValueRunnable);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Runnable mPostValueRunnable = <span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">    <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Object newValue;</span><br><span class="line">        <span class="keyword">synchronized</span> (mDataLock) &#123;</span><br><span class="line">            newValue = mPendingData;</span><br><span class="line">            mPendingData = NOT_SET;</span><br><span class="line">        &#125;</span><br><span class="line">        setValue((T) newValue);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><code>postValue</code>的主要内容：</p>
+<ol>
+<li>每次调用<code>postVaule</code>，会将新值赋给<code>mPendingData</code></li>
+<li>在<code>Runnable</code>中进行值的分发，通过<code>ArchTaskExecutor</code>将任务发布到主线程中</li>
+</ol>
+<p>到这其实连续<code>postValue</code>时值会丢失的原因已经清楚了</p>
+<ol>
+<li>调用<code>postValue</code>时，其实只是将值暂存到<code>mPendingData</code>，然后往主线程抛一个<code>Runnable</code>，通过<code>setValue</code>将暂存的值设置进去，回调观察者</li>
+<li>如果在这个<code>Runnable</code>真正执行前多次<code>postValue</code>，只会改变暂存值<code>mPendingData</code>，通过<code>postTask</code>的检测不会再往主线程抛<code>Runnable</code></li>
+</ol>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="http://liuwangshu.cn/application/jetpack/4-livedata-use.html">http://liuwangshu.cn/application/jetpack/4-livedata-use.html</a></p>
+<p><a href="https://blog.csdn.net/hewuzhao/article/details/117165379">https://blog.csdn.net/hewuzhao/article/details/117165379</a></p>
+]]></content>
+      <categories>
+        <category>Android</category>
+        <category>Lifecycle</category>
       </categories>
   </entry>
 </search>
