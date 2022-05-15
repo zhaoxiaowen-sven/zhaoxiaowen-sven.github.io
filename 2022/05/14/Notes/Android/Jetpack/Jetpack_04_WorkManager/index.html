@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhaoxiaowen-sven.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Jetpack_04_WorkManager使用一、为什么使用WorkManagerWorkManager 是适合用于持久性工作的推荐解决方案。如果工作始终要通过应用重启和系统重新启动来调度，便是永久性的工作。由于大多数后台处理操作都是通过持久性工作完成的，因此 WorkManager 是适用于后台处理操作的主要推荐 API。 持久性工作的类型 WorkManager 可处理三种类型的永久性工作：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jetpack_04_WorkManager使用">
+<meta property="og:url" content="https://zhaoxiaowen-sven.github.io/2022/05/14/Notes/Android/Jetpack/Jetpack_04_WorkManager/index.html">
+<meta property="og:site_name" content="Sven&#39;s blog">
+<meta property="og:description" content="Jetpack_04_WorkManager使用一、为什么使用WorkManagerWorkManager 是适合用于持久性工作的推荐解决方案。如果工作始终要通过应用重启和系统重新启动来调度，便是永久性的工作。由于大多数后台处理操作都是通过持久性工作完成的，因此 WorkManager 是适用于后台处理操作的主要推荐 API。 持久性工作的类型 WorkManager 可处理三种类型的永久性工作：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20220514154916176.png">
+<meta property="og:image" content="https://developer.android.com/images/topic/libraries/architecture/workmanager/how-to/definework-flex-period.png?hl=zh-cn">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d844f1b3c4c343b88463b1de0d5d60aa~tplv-k3u1fbpfcp-zoom-in-crop-mark:1304:0:0:0.awebp">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b84f517593d74a879a041a3e4eca99f9~tplv-k3u1fbpfcp-zoom-in-crop-mark:1304:0:0:0.awebp">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20220515201114992.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20220515201138035.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20220515201325106.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20220515201342698.png">
+<meta property="article:published_time" content="2022-05-14T06:56:01.225Z">
+<meta property="article:modified_time" content="2022-05-15T14:00:17.176Z">
+<meta property="article:author" content="sven">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20220514154916176.png">
+
+<link rel="canonical" href="https://zhaoxiaowen-sven.github.io/2022/05/14/Notes/Android/Jetpack/Jetpack_04_WorkManager/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Jetpack_04_WorkManager使用 | Sven's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+      <a target="_blank" rel="noopener" href="https://github.com/zhaoxiaowen-sven" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Sven's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaowen-sven.github.io/2022/05/14/Notes/Android/Jetpack/Jetpack_04_WorkManager/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/sven.jpeg">
+      <meta itemprop="name" content="sven">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sven's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Jetpack_04_WorkManager使用
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-05-14 14:56:01" itemprop="dateCreated datePublished" datetime="2022-05-14T14:56:01+08:00">2022-05-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/Lifecycle/" itemprop="url" rel="index"><span itemprop="name">Lifecycle</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Jetpack-04-WorkManager使用"><a href="#Jetpack-04-WorkManager使用" class="headerlink" title="Jetpack_04_WorkManager使用"></a>Jetpack_04_WorkManager使用</h1><h1 id="一、为什么使用WorkManager"><a href="#一、为什么使用WorkManager" class="headerlink" title="一、为什么使用WorkManager"></a>一、为什么使用WorkManager</h1><p><a target="_blank" rel="noopener" href="https://developer.android.com/reference/androidx/work/WorkManager?hl=zh-cn">WorkManager</a> 是适合用于持久性工作的推荐解决方案。如果工作始终要通过应用重启和系统重新启动来调度，便是永久性的工作。由于大多数后台处理操作都是通过持久性工作完成的，因此 WorkManager 是适用于后台处理操作的主要推荐 API。</p>
+<p><strong>持久性工作的类型</strong></p>
+<p>WorkManager 可处理三种类型的永久性工作：</p>
+<ul>
+<li><strong>立即执行</strong>：必须立即开始且很快就完成的任务，可以加急。</li>
+<li><strong>长时间运行</strong>：运行时间可能较长（有可能超过 10 分钟）的任务。</li>
+<li><strong>可延期执行</strong>：延期开始并且可以定期运行的预定任务。</li>
+</ul>
+<img src="/pics/image-20220514154916176.png" alt="image-20220514154916176" style="zoom:40%;" />
+
+<h1 id="二、基本使用"><a href="#二、基本使用" class="headerlink" title="二、基本使用"></a>二、基本使用</h1><blockquote>
+<p>本文Demo基于<code>Lifecycle 2.4.1</code>版本源码，程序demo基于<code>sdk 31</code></p>
+</blockquote>
+<p><strong>引入依赖</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    def work_version = &quot;2.7.1&quot;</span><br><span class="line"></span><br><span class="line">    // (Java only)</span><br><span class="line">    implementation &quot;androidx.work:work-runtime:$work_version&quot;</span><br><span class="line"></span><br><span class="line">    // Kotlin + coroutines</span><br><span class="line">    implementation &quot;androidx.work:work-runtime-ktx:$work_version&quot;</span><br><span class="line"></span><br><span class="line">    // optional - RxJava2 support</span><br><span class="line">    implementation &quot;androidx.work:work-rxjava2:$work_version&quot;</span><br><span class="line"></span><br><span class="line">    // optional - GCMNetworkManager support</span><br><span class="line">    implementation &quot;androidx.work:work-gcm:$work_version&quot;</span><br><span class="line"></span><br><span class="line">    // optional - Test helpers</span><br><span class="line">    androidTestImplementation &quot;androidx.work:work-testing:$work_version&quot;</span><br><span class="line"></span><br><span class="line">    // optional - Multiprocess support</span><br><span class="line">    implementation &quot;androidx.work:work-multiprocess:$work_version&quot;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-1、简单使用"><a href="#2-1、简单使用" class="headerlink" title="2.1、简单使用"></a>2.1、简单使用</h2><p><code>WorkManager</code> 的使用步骤分为：</p>
+<ol>
+<li>定义 <code>Worker</code>，执行具体的后台逻辑</li>
+<li>创建<code>WorkRequest</code>，配置任务的后台执行方式</li>
+<li>使用 <code>WorkerManager</code>执行任务</li>
+</ol>
+<h3 id="2-1-1、定义Worker"><a href="#2-1-1、定义Worker" class="headerlink" title="2.1.1、定义Worker"></a>2.1.1、定义Worker</h3><p>工作使用 <code>Worker</code> 类定义。<code>doWork()</code> 方法在 WorkManager 提供的后台线程上异步运行。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UploadWorker</span></span>(appContext: Context, workerParams: WorkerParameters):</span><br><span class="line">    Worker(appContext, workerParams) &#123;</span><br><span class="line">    <span class="keyword">companion</span> <span class="keyword">object</span> &#123;</span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">val</span> TAG = <span class="string">&quot;UploadWorker&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">doWork</span><span class="params">()</span></span>: Result &#123;</span><br><span class="line">        Log.i(TAG, <span class="string">&quot;Thread = <span class="subst">$&#123;Thread.currentThread().name&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Do the work here--in this case, upload the images.</span></span><br><span class="line">        uploadImages()</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Indicate whether the work finished successfully with the Result</span></span><br><span class="line">        <span class="keyword">return</span> Result.success()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">uploadImages</span><span class="params">()</span></span> &#123;</span><br><span class="line">        Log.i(TAG, <span class="string">&quot;uploadImages start&quot;</span>)</span><br><span class="line">        Thread.sleep(<span class="number">3</span> * <span class="number">1000L</span>)</span><br><span class="line">        Log.i(TAG, <span class="string">&quot;uploadImages end&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从 <code>doWork()</code> 返回的 <code>Result</code> 会通知 WorkManager 服务工作是否成功，以及工作失败时是否应重试工作。</p>
+<ul>
+<li><code>Result.success()</code>：工作成功完成。</li>
+<li><code>Result.failure()</code>：工作失败。</li>
+<li><code>Result.retry()</code>：工作失败，应根据其<a target="_blank" rel="noopener" href="https://developer.android.com/topic/libraries/architecture/workmanager/how-to/define-work?hl=zh-cn#retries_backoff">重试政策</a>在其他时间尝试。</li>
+</ul>
+<h3 id="2-1-2、创建WorkRequest"><a href="#2-1-2、创建WorkRequest" class="headerlink" title="2.1.2、创建WorkRequest"></a>2.1.2、创建WorkRequest</h3><p><code>WorkRequest</code>用于定义如何调度工作，可以将工作安排为在某段时间内<a target="_blank" rel="noopener" href="https://developer.android.com/topic/libraries/architecture/workmanager/how-to/define-work?hl=zh-cn#schedule_periodic_work">定期运行 PeriodicWorkRequest</a> ，也可以将其安排为仅运行<a target="_blank" rel="noopener" href="https://developer.android.com/topic/libraries/architecture/workmanager/how-to/define-work?hl=zh-cn#constraints">一次 OneTimeWorkRequest</a>。最简单的情况下，使用 <code>OneTimeWorkRequest</code>，如以下示例所示</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> request0: WorkRequest =</span><br><span class="line">    OneTimeWorkRequestBuilder&lt;UploadWorker&gt;()</span><br><span class="line">         <span class="comment">// 延迟启动   </span></span><br><span class="line">        .setInitialDelay(<span class="number">3</span>, TimeUnit.SECONDS)</span><br><span class="line">        .build()</span><br></pre></td></tr></table></figure>
+
+<p>创建<code>WorkRequest</code>时，需要使用 <code>WorkRequest.Builder</code>，可以设置任务执行的启动延迟，约束条件 <code>Constraints</code> 等。下一节介绍。</p>
+<h3 id="2-1-3、将-WorkRequest-提交给系统"><a href="#2-1-3、将-WorkRequest-提交给系统" class="headerlink" title="2.1.3、将 WorkRequest 提交给系统"></a>2.1.3、将 WorkRequest 提交给系统</h3><p>最后，使用 <code>enqueue()</code> 方法将 <code>WorkRequest</code> 提交到 <code>WorkManager</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">WorkManager</span><br><span class="line">    .getInstance(myContext)</span><br><span class="line">    .enqueue(request0)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：执行工作器的确切时间取决于 <code>WorkRequest</code> 中使用的约束和系统优化方式。<code>WorkManager </code>经过设计，能够在满足这些约束的情况下提供最佳行为。</p>
+</blockquote>
+<h2 id="2-2、PeriodicWorkRequest"><a href="#2-2、PeriodicWorkRequest" class="headerlink" title="2.2、PeriodicWorkRequest"></a>2.2、PeriodicWorkRequest</h2><p>除了一次性工作<code>OneTimeWorkRequest</code>外，当我们需要定时执行某些工作。例如，定期备份数据、定期下载应用中的新鲜内容或者定期上传日志到服务器。</p>
+<p>可以使用 <code>PeriodicWorkRequest</code> 创建定期执行的 <code>WorkRequest</code> 对象的方法如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> saveRequest =</span><br><span class="line">       PeriodicWorkRequestBuilder&lt;SaveImageToFileWorker&gt;(<span class="number">1</span>, TimeUnit.HOURS)</span><br><span class="line">    <span class="comment">// Additional configuration</span></span><br><span class="line">           .build()</span><br></pre></td></tr></table></figure>
+
+<p>以上示例中，工作的运行时间间隔定为一小时。</p>
+<h3 id="灵活的运行间隔"><a href="#灵活的运行间隔" class="headerlink" title="灵活的运行间隔"></a>灵活的运行间隔</h3><p>有些情况下仅限定时间隔是不够的，比如定时下载任务可能会导致服务器集中请求，导致CDN带宽波动较大，这种情况下可以使用 <code>PeriodicWorkRequest</code> 配置为在每个时间间隔的<strong>灵活时间段</strong>内运行。</p>
+<p><img src="https://developer.android.com/images/topic/libraries/architecture/workmanager/how-to/definework-flex-period.png?hl=zh-cn" alt="您可以为定期作业设置一个灵活间隔。您要定义一个重复间隔，然后再定义一个灵活间隔（指定一个在重复间隔末尾开始的具体时间段）。WorkManager 会尝试在每个周期的灵活间隔内运行作业。"></p>
+<p>创建 <code>PeriodicWorkRequest</code> 时传递 <code>flexInterval</code> 以及 <code>repeatInterval</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">val myUploadWork = PeriodicWorkRequestBuilder&lt;SaveImageToFileWorker&gt;(</span><br><span class="line">       1, TimeUnit.HOURS, // repeatInterval (the period cycle)</span><br><span class="line">       15, TimeUnit.MINUTES) // flexInterval</span><br><span class="line">    .build()</span><br></pre></td></tr></table></figure>
+
+<p>这样的话，我们的任务执行间隔就是范围的<code>[repeatInterval - flexInterval ,repeatInterval]</code>。</p>
+<blockquote>
+<p>repeatInterval 的最小值是 15分钟，flexInterval 的最小值时 5 分钟</p>
+</blockquote>
+<h1 id="三、WorkRequest配置"><a href="#三、WorkRequest配置" class="headerlink" title="三、WorkRequest配置"></a>三、WorkRequest配置</h1><p>下面我们介绍下 <code>WorkRequest</code>相关的配置</p>
+<h2 id="3-1、工作约束"><a href="#3-1、工作约束" class="headerlink" title="3.1、工作约束"></a>3.1、工作约束</h2><p><a target="_blank" rel="noopener" href="https://developer.android.com/reference/androidx/work/Constraints?hl=zh-cn">约束<code>Constraints</code></a>可确保将工作延迟到满足最佳条件时运行。以下约束适用于 WorkManager。</p>
+<table>
+<thead>
+<tr>
+<th><strong>NetworkType</strong></th>
+<th>约束运行工作所需的<a target="_blank" rel="noopener" href="https://developer.android.com/reference/androidx/work/NetworkType?hl=zh-cn">网络类型</a>。例如 Wi-Fi (<code>UNMETERED</code>)。</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>BatteryNotLow</strong></td>
+<td>如果设置为 true，那么当设备处于“电量不足模式”时，工作不会运行。</td>
+</tr>
+<tr>
+<td><strong>RequiresCharging</strong></td>
+<td>如果设置为 true，那么工作只能在设备充电时运行。</td>
+</tr>
+<tr>
+<td><strong>DeviceIdle</strong></td>
+<td>如果设置为 true，则要求用户的设备必须处于空闲状态，才能运行工作。在运行批量操作时，此约束会非常有用；若是不用此约束，批量操作可能会降低用户设备上正在积极运行的其他应用的性能。</td>
+</tr>
+<tr>
+<td><strong>StorageNotLow</strong></td>
+<td>如果设置为 true，那么当用户设备上的存储空间不足时，工作不会运行。</td>
+</tr>
+</tbody></table>
+<p>可以使用 <code>Contraints.Builder()</code> 创建 <code>Constraints</code> 实例，并将该实例分配给 <code>WorkRequest.Builder()</code>。</p>
+<p>例如，以下代码会构建了一个工作请求，该工作请求仅在用户设备正在充电且连接到 Wi-Fi 网络时才会运行：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> constraints = Constraints.Builder()</span><br><span class="line">   .setRequiredNetworkType(NetworkType.UNMETERED)</span><br><span class="line">   .setRequiresCharging(<span class="literal">true</span>)</span><br><span class="line">   .build()</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> myWorkRequest: WorkRequest =</span><br><span class="line">   OneTimeWorkRequestBuilder&lt;MyWork&gt;()</span><br><span class="line">       .setConstraints(constraints)</span><br><span class="line">       .build()</span><br></pre></td></tr></table></figure>
+
+<p>如果指定了多个约束，工作将仅在满足所有约束时才会运行。</p>
+<p>如果在工作运行时不再满足某个约束，WorkManager 将停止工作器。系统将在满足所有约束后重试工作。</p>
+<h2 id="3-2、延迟工作"><a href="#3-2、延迟工作" class="headerlink" title="3.2、延迟工作"></a>3.2、延迟工作</h2><p>如果工作没有约束，或者当工作加入队列时所有约束都得到了满足，那么系统可能会选择立即运行该工作。如果您不希望工作立即运行，可以将工作指定为在经过一段最短初始延迟时间后再启动。</p>
+<p>下面举例说明了如何将工作设置为在加入队列后至少经过 10 分钟后再运行。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> myWorkRequest = OneTimeWorkRequestBuilder&lt;MyWork&gt;()</span><br><span class="line">   .setInitialDelay(<span class="number">10</span>, TimeUnit.MINUTES)</span><br><span class="line">   .build()</span><br></pre></td></tr></table></figure>
+
+<p>该示例说明了如何为 <code>OneTimeWorkRequest</code> 设置初始延迟时间，也可以为 <code>PeriodicWorkRequest</code> 设置初始延迟时间。在这种情况下，定期工作只有首次运行时会延迟。</p>
+<h2 id="3-3、重试和退避策略"><a href="#3-3、重试和退避策略" class="headerlink" title="3.3、重试和退避策略"></a>3.3、重试和退避策略</h2><p>如果您需要让 WorkManager 重试工作，可以从工作器返回 <code>Result.retry()</code>。然后，系统将根据<a target="_blank" rel="noopener" href="https://developer.android.com/reference/androidx/work/WorkRequest?hl=zh-cn#DEFAULT_BACKOFF_DELAY_MILLIS">退避延迟时间</a>和<a target="_blank" rel="noopener" href="https://developer.android.com/reference/androidx/work/BackoffPolicy?hl=zh-cn">退避政策</a>重新调度工作。</p>
+<ul>
+<li>退避延迟时间指定了首次尝试后重试工作前的最短等待时间。此值范围是[<a target="_blank" rel="noopener" href="https://developer.android.com/reference/androidx/work/WorkRequest?hl=zh-cn#MIN_BACKOFF_MILLIS">MIN_BACKOFF_MILLIS</a> –10s，<a target="_blank" rel="noopener" href="https://developer.android.com/reference/androidx/work/WorkRequest?hl=zh-cn#MAX_BACKOFF_MILLIS">MAX_BACKOFF_MILLIS</a> – 5小时]。</li>
+<li>退避政策定义了在后续重试过程中，退避延迟时间随时间以怎样的方式增长。WorkManager 支持 2 个退避政策，即 <code>LINEAR</code> 和 <code>EXPONENTIAL</code>。<ul>
+<li> <code>LINEAR</code>，线性增长，每次尝试重试时，重试间隔都会增加约 10 秒。例如，第一次运行以 <code>Result.retry()</code> 结束并在 10 秒后重试；然后，如果工作在后续尝试后继续返回 <code>Result.retry()</code>，那么接下来会在 20 秒、30 秒、40 秒后重试，以此类推。</li>
+<li><code>EXPONENTIAL</code>，指数性增长，那么重试时长序列将接近 20、40、80 秒，以此类推。</li>
+</ul>
+</li>
+</ul>
+<p>每个工作请求都有退避政策和退避延迟时间。默认政策是 <code>EXPONENTIAL</code>，延迟时间为 10 秒，但您可以在工作请求配置中替换此设置。</p>
+<p>以下是自定义退避延迟时间和政策的示例。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> myWorkRequest = OneTimeWorkRequestBuilder&lt;MyWork&gt;()</span><br><span class="line">   .setBackoffCriteria(</span><br><span class="line">       BackoffPolicy.LINEAR,</span><br><span class="line">       OneTimeWorkRequest.MIN_BACKOFF_MILLIS,</span><br><span class="line">       TimeUnit.MILLISECONDS)</span><br><span class="line">   .build()</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>注意</strong>：退避延迟时间不精确，在两次重试之间可能会有几秒钟的差异，但绝不会低于配置中指定的初始退避延迟时间。</p>
+</blockquote>
+<h2 id="3-4、标记工作"><a href="#3-4、标记工作" class="headerlink" title="3.4、标记工作"></a>3.4、标记工作</h2><p>每个工作请求都有一个<a target="_blank" rel="noopener" href="https://developer.android.com/reference/androidx/work/WorkRequest?hl=zh-cn#getId()">唯一标识符</a>，该标识符可用于在以后标识该工作，以便<a target="_blank" rel="noopener" href="https://developer.android.com/topic/libraries/architecture/workmanager/how-to/managing-work?hl=zh-cn#cancelling">取消</a>工作或<a target="_blank" rel="noopener" href="https://developer.android.com/topic/libraries/architecture/workmanager/how-to/states-and-observation?hl=zh-cn#observing">观察其进度</a>。</p>
+<p>如果有一组在逻辑上相关的工作，对这些工作项进行标记可能也会很有帮助。通过标记，可以一起处理一组工作请求。</p>
+<p>例如，<code>WorkManager.cancelAllWorkByTag(String)</code> 会取消带有特定标记的所有工作请求，<code>WorkManager.getWorkInfosByTag(String)</code> 会返回一个 WorkInfo 对象列表，该列表可用于确定当前工作状态。</p>
+<p>以下代码展示了如何向工作添加 <code>cleanup</code>标记：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> myWorkRequest = OneTimeWorkRequestBuilder&lt;MyWork&gt;()</span><br><span class="line">   .addTag(<span class="string">&quot;cleanup&quot;</span>)</span><br><span class="line">   .build()</span><br></pre></td></tr></table></figure>
+
+<p>最后，可以向单个工作请求添加多个标记。这些标记在内部以一组字符串的形式进行存储。您可以使用 <a target="_blank" rel="noopener" href="https://developer.android.com/reference/androidx/work/WorkInfo?hl=zh-cn#getTags()">WorkInfo.getTags()</a> 获取与 <code>WorkRequest</code> 关联的标记集。</p>
+<p>从 <code>Worker</code> 类中，您可以通过 <a target="_blank" rel="noopener" href="https://developer.android.com/reference/androidx/work/ListenableWorker?hl=zh-cn#getTags()">ListenableWorker.getTags()</a> 检索其标记集。</p>
+<h2 id="3-5、分配输入数据"><a href="#3-5、分配输入数据" class="headerlink" title="3.5、分配输入数据"></a>3.5、分配输入数据</h2><p>工作可能需要输入数据才能正常运行。例如，处理图片上传的工作可能需要使用待上传图片的 URI 作为输入数据。</p>
+<p>输入值以键值对的形式存储在 <code>Data</code> 对象中，并且可以在工作请求中设置。WorkManager 会在执行工作时将输入 <code>Data</code> 传递给工作。<code>Worker</code> 类可通过调用 <code>Worker.getInputData()</code> 访问输入参数。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Define the Worker requiring input</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UploadWork</span></span>(appContext: Context, workerParams: WorkerParameters)</span><br><span class="line">   : Worker(appContext, workerParams) &#123;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">doWork</span><span class="params">()</span></span>: Result &#123;</span><br><span class="line">       <span class="keyword">val</span> imageUriInput =</span><br><span class="line">           inputData.getString(<span class="string">&quot;IMAGE_URI&quot;</span>) ?: <span class="keyword">return</span> Result.failure()</span><br><span class="line"></span><br><span class="line">       uploadFile(imageUriInput)</span><br><span class="line">       <span class="keyword">return</span> Result.success()</span><br><span class="line">   &#125;</span><br><span class="line">   ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Create a WorkRequest for your Worker and sending it input</span></span><br><span class="line"><span class="keyword">val</span> myUploadWork = OneTimeWorkRequestBuilder&lt;UploadWork&gt;()</span><br><span class="line">   .setInputData(workDataOf(</span><br><span class="line">       <span class="string">&quot;IMAGE_URI&quot;</span> to <span class="string">&quot;http://...&quot;</span></span><br><span class="line">   ))</span><br><span class="line">   .build()</span><br></pre></td></tr></table></figure>
+
+<p>同样，可使用 <code>Data</code> 类输出返回值。如需详细了解输入和输出数据，请参阅<a target="_blank" rel="noopener" href="https://developer.android.com/topic/libraries/architecture/workmanager/advanced?hl=zh-cn#params">输入参数和返回值</a>部分。</p>
+<blockquote>
+<p>注意：Data 数据的 不能超过 <a target="_blank" rel="noopener" href="https://developer.android.com/reference/kotlin/androidx/work/Data#max_data_bytes">MAX_DATA_BYTES</a> – 10 KB </p>
+</blockquote>
+<h1 id="四、加急工作"><a href="#四、加急工作" class="headerlink" title="四、加急工作"></a>四、加急工作</h1><p>WorkManager 2.7.0 引入了加急工作的概念，它指的是可以在后台快速执行，并需要立即开始执行的工作。</p>
+<p>加急工作具有以下特征：</p>
+<ul>
+<li><strong>重要性</strong>：加急工作适用于对用户很重要或由用户启动的任务。</li>
+<li><strong>速度</strong>：加急工作最适合那些立即启动并在几分钟内完成的简短任务。</li>
+<li><strong>配额</strong>：限制前台执行时间的系统级配额决定了加急作业是否可以启动。</li>
+<li><strong>电源管理</strong>：<a target="_blank" rel="noopener" href="https://developer.android.com/topic/performance/power/power-details?hl=zh-cn">电源管理限制</a>（如省电模式和低电耗模式）不太可能影响加急工作。</li>
+<li><strong>延迟时间</strong>：系统立即执行加急工作，前提是系统的当前工作负载允许执行此操作。这意味着这些工作对延迟时间较为敏感，不能安排到以后执行。</li>
+</ul>
+<h2 id="4-1、配额"><a href="#4-1、配额" class="headerlink" title="4.1、配额"></a>4.1、配额</h2><p>系统必须先为加急作业分配应用执行时间，然后才能运行作业。执行时间并非无限制，而是受配额限制。如果您的应用使用其执行时间并达到分配的配额，在配额刷新之前，您无法再执行加急工作。这样，Android 可以更有效地在应用之间平衡资源。</p>
+<p>每个应用均有自己的前台执行时间配额。可用的执行时间取决于<a target="_blank" rel="noopener" href="https://developer.android.com/topic/performance/appstandby?hl=zh-cn">待机模式存储分区</a>和进程的重要性。</p>
+<p>您可以确定在执行配额不允许立即运行加急作业时会出现什么情况。如需了解详情，请参阅以下代码段。</p>
+<blockquote>
+<p><strong>注意</strong>：当您的应用在前台运行时，配额不会限制加急工作的执行。仅在应用在后台运行时或当应用移至后台时，执行时间配额才适用。因此，您应在后台加快要继续的工作。当应用在前台运行时，您可以继续使用 <code>setForeground()</code>。</p>
+</blockquote>
+<h2 id="4-2、执行加急工作"><a href="#4-2、执行加急工作" class="headerlink" title="4.2、执行加急工作"></a>4.2、执行加急工作</h2><p>从 WorkManager 2.7 开始，您的应用可以调用 <code>setExpedited()</code> 来声明 <code>WorkRequest</code> 应该使用加急作业，以尽可能快的速度运行。以下代码段展示了关于如何使用 <code>setExpedited()</code> 的示例：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> request = OneTimeWorkRequestBuilder()</span><br><span class="line">    .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)</span><br><span class="line">    .build()</span><br><span class="line"></span><br><span class="line">WorkManager.getInstance(context)</span><br><span class="line">    .enqueue(request)</span><br></pre></td></tr></table></figure>
+
+<p>在此示例中，我们初始化 <code>OneTimeWorkRequest</code> 的实例并对其调用 <code>setExpedited()</code>。然后，此请求就会变成加急工作。如果配额允许，它将立即开始在后台运行。</p>
+<p><code>setExpedited</code>配额不足时：</p>
+<ul>
+<li><code>OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST</code>：导致作业作为普通工作请求运行</li>
+<li><code>OutOfQuotaPolicy.DROP_WORK_REQUEST</code>：配额不足时取消请求</li>
+</ul>
+<h2 id="4-3、向后兼容性和前台服务"><a href="#4-3、向后兼容性和前台服务" class="headerlink" title="4.3、向后兼容性和前台服务"></a>4.3、向后兼容性和前台服务</h2><p>android12 之前 <code>WorkManager</code>使用前台服务运行加急任务，为了保证兼容性，通过<code>setExpedited</code> 使用加急任务时，一定要复写<code>worker</code>中的 <code>getForegroundInfoAsync </code>或 <code>getForegroundInfo</code></p>
+<p><code>(CoroutineWorker)</code> 方法，创建前台服务需要的通知，让 WorkManager 在必要时显示通知，以便启动 <code>ForegroundService</code>。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 普通worker</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExpeditedWorker</span></span>(context: Context, workerParams: WorkerParameters) : Worker(</span><br><span class="line">    context,</span><br><span class="line">    workerParams</span><br><span class="line">) &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">doWork</span><span class="params">()</span></span>: Result &#123;</span><br><span class="line">        Log.i(<span class="string">&quot;ExpeditedWorker&quot;</span>, <span class="string">&quot;ExpeditedWorker  doWork start&quot;</span>)</span><br><span class="line">        Thread.sleep(<span class="number">3000</span>)</span><br><span class="line">        Log.i(<span class="string">&quot;ExpeditedWorker&quot;</span>, <span class="string">&quot;ExpeditedWorker  doWork end&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> Result.success()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequiresApi(Build.VERSION_CODES.O)</span></span><br><span class="line">    <span class="meta">@SuppressLint(<span class="meta-string">&quot;RestrictedApi&quot;</span>)</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getForegroundInfoAsync</span><span class="params">()</span></span>: ListenableFuture&lt;ForegroundInfo&gt; &#123;</span><br><span class="line">        <span class="keyword">val</span> future = SettableFuture.create&lt;ForegroundInfo&gt;()</span><br><span class="line">        future.<span class="keyword">set</span>(ForegroundInfo(<span class="number">1001</span>, createNotification()))</span><br><span class="line">        <span class="keyword">return</span> future</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequiresApi(Build.VERSION_CODES.O)</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">createNotification</span><span class="params">()</span></span>: Notification &#123;</span><br><span class="line">        <span class="keyword">var</span> channelId: String? = <span class="literal">null</span></span><br><span class="line">        <span class="comment">// 8.0 以上需要特殊处理</span></span><br><span class="line">        <span class="comment">// 8.0 以上需要特殊处理</span></span><br><span class="line">        channelId = <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= Build.VERSION_CODES.O) &#123;</span><br><span class="line">            createNotificationChannel(<span class="string">&quot;ExpeditedWorker&quot;</span>, <span class="string">&quot;ExpeditedWorker01&quot;</span>)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="string">&quot;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> Notification.Builder(applicationContext, channelId)</span><br><span class="line">            .setSmallIcon(R.drawable.ic_launcher_foreground)</span><br><span class="line">            .setContentTitle(<span class="string">&quot;ExpeditedWorker&quot;</span>)</span><br><span class="line">            .setContentText(<span class="string">&quot;ExpeditedWorker content&quot;</span>)</span><br><span class="line">            .build()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建通知通道</span></span><br><span class="line">    <span class="meta">@RequiresApi(Build.VERSION_CODES.O)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">createNotificationChannel</span><span class="params">(channelId: <span class="type">String</span>, channelName: <span class="type">String</span>)</span></span>: String? &#123;</span><br><span class="line">        <span class="keyword">val</span> channel = NotificationChannel(</span><br><span class="line">            channelId,</span><br><span class="line">            channelName, NotificationManager.IMPORTANCE_NONE</span><br><span class="line">        )</span><br><span class="line">        channel.lightColor = Color.BLUE</span><br><span class="line">        channel.lockscreenVisibility = Notification.VISIBILITY_PRIVATE</span><br><span class="line">        <span class="keyword">val</span> service =</span><br><span class="line">            applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) <span class="keyword">as</span> NotificationManager?</span><br><span class="line">        service!!.createNotificationChannel(channel)</span><br><span class="line">        <span class="keyword">return</span> channelId</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//CoroutineWorker</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExpeditedWorker</span></span>(appContext: Context, workerParams: WorkerParameters):</span><br><span class="line"> CoroutineWorker(appContext, workerParams) &#123;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">override</span> <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">getForegroundInfo</span><span class="params">()</span></span>: ForegroundInfo &#123;</span><br><span class="line">     <span class="keyword">return</span> ForegroundInfo(</span><br><span class="line">         NOTIFICATION_ID, createNotification()</span><br><span class="line">     )</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">override</span> <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">doWork</span><span class="params">()</span></span>: Result &#123;</span><br><span class="line">     TODO()</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">createNotification</span><span class="params">()</span></span> : Notification &#123;</span><br><span class="line">     TODO()</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>注意</strong>：如果未能实现对应的 <code>getForegroundInfo</code> 方法，那么在旧版平台上调用 <code>setExpedited</code> 时，可能会导致运行时崩溃。</p>
+</blockquote>
+<h3 id="1、前台服务说明"><a href="#1、前台服务说明" class="headerlink" title="1、前台服务说明"></a>1、前台服务说明</h3><p>除了<code>setExpedited</code> API外，也可以调用 <code>ListenableWorker.setForegroundAsync()</code>启动前台服务，当应用后台启动前台服务时，除了这些情外<a target="_blank" rel="noopener" href="https://developer.android.com/about/versions/12/foreground-services#cases-fgs-background-starts-allowed">应用不受前台服务限制</a>会抛出 <a target="_blank" rel="noopener" href="https://developer.android.com/reference/android/app/ForegroundServiceStartNotAllowedException">ForegroundServiceStartNotAllowedException</a>。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ExpeditedNotifyWorker</span></span>(context: Context, workerParams: WorkerParameters) : Worker(</span><br><span class="line">    context,</span><br><span class="line">    workerParams</span><br><span class="line">) &#123;</span><br><span class="line">    <span class="keyword">companion</span> <span class="keyword">object</span> &#123;</span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">val</span> TAG = <span class="string">&quot;ExpeditedNotifyWorker&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">doWork</span><span class="params">()</span></span>: Result &#123;</span><br><span class="line">        Log.i(TAG, <span class="string">&quot;doWork start&quot;</span>)</span><br><span class="line">        <span class="comment">// 使用 setForegroundAsync</span></span><br><span class="line">        setForegroundAsync(ForegroundInfo(<span class="number">1002</span>, createNotification()))</span><br><span class="line">        Thread.sleep(<span class="number">3000</span>)</span><br><span class="line">        Log.i(TAG, <span class="string">&quot;doWork end&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> Result.success()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequiresApi(Build.VERSION_CODES.O)</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">createNotification</span><span class="params">()</span></span>: Notification &#123;</span><br><span class="line">        <span class="comment">// 创建通知,https://zhuanlan.zhihu.com/p/361776650</span></span><br><span class="line">    &#125;   </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> expeditedRequest02 = OneTimeWorkRequestBuilder&lt;ExpeditedNotifyWorker&gt;()</span><br><span class="line">    <span class="comment">// 注意这里没有setExpedited</span></span><br><span class="line">    <span class="comment">// .setExpedited()</span></span><br><span class="line">    .build()</span><br><span class="line">workManager.enqueue(expeditedRequest02)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>注意</strong>：将 <code>setForeground()</code> 封装在 <code>try/catch</code> 块中，以捕获可能出现的 <code>IllegalStateException</code>。如果应用此时无法在前台运行，便可能会发生这类<code>ForegroundServiceStartNotAllowedException</code>异常。</p>
+</blockquote>
+<h3 id="2、支持长时间运行的工作器"><a href="#2、支持长时间运行的工作器" class="headerlink" title="2、支持长时间运行的工作器"></a>2、支持长时间运行的工作器</h3><p>​        WorkManager <code>2.3.0-alpha02</code> 增加了对长时间运行的工作器的内置支持。<a target="_blank" rel="noopener" href="https://developer.android.google.cn/topic/libraries/architecture/workmanager/advanced/long-running">文档</a></p>
+<h1 id="五、管理工作"><a href="#五、管理工作" class="headerlink" title="五、管理工作"></a>五、管理工作</h1><p>定义完<code>Worker</code>和<code>WorkRequest</code>，需要将工作加入队列。将工作加入队列的最简单方法是调用 <code>WorkManager</code> <code>enqueue()</code> 方法，然后传递要运行的 <code>WorkRequest</code>。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">......</span><br><span class="line">WorkManager.getInstance(<span class="keyword">this</span>).enqueue(workRequest)</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-1、唯一工作"><a href="#5-1、唯一工作" class="headerlink" title="5.1、唯一工作"></a>5.1、唯一工作</h2><p>将工作加入队列时需小心谨慎，避免重复。例如，应用可能会每 24 小时尝试将其日志上传到后端服务。如果不谨慎，即使作业只需运行一次，您最终也可能会多次将同一作业加入队列。为了实现此目标，可以将工作调度为<a href="https://link.juejin.cn/?target=https://developer.android.google.cn/topic/libraries/architecture/workmanager/how-to/managing-work?hl=zh-cn%23unique-work">唯一工作</a>。</p>
+<p>唯一工作可确保同一时刻只有一个具有特定名称的工作实例。唯一名称由开发者指定，仅与一个工作实例相关联。</p>
+<p>唯一工作可用于一次性工作，也可用于定期工作。创建方法为</p>
+<ul>
+<li><a href="%5Bdeveloper.android.google.cn/reference/a%E2%80%A6%5D(https://link.juejin.cn?target=https://developer.android.google.cn/reference/androidx/work/WorkManager?hl=zh-cn#enqueueUniqueWork(java.lang.String"><code>WorkManager.enqueueUniqueWork()</code></a>, androidx.work.ExistingWorkPolicy, androidx.work.OneTimeWorkRequest))（用于一次性工作）</li>
+<li><a href="%5Bdeveloper.android.google.cn/reference/a%E2%80%A6%5D(https://link.juejin.cn?target=https://developer.android.google.cn/reference/androidx/work/WorkManager?hl=zh-cn#enqueueUniquePeriodicWork(java.lang.String"><code>WorkManager.enqueueUniquePeriodicWork()</code></a>, androidx.work.ExistingPeriodicWorkPolicy, androidx.work.PeriodicWorkRequest))（用于定期工作）</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>uniqueWorkName</code></td>
+<td>唯一标识工作请求的<code>String</code></td>
+</tr>
+<tr>
+<td><code>existingWorkPolicy</code></td>
+<td>此 <code>enum</code> 可告知 <code>WorkManager</code>：如果已有使用该名称且尚未完成的唯一工作链，应执行什么操作</td>
+</tr>
+<tr>
+<td><code>work</code></td>
+<td>要调度的<code>WorkRequest</code></td>
+</tr>
+</tbody></table>
+<p>调度唯一工作时，您必须告知 <code>WorkManager</code> 在发生冲突时要执行的操作，其处理冲突的策略选项有4个：</p>
+<ul>
+<li><p><a href="https://link.juejin.cn/?target=https://developer.android.google.cn/reference/androidx/work/ExistingWorkPolicy?hl=zh-cn%23REPLACE"><code>REPLACE</code></a>：用新工作替换现有工作。此选项将取消现有工作</p>
+</li>
+<li><p><a href="https://link.juejin.cn/?target=https://developer.android.google.cn/reference/androidx/work/ExistingWorkPolicy?hl=zh-cn%23KEEP"><code>KEEP</code></a>：保留现有工作，并忽略新工作。</p>
+</li>
+<li><p><a href="https://link.juejin.cn/?target=https://developer.android.google.cn/reference/androidx/work/ExistingWorkPolicy?hl=zh-cn%23APPEND"><code>APPEND</code></a>：将新工作附加到现有工作的末尾。此政策将导致您的新工作<a href="https://link.juejin.cn/?target=https://developer.android.google.cn/topic/libraries/architecture/workmanager/how-to/chain-work?hl=zh-cn">链接</a>到现有工作，在现有工作完成后运行。</p>
+<p>现有工作将成为新工作的先决条件。如果现有工作变为 <code>CANCELLED</code> 或 <code>FAILED</code> 状态，新工作也会变为 <code>CANCELLED</code> 或 <code>FAILED</code>。如果您希望无论现有工作的状态如何都运行新工作，请改用 <code>APPEND_OR_REPLACE</code>。</p>
+</li>
+<li><p><a href="https://link.juejin.cn/?target=https://developer.android.google.cn/reference/androidx/work/ExistingWorkPolicy?hl=zh-cn%23APPEND"><code>APPEND_OR_REPLACE</code></a> 函数类似于 <code>APPEND</code>，不过它并不依赖于<strong>先决条件</strong>工作状态。即使现有工作变为 <code>CANCELLED</code> 或 <code>FAILED</code> 状态，新工作仍会运行。</p>
+</li>
+</ul>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> sendLogsWorkRequest =</span><br><span class="line">       PeriodicWorkRequestBuilder&lt;SendLogsWorker&gt;(<span class="number">24</span>, TimeUnit.HOURS)</span><br><span class="line">           .setConstraints(Constraints.Builder()</span><br><span class="line">               .setRequiresCharging(<span class="literal">true</span>)</span><br><span class="line">               .build()</span><br><span class="line">            )</span><br><span class="line">           .build()</span><br><span class="line">WorkManager.getInstance(<span class="keyword">this</span>).enqueueUniquePeriodicWork(</span><br><span class="line">           <span class="string">&quot;sendLogs&quot;</span>,</span><br><span class="line">           ExistingPeriodicWorkPolicy.KEEP,</span><br><span class="line">           sendLogsWorkRequest</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>上述代码在 <code>sendLogs</code> 作业已处于队列中的情况下运行，系统会保留现有的作业，并且不会添加新的作业。</p>
+<h2 id="5-2、任务状态"><a href="#5-2、任务状态" class="headerlink" title="5.2、任务状态"></a>5.2、任务状态</h2><h3 id="1、-WorkInfo类"><a href="#1、-WorkInfo类" class="headerlink" title="1、**WorkInfo类**"></a>1、**<code>WorkInfo</code>类**</h3><p>工作在整个生命周期内会经历一系列<code>State</code>更改，而<code>WorkInfo</code>用于包含其特定的任务信息与状态。</p>
+<p>工作状态分为：<code>ENQUEUED</code>、<code>RUNNING</code>、<code>SUCCEEDED</code>、<code>FAILED</code>、<code>BLOCKED</code>与<code>CANCELLED</code>。</p>
+<ul>
+<li><p><strong>一次性工作的状态</strong></p>
+<p>对于一次性工作请求，初始状态为<code>ENQUEUED</code>。</p>
+<p><code>ENQUEUED</code>状态下，工作满足<code>Constraints</code>和初始延迟计时要求后立即运行，工作状态转为<code>RUNNING</code>状态，然后根据结果转为<code>SUCCEEDED</code>、<code>FAILED</code>。如果结果是<code>retry</code>，重回到<code>ENQUEUED</code>状态。在此过程中可随时取消工作，状态变更为<code>CANCELLED</code>。</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/d844f1b3c4c343b88463b1de0d5d60aa~tplv-k3u1fbpfcp-zoom-in-crop-mark:1304:0:0:0.awebp" alt="img"></p>
+<p><code>SUCCEEDED</code>、<code>FAILED</code> 和 <code>CANCELLED</code> 均表示此工作的终止状态。处于此状态时，<code>WorkInfo.State.isFinished()</code>返回<code>true</code>。</p>
+</li>
+<li><p><strong>定期工作的状态</strong></p>
+<p>成功和失败状态仅适用于一次性工作和链式工作，定期工作只有一个终止状态 <code>CANCELLED</code></p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/b84f517593d74a879a041a3e4eca99f9~tplv-k3u1fbpfcp-zoom-in-crop-mark:1304:0:0:0.awebp" alt="img"></p>
+</li>
+<li><p><strong>链式工作的状态</strong></p>
+<p>关于链式工作，其多了个<code>BLOCKED</code>状态。关于链式工作状态，可直接参看<a href="https://link.juejin.cn/?target=https://developer.android.google.cn/topic/libraries/architecture/workmanager/how-to/chain-work?hl=zh-cn">链接和工作状态</a></p>
+</li>
+</ul>
+<h3 id="2、查询状态"><a href="#2、查询状态" class="headerlink" title="2、查询状态"></a>2、查询状态</h3><p>将工作加入队列后，可以按 <code>name</code>、<code>id</code> 或 <code>tag</code> 在 WorkManager 中进行查询<code>WorkInfo</code>任务状态。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// by id</span></span><br><span class="line">workManager.getWorkInfoById(syncWorker.id) <span class="comment">// ListenableFuture&lt;WorkInfo&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// by name</span></span><br><span class="line">workManager.getWorkInfosForUniqueWork(<span class="string">&quot;sync&quot;</span>) <span class="comment">// ListenableFuture&lt;List&lt;WorkInfo&gt;&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// by tag</span></span><br><span class="line">workManager.getWorkInfosByTag(<span class="string">&quot;syncTag&quot;</span>) <span class="comment">// ListenableFuture&lt;List&lt;WorkInfo&gt;&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>该查询会返回 <a target="_blank" rel="noopener" href="https://developer.android.com/reference/androidx/work/WorkInfo?hl=zh-cn"><code>WorkInfo</code></a> 对象的 <a target="_blank" rel="noopener" href="https://guava.dev/releases/23.1-android/api/docs/com/google/common/util/concurrent/ListenableFuture.html"><code>ListenableFuture</code></a>，该值包含工作的 <a target="_blank" rel="noopener" href="https://developer.android.com/reference/androidx/work/WorkInfo?hl=zh-cn#getId()"><code>id</code></a>、其标记、其当前的 <a target="_blank" rel="noopener" href="https://developer.android.com/reference/androidx/work/WorkInfo.State?hl=zh-cn"><code>State</code></a> 以及通过 <a target="_blank" rel="noopener" href="https://developer.android.com/reference/androidx/work/ListenableWorker.Result?hl=zh-cn#success(androidx.work.Data)"><code>Result.success(outputData)</code></a> 设置的任何输出数据。</p>
+<p>利用每个方法的 <a target="_blank" rel="noopener" href="https://developer.android.com/topic/libraries/architecture/livedata?hl=zh-cn"><code>LiveData</code></a> 变种，您可以通过注册监听器来观察 <code>WorkInfo</code> 的变化。例如，如果您想要在某项工作成功完成后向用户显示消息，您可以进行如下设置：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">workManager.getWorkInfoByIdLiveData(syncWorker.id)</span><br><span class="line">               .observe(viewLifecycleOwner) &#123; workInfo -&gt;</span><br><span class="line">   <span class="keyword">if</span>(workInfo?.state == WorkInfo.State.SUCCEEDED) &#123;</span><br><span class="line">       Snackbar.make(requireView(),</span><br><span class="line">      R.string.work_completed, Snackbar.LENGTH_SHORT)</span><br><span class="line">           .show()</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3、复杂的工作查询"><a href="#3、复杂的工作查询" class="headerlink" title="3、复杂的工作查询"></a>3、复杂的工作查询</h3><p><code>WorkManager 2.4.0</code> 及更高版本支持使用 <a href="https://link.juejin.cn/?target=https://developer.android.google.cn/reference/androidx/work/WorkQuery?hl=zh-cn"><code>WorkQuery</code></a> 对象对已加入队列的作业进行复杂查询。<code>WorkQuery</code> 支持按工作的<code>ID/ 标记tag、状态state、名称name</code>组合进行查询。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> workQuery = WorkQuery.Builder</span><br><span class="line">       .fromTags(listOf(<span class="string">&quot;syncTag&quot;</span>))</span><br><span class="line">       .addStates(listOf(WorkInfo.State.FAILED, WorkInfo.State.CANCELLED))</span><br><span class="line">       .addUniqueWorkNames(listOf(<span class="string">&quot;preProcess&quot;</span>, <span class="string">&quot;sync&quot;</span>)</span><br><span class="line">    )</span><br><span class="line">   .build()</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> workInfos: ListenableFuture&lt;List&lt;WorkInfo&gt;&gt; = workManager.getWorkInfos(workQuery)</span><br></pre></td></tr></table></figure>
+
+<p><code>WorkQuery</code> 中的每个条件（ID，标记、状态或名称）与其他组件都是 <code>AND</code> 逻辑关系。条件中的每个值都是 <code>OR</code> 逻辑关系。<code>WorkQuery</code> 也适用于等效的 LiveData 方法 <a href="https://link.juejin.cn/?target=https://developer.android.google.cn/reference/androidx/work/WorkManager?hl=zh-cn%23getWorkInfosLiveData(androidx.work.WorkQuery)"><code>getWorkInfosLiveData()</code></a>。</p>
+<h2 id="5-3、取消和停止工作"><a href="#5-3、取消和停止工作" class="headerlink" title="5.3、取消和停止工作"></a>5.3、取消和停止工作</h2><p>如果您不再需要运行先前加入队列的工作，则可以要求将其取消。可以按工作的 <code>name</code>、<code>id</code> 或 <code>tag</code> 取消工作。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// by id</span></span><br><span class="line">workManager.cancelWorkById(syncWorker.id)</span><br><span class="line"></span><br><span class="line"><span class="comment">// by name</span></span><br><span class="line">workManager.cancelUniqueWork(<span class="string">&quot;sync&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// by tag</span></span><br><span class="line">workManager.cancelAllWorkByTag(<span class="string">&quot;syncTag&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>取消时，WorkManager 会检查工作的 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/WorkInfo.State?hl=zh-cn"><code>State</code></a>。如果工作已经<a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/WorkInfo.State?hl=zh-cn#isFinished()">完成</a>，系统不会执行任何操作。否则，工作的状态会更改为 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/WorkInfo.State?hl=zh-cn#CANCELLED"><code>CANCELLED</code></a>，之后就不会运行这个工作。任何<a target="_blank" rel="noopener" href="https://developer.android.google.cn/topic/libraries/architecture/workmanager/how-to/chain-work?hl=zh-cn">依赖于此工作</a>的 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/WorkRequest?hl=zh-cn"><code>WorkRequest</code></a> 作业也将变为 <code>CANCELLED</code>。</p>
+<blockquote>
+<p><strong>注意</strong>：<a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/WorkManager?hl=zh-cn#cancelAllWorkByTag(java.lang.String)"><code>cancelAllWorkByTag(String)</code></a> 会取消具有给定标记的所有工作。</p>
+</blockquote>
+<h2 id="5-4、停止Worker"><a href="#5-4、停止Worker" class="headerlink" title="5.4、停止Worker"></a>5.4、停止<code>Worker</code></h2><p>正在运行的 <code>Worker</code> 可能会由于以下几种原因而停止运行：</p>
+<ul>
+<li>明确要求取消它（例如，通过调用 <code>WorkManager.cancelWorkById(UUID)</code> 取消）。</li>
+<li>如果是<a target="_blank" rel="noopener" href="https://developer.android.google.cn/topic/libraries/architecture/workmanager/how-to/managing-work?hl=zh-cn#unique-work">唯一工作</a>，将 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/ExistingWorkPolicy?hl=zh-cn"><code>ExistingWorkPolicy</code></a> 为 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/ExistingWorkPolicy?hl=zh-cn#REPLACE"><code>REPLACE</code></a> 的新 <code>WorkRequest</code> 加入到了队列中。旧的 <code>WorkRequest</code> 会立即被视为已取消。</li>
+<li>工作约束条件已不再满足。</li>
+<li>系统出于某种原因指示您的应用停止工作。如果超过 10 分钟的执行期限，可能会发生这种情况。该工作会调度为在稍后重试。</li>
+</ul>
+<h3 id="1、onStopped-回调"><a href="#1、onStopped-回调" class="headerlink" title="1、onStopped() 回调"></a>1、<strong>onStopped() 回调</strong></h3><p><code>Worker</code>被取消时，可以在onStop中收到回调，此时应该主动释放<code>Worker</code>的所有资源。例如，此时关闭所打开的数据库和文件句柄等等。</p>
+<h3 id="2、isStopped-属性"><a href="#2、isStopped-属性" class="headerlink" title="2、isStopped() 属性"></a>2、isStopped() 属性</h3><p>您可以调用 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/ListenableWorker?hl=zh-cn#isStopped()"><code>ListenableWorker.isStopped()</code></a> 方法以检查工作器是否已停止。如果您在工作器执行长时间运行的操作或重复操作，您应经常检查此属性，并尽快将其用作停止工作的信号。</p>
+<blockquote>
+<p><strong>注意</strong>：WorkManager 会忽略已收到 onStop 信号的工作器所设置的 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/ListenableWorker.Result?hl=zh-cn"><code>Result</code></a>，因为工作器已被视为停止。</p>
+</blockquote>
+<p>示例如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UploadWorker</span></span>(appContext: Context, workerParams: WorkerParameters):</span><br><span class="line">    Worker(appContext, workerParams) &#123;</span><br><span class="line">    <span class="keyword">companion</span> <span class="keyword">object</span> &#123;</span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">val</span> TAG = <span class="string">&quot;UploadWorker&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">doWork</span><span class="params">()</span></span>: Result &#123;</span><br><span class="line">        Log.i(TAG, <span class="string">&quot;Thread = <span class="subst">$&#123;Thread.currentThread().name&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (isStopped) &#123;</span><br><span class="line">            Log.i(TAG, <span class="string">&quot;work stopped&quot;</span>)</span><br><span class="line">            <span class="keyword">return</span> Result.failure()</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// Do the work here--in this case, upload the images.</span></span><br><span class="line">        uploadImages()</span><br><span class="line">        <span class="comment">// Indicate whether the work finished successfully with the Result</span></span><br><span class="line">        <span class="keyword">return</span> Result.success()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">uploadImages</span><span class="params">()</span></span> &#123;</span><br><span class="line">        Log.i(TAG, <span class="string">&quot;uploadImages start&quot;</span>)</span><br><span class="line">        <span class="comment">// 模拟任务执行 3s</span></span><br><span class="line">        Thread.sleep(<span class="number">3</span> * <span class="number">1000L</span>)</span><br><span class="line">        Log.i(TAG, <span class="string">&quot;uploadImages end&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onStopped</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="comment">// release resource</span></span><br><span class="line">        Log.i(TAG, <span class="string">&quot;onStopped ...&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 启动</span></span><br><span class="line"><span class="keyword">val</span> request0: WorkRequest =</span><br><span class="line">    OneTimeWorkRequestBuilder&lt;UploadWorker&gt;()</span><br><span class="line">        .addTag(<span class="string">&quot;UploadWorker0&quot;</span>)</span><br><span class="line">        .build()</span><br><span class="line">workManager.enqueue(request0)</span><br><span class="line"><span class="comment">// 延迟 1s 执行</span></span><br><span class="line">Thread.sleep(<span class="number">1000</span>)</span><br><span class="line">workManager.cancelAllWorkByTag(<span class="string">&quot;UploadWorker0&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-5、任务进度观察"><a href="#5-5、任务进度观察" class="headerlink" title="5.5、任务进度观察"></a>5.5、任务进度观察</h2><p><code>WorkManager 2.3.0-alpha01</code> 为设置和观察工作器的中间进度添加了支持。</p>
+<p><code>Worker中</code>通过<code>ListenableWorker#setProgressAsync</code>或 <code>CoroutineWorker#setProgress</code>，允许保留中间进度。开发者能可通过界面观察到的中间进度。<code>progress</code>进度类型是 <a href="https://link.juejin.cn/?target=https://developer.android.google.cn/reference/androidx/work/Data?hl=zh-cn"><code>Data</code></a> 类型。</p>
+<h3 id="1、更新进度"><a href="#1、更新进度" class="headerlink" title="1、更新进度"></a>1、更新进度</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ProgressWorker</span></span>(context: Context, parameters: WorkerParameters) :</span><br><span class="line">    CoroutineWorker(context, parameters) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">companion</span> <span class="keyword">object</span> &#123;</span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">val</span> Progress = <span class="string">&quot;Progress&quot;</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">const</span> <span class="keyword">val</span> delayDuration = <span class="number">1L</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">doWork</span><span class="params">()</span></span>: Result &#123;</span><br><span class="line">        <span class="keyword">val</span> firstUpdate = workDataOf(Progress to <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">val</span> lastUpdate = workDataOf(Progress to <span class="number">100</span>)</span><br><span class="line">        setProgress(firstUpdate)</span><br><span class="line">        delay(delayDuration)</span><br><span class="line">        <span class="comment">// 设置进度</span></span><br><span class="line">        setProgress(lastUpdate)</span><br><span class="line">        <span class="keyword">return</span> Result.success()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="2、观察进度"><a href="#2、观察进度" class="headerlink" title="2、观察进度"></a>2、观察进度</h3><p>可以使用 <a href="https://link.juejin.cn/?target=https://developer.android.google.cn/reference/androidx/work/WorkManager?hl=zh-cn%23getWorkInfoById(java.util.UUID)"><code>getWorkInfoBy…()</code> 或 <code>getWorkInfoBy…LiveData()</code></a> 方法，并引用 <a href="https://link.juejin.cn/?target=https://developer.android.google.cn/reference/androidx/work/WorkInfo?hl=zh-cn"><code>WorkInfo</code></a>。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">WorkManager.getInstance(applicationContext)</span><br><span class="line">    <span class="comment">// requestId is the WorkRequest id</span></span><br><span class="line">    .getWorkInfoByIdLiveData(requestId)</span><br><span class="line">    .observe(observer, Observer &#123; workInfo: WorkInfo? -&gt;</span><br><span class="line">            <span class="keyword">if</span> (workInfo != <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="keyword">val</span> progress = workInfo.progress</span><br><span class="line">                <span class="keyword">val</span> value = progress.getInt(Progress, <span class="number">0</span>)</span><br><span class="line">                <span class="comment">// Do something with progress information</span></span><br><span class="line">            &#125;</span><br><span class="line">    &#125;)</span><br></pre></td></tr></table></figure>
+
+<h1 id="六、工作链"><a href="#六、工作链" class="headerlink" title="六、工作链"></a>六、工作链</h1><p>可以使用 WorkManager 创建工作链并将其加入队列。工作链用于指定多个依存任务并定义这些任务的运行顺序。当您需要以特定顺序运行多个任务时，此功能尤其有用。</p>
+<p>创建任务链可以使用<a href="https://link.juejin.cn/?target=https://developer.android.google.cn/reference/androidx/work/WorkManager?hl=zh-cn%23beginWith(androidx.work.OneTimeWorkRequest)"><code>WorkManager.beginWith(OneTimeWorkRequest)</code></a></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">WorkManager.getInstance(<span class="keyword">this</span>)</span><br><span class="line">    .beginWith(workA)</span><br><span class="line">    .then(workB)   </span><br><span class="line">    .then(workC)</span><br><span class="line">    .enqueue()</span><br></pre></td></tr></table></figure>
+
+<p>任务会按照设置的顺序依次执行A、B、C。<code>WorkManager</code>在执行过程中，遇到其中一个<code>Work</code>不成功，会停止执行。比如代码执行到<code>WorkB</code>返回<code>FAILURE</code>状态，代码结束，<code>WorkC</code>不执行。</p>
+<p>也可以使用 <a href="https://link.juejin.cn/?target=https://developer.android.google.cn/reference/androidx/work/WorkManager?hl=zh-cn%23beginWith(java.util.List)"><code>WorkManager.beginWith(List)</code></a>传入一个List，其中的<code>Worker </code>是并行执行的。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">WorkManager.getInstance(myContext)</span><br><span class="line">   <span class="comment">// Candidates to run in parallel</span></span><br><span class="line">   .beginWith(listOf(plantName1, plantName2, plantName3))</span><br><span class="line">   <span class="comment">// Dependent work (only runs after all previous work in chain)</span></span><br><span class="line">   .then(cache)</span><br><span class="line">   .then(upload)</span><br><span class="line">   <span class="comment">// Call enqueue to kick things off</span></span><br><span class="line">   .enqueue()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>当然，then接口也可以传入list集合，并行执行任务。</p>
+<h2 id="6-1、输入合并器"><a href="#6-1、输入合并器" class="headerlink" title="6.1、输入合并器"></a>6.1、<strong>输入合并器</strong></h2><p>当链接 <code>OneTimeWorkRequest</code> 实例时，父级工作请求的输出将作为子级的输入传入。因此，在上面的示例中，<code>plantName1</code>、<code>plantName2</code> 和 <code>plantName3</code> 的输出将作为 <code>cache</code> 请求的输入传入。</p>
+<p>为了管理来自多个父级工作请求的输入，WorkManager 使用 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/InputMerger"><code>InputMerger</code></a>。</p>
+<p>WorkManager 提供两种不同类型的 <code>InputMerger</code>：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/OverwritingInputMerger"><code>OverwritingInputMerger</code></a> 会尝试将所有输入中的所有键添加到输出中。如果发生冲突，它会覆盖先前设置的键。</li>
+<li><a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/ArrayCreatingInputMerger"><code>ArrayCreatingInputMerger</code></a> 会尝试合并输入，并在必要时创建数组。</li>
+</ul>
+<h3 id="1、OverwritingInputMerger"><a href="#1、OverwritingInputMerger" class="headerlink" title="1、OverwritingInputMerger"></a>1、OverwritingInputMerger</h3><p><code>OverwritingInputMerger</code> 是默认的合并方法。如果合并过程中存在键冲突，键的最新值将覆盖生成的输出数据中的所有先前版本。</p>
+<p>例如，如果每种植物的输入都有一个与其各自变量名称（<code>&quot;plantName1&quot;</code>、<code>&quot;plantName2&quot;</code> 和 <code>&quot;plantName3&quot;</code>）匹配的键，传递给 <code>cache</code> 工作器的数据将具有三个键值对。</p>
+<img src="/pics/image-20220515201114992.png" alt="image-20220515201114992" style="zoom:50%;" />
+
+<p>如果存在冲突，那么最后一个工作器将在争用中“取胜”，其值将传递给 <code>cache</code>。</p>
+<img src="/pics/image-20220515201138035.png" style="zoom:50%;" />
+
+<p>由于工作请求是并行运行的，因此无法保证其运行顺序。在上面的示例中，<code>plantName1</code> 可以保留值 <code>&quot;tulip&quot;</code> 或 <code>&quot;elm&quot;</code>，具体取决于最后写入的是哪个值。如果有可能存在键冲突，并且您需要在合并器中保留所有输出数据，那么 <code>ArrayCreatingInputMerger</code> 可能是更好的选择。</p>
+<h3 id="2、ArrayCreatingInputMerger"><a href="#2、ArrayCreatingInputMerger" class="headerlink" title="2、ArrayCreatingInputMerger"></a>2、ArrayCreatingInputMerger</h3><p>对于上面的示例，假设我们要保留所有植物名称工作器的输出，则应使用 <code>ArrayCreatingInputMerger</code>。</p>
+<p><a target="_blank" rel="noopener" href="https://developer.android.google.cn/topic/libraries/architecture/workmanager/how-to/chain-work#kotlin">Kotlin</a><a target="_blank" rel="noopener" href="https://developer.android.google.cn/topic/libraries/architecture/workmanager/how-to/chain-work#java">Java</a></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> cache: OneTimeWorkRequest = OneTimeWorkRequestBuilder&lt;PlantWorker&gt;()</span><br><span class="line">   .setInputMerger(ArrayCreatingInputMerger::<span class="class"><span class="keyword">class</span>)</span></span><br><span class="line">   .setConstraints(constraints)</span><br><span class="line">   .build()</span><br></pre></td></tr></table></figure>
+
+<p><code>ArrayCreatingInputMerger</code> 将每个键与数组配对。如果每个键都是唯一的，您会得到一系列一元数组。</p>
+<img src="/pics/image-20220515201325106.png" alt="image-20220515201325106" style="zoom:50%;" />
+
+<p>如果存在任何键冲突，那么所有对应的值会分组到一个数组中。</p>
+<img src="/pics/image-20220515201342698.png" alt="image-20220515201342698" style="zoom:50%;" />
+
+<h2 id="6-2、链接和工作状态"><a href="#6-2、链接和工作状态" class="headerlink" title="6.2、链接和工作状态"></a>6.2、链接和工作状态</h2><p>只要工作成功完成（即，返回 <code>Result.success()</code>），<code>OneTimeWorkRequest</code> 链便会按顺序执行。运行时，工作请求可能会失败或被取消，这会对依存工作请求产生下游影响。</p>
+<p>当第一个 <code>OneTimeWorkRequest</code> 被加入工作请求链队列时，所有后续工作请求会被屏蔽，直到第一个工作请求的工作完成为止。</p>
+<p>具体工作机制：<a target="_blank" rel="noopener" href="https://developer.android.google.cn/topic/libraries/architecture/workmanager/how-to/chain-work#work-statuses">链接和工作状态</a></p>
+<h1 id="七、自定义WorkManager"><a href="#七、自定义WorkManager" class="headerlink" title="七、自定义WorkManager"></a>七、自定义WorkManager</h1><p>默认情况下，应用启动时，<code>WorkManager</code> 使用适合大多数应用的合理选项自动进行配置。如果需要进一步控制 <code>WorkManager</code> 管理和调度工作的方式，可以通过自行初始化 <code>WorkManager</code> 来自定义 <code>WorkManager</code> 配置。</p>
+<h3 id="移除默认实现"><a href="#移除默认实现" class="headerlink" title="移除默认实现"></a>移除默认实现</h3><p>通过按需初始化，可以在仅需要<code>WorkManager</code>时创建该组件，不用每次应用启动都创建，提高应用启动性能。</p>
+<p>如需提供自己的配置，必须先移除默认初始化程序，使用合并规则 <code>tools:node=&quot;remove&quot;</code> 更新 <a href="https://link.juejin.cn/?target=https://developer.android.google.cn/guide/topics/manifest/manifest-intro?hl=zh-cn"><code>AndroidManifest.xml</code></a>。</p>
+<p>从 <code>WorkManager 2.6</code> 开始，应用启动功能在<code>WorkManager</code>内部使用。若需提供自定义初始化程序，需移除<code>androidx.startup</code>节点</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 如果您不在应用中使用应用启动功能，则可以将其彻底移除 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">provider</span></span></span><br><span class="line"><span class="tag">   <span class="attr">android:name</span>=<span class="string">&quot;androidx.startup.InitializationProvider&quot;</span></span></span><br><span class="line"><span class="tag">   <span class="attr">android:authorities</span>=<span class="string">&quot;$&#123;applicationId&#125;.androidx-startup&quot;</span></span></span><br><span class="line"><span class="tag">   <span class="attr">tools:node</span>=<span class="string">&quot;remove&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">provider</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>否则，如果要使用<code>startUp</code>其他功能，可以仅移除 <code>WorkManagerInitializer</code> 节点即可。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">provider</span></span></span><br><span class="line"><span class="tag">   <span class="attr">android:name</span>=<span class="string">&quot;androidx.startup.InitializationProvider&quot;</span></span></span><br><span class="line"><span class="tag">   <span class="attr">android:authorities</span>=<span class="string">&quot;$&#123;applicationId&#125;.androidx-startup&quot;</span></span></span><br><span class="line"><span class="tag">   <span class="attr">android:exported</span>=<span class="string">&quot;false&quot;</span></span></span><br><span class="line"><span class="tag">   <span class="attr">tools:node</span>=<span class="string">&quot;merge&quot;</span>&gt;</span></span><br><span class="line">   <span class="comment">&lt;!-- If you are using androidx.startup to initialize other components --&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">meta-data</span></span></span><br><span class="line"><span class="tag">       <span class="attr">android:name</span>=<span class="string">&quot;androidx.work.WorkManagerInitializer&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">android:value</span>=<span class="string">&quot;androidx.startup&quot;</span></span></span><br><span class="line"><span class="tag">       <span class="attr">tools:node</span>=<span class="string">&quot;remove&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">provider</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="实现Configguration-Provider"><a href="#实现Configguration-Provider" class="headerlink" title="实现Configguration.Provider"></a><strong>实现<code>Configguration.Provider</code></strong></h3><p>让 <code>Application</code> 类实现 <a href="https://link.juejin.cn/?target=https://developer.android.google.cn/reference/androidx/work/Configuration.Provider?hl=zh-cn"><code>Configuration.Provider</code></a> 接口，并提供自定义的 <a href="https://link.juejin.cn/?target=https://developer.android.google.cn/reference/androidx/work/Configuration.Provider?hl=zh-cn%23getWorkManagerConfiguration()"><code>Configuration.Provider.getWorkManagerConfiguration</code>()</a> 实现</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">App</span> : <span class="type">Application</span></span>(), Configuration.Provider &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getWorkManagerConfiguration</span><span class="params">()</span></span> =</span><br><span class="line">        Configuration.Builder()</span><br><span class="line">            .setWorkerFactory(RenameWorkerFactory())</span><br><span class="line">            .setMinimumLoggingLevel(Log.VERBOSE)</span><br><span class="line">            .build()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如需查看可用自定义的完整列表，请参阅 <a href="https://link.juejin.cn/?target=https://developer.android.google.cn/reference/androidx/work/Configuration.Builder?hl=zh-cn"><code>Configuration.Builder()文档</code></a> </p>
+<blockquote>
+<p><strong>注意</strong>： 必须<a target="_blank" rel="noopener" href="https://developer.android.google.cn/topic/libraries/architecture/workmanager/advanced/custom-configuration#remove-default">移除默认的初始化程序</a>，自定义的 <code>getWorkManagerConfiguration()</code> 实现才能生效。</p>
+</blockquote>
+<h1 id="八、自定义WorkerFactory"><a href="#八、自定义WorkerFactory" class="headerlink" title="八、自定义WorkerFactory"></a>八、自定义WorkerFactory</h1><p><code>WorkManager</code>执行 <code>Worker</code>任务时，会通过<code>WorkerFactory</code>反射实例化你定义的<code>Worker</code>。默认的<code>WorkerFactory</code>创建<code>Worker</code>需要两个参数：</p>
+<ol>
+<li><code>Application’s Context</code></li>
+<li><code>WorkerParameters</code></li>
+</ol>
+<p>实际开发中，可能需要为<code>Worker</code>构造函数添加其他参数，满足我们的功能需求。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyWorkerFactory</span></span>(<span class="keyword">private</span> <span class="keyword">val</span> name: String = <span class="string">&quot;MyWorkerFactory-&quot;</span>) : WorkerFactory() &#123;</span><br><span class="line">    <span class="meta">@SuppressLint(<span class="meta-string">&quot;RestrictedApi&quot;</span>)</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">createWorker</span><span class="params">(appContext: <span class="type">Context</span>, workerClassName: <span class="type">String</span>, workerParameters: <span class="type">WorkerParameters</span>)</span></span>: ListenableWorker? &#123;</span><br><span class="line">        Log.i(<span class="string">&quot;zxw&quot;</span>, <span class="string">&quot;workerClassName = <span class="variable">$workerClassName</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">when</span> (workerClassName) &#123;</span><br><span class="line">            MyWorker01::<span class="keyword">class</span>.java.name -&gt; MyWorker01(name, appContext, workerParameters)</span><br><span class="line">            MyWorker02::<span class="keyword">class</span>.java.name -&gt; MyWorker02(name, appContext, workerParameters)</span><br><span class="line">            <span class="keyword">else</span> -&gt; &#123;</span><br><span class="line">                <span class="comment">// 调用默认的Factory方法</span></span><br><span class="line">                getDefaultWorkerFactory().createWorker(appContext, workerClassName, workerParameters)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyWorker01</span> </span>(<span class="keyword">private</span> <span class="keyword">val</span> name:String, appContext: Context, workerParams: WorkerParameters):</span><br><span class="line">    Worker(appContext, workerParams)&#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">doWork</span><span class="params">()</span></span>: Result &#123;</span><br><span class="line">        Log.i(<span class="string">&quot;zxw&quot;</span>, <span class="string">&quot;MyWorker01 = <span class="variable">$name</span>&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> Result.success()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> request11 = OneTimeWorkRequestBuilder&lt;MyWorker01&gt;().build()</span><br><span class="line">            workManager.enqueue(request11)</span><br></pre></td></tr></table></figure>
+
+<h3 id="DelegatingWorkerFactory使用"><a href="#DelegatingWorkerFactory使用" class="headerlink" title="DelegatingWorkerFactory使用"></a><strong><code>DelegatingWorkerFactory</code>使用</strong></h3><p>实际开发中可能会有多个<code>Worker</code>类，示例中直接返回某个特定<code>Worker</code>实例的操作就不是很适用，可以通过<code>DelegatingWorkerFactory</code>解决。</p>
+<p>可以使用<code>DelegatingWorkerFactory</code>，将其设置到我们的<code>WorkerFactory</code>中，从而支持多个多个工厂。这种情况下，如果一个<code>WorkerFactory</code>没有创建<code>Worker</code>，<code>DelegatingFactory</code>会去找到下一个<code>WorkerFactory</code>。如果没有任何被注册的工厂知道如何处理某个类，那么它将回退到使用反射的默认工厂。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyWorkerFactory</span></span>(<span class="keyword">private</span> <span class="keyword">val</span> name: String = <span class="string">&quot;MyWorkerFactory-&quot;</span>) : WorkerFactory() &#123;</span><br><span class="line">    <span class="meta">@SuppressLint(<span class="meta-string">&quot;RestrictedApi&quot;</span>)</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">createWorker</span><span class="params">(appContext: <span class="type">Context</span>, workerClassName: <span class="type">String</span>, workerParameters: <span class="type">WorkerParameters</span>)</span></span>: ListenableWorker? &#123;</span><br><span class="line">        Log.i(<span class="string">&quot;zxw&quot;</span>, <span class="string">&quot;workerClassName = <span class="variable">$workerClassName</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">when</span> (workerClassName) &#123;</span><br><span class="line">            MyWorker01::<span class="keyword">class</span>.java.name -&gt; MyWorker01(name, appContext, workerParameters)</span><br><span class="line">            MyWorker02::<span class="keyword">class</span>.java.name -&gt; MyWorker02(name, appContext, workerParameters)</span><br><span class="line">            <span class="keyword">else</span> -&gt; &#123;</span><br><span class="line">                <span class="literal">null</span></span><br><span class="line">                <span class="comment">// 返回null 让其他factory 进行处理，如果没有任何自定义工厂处理某个类，将使用默认的反射工厂</span></span><br><span class="line">                <span class="comment">// getDefaultWorkerFactory().createWorker(appContext, workerClassName, workerParameters)</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyApplication</span> : <span class="type">Application</span></span>(), Configuration.Provider &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getWorkManagerConfiguration</span><span class="params">()</span></span>: Configuration &#123;</span><br><span class="line">        <span class="keyword">val</span> factory = DelegatingWorkerFactory()</span><br><span class="line">        factory.addFactory(MyWorkerFactory())</span><br><span class="line">        <span class="keyword">return</span> Configuration.Builder()</span><br><span class="line">            <span class="comment">// .setWorkerFactory(MyWorkerFactory())</span></span><br><span class="line">            <span class="comment">// 变化在这里</span></span><br><span class="line">            .setWorkerFactory(factory)</span><br><span class="line">            .setMinimumLoggingLevel(android.util.Log.INFO)</span><br><span class="line">            .build()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="九、线程处理"><a href="#九、线程处理" class="headerlink" title="九、线程处理"></a>九、线程处理</h1><p>在 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/topic/libraries/architecture/workmanager/basics">WorkManager 使用入门</a>中，我们提到 WorkManager 可以代表您异步执行后台工作。</p>
+<p>WorkManager 提供了四种不同类型的工作基元：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/Worker"><code>Worker</code></a> 是最简单的实现，WorkManager 会自动在后台线程中调用 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/Worker#doWork()"><code>Worker.doWork()</code></a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/kotlin/androidx/work/CoroutineWorker"><code>CoroutineWorker</code></a> 是为 Kotlin 用户建议的实现。<code>CoroutineWorker</code> 实例公开了后台工作的一个挂起函数。详细了解 <code>CoroutineWorker</code> 实例中的线程处理，请参阅 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/topic/libraries/architecture/workmanager/advanced/coroutineworker">CoroutineWorker 中的线程处理</a>。</li>
+<li><a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/RxWorker"><code>RxWorker</code></a> 是为 RxJava 用户建议的实现。</li>
+<li><a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/ListenableWorker"><code>ListenableWorker</code></a> 是 <code>Worker</code>、<code>CoroutineWorker</code> 和 <code>RxWorker</code> 的基类。</li>
+</ul>
+<h2 id="9-1、Worker-中的线程处理"><a href="#9-1、Worker-中的线程处理" class="headerlink" title="9.1、Worker 中的线程处理"></a>9.1、Worker 中的线程处理</h2><p>当您使用 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/Worker"><code>Worker</code></a> 时，WorkManager 会自动在后台线程中调用 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/Worker#doWork()"><code>Worker.doWork()</code></a>。该后台线程来自于 WorkManager 的 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/Configuration"><code>Configuration</code></a> 中指定的 <code>Executor</code>。默认情况下，WorkManager 会为您设置 <code>Executor</code>，但您也可以自己进行自定义,按以下方式指定 <code>Executor</code>：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">WorkManager.initialize(</span><br><span class="line">    context,</span><br><span class="line">    Configuration.Builder()</span><br><span class="line">         <span class="comment">// Uses a fixed thread pool of size 8 threads.</span></span><br><span class="line">        .setExecutor(Executors.newFixedThreadPool(<span class="number">8</span>))</span><br><span class="line">        .build())</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>WorkManager中的线程池有2种：1、bgExecutor，用来执行后台worker任务的 2、taskExecutor，用来处理api调用的，比如cancel 等等</p>
+</blockquote>
+<h2 id="9-2、ListenableWorker-中的线程处理"><a href="#9-2、ListenableWorker-中的线程处理" class="headerlink" title="9.2、ListenableWorker 中的线程处理"></a>9.2、ListenableWorker 中的线程处理</h2><p>在某些情况下，需要处理基于回调的异步操作。在这种情况下，不能只依靠 <code>Worker</code> 来完成操作，因为它无法以阻塞方式完成这项工作。WorkManager 通过 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/ListenableWorker"><code>ListenableWorker</code></a> 支持该用例。</p>
+<p><code>ListenableWorker</code> 是最基本的工作器 API；<a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/Worker"><code>Worker</code></a>、<a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/kotlin/androidx/work/CoroutineWorker"><code>CoroutineWorker</code></a> 和 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/RxWorker"><code>RxWorker</code></a> 都是从这个类衍生而来的。<code>ListenableWorker</code> 只会发出信号以表明应该开始和停止工作，而线程处理则完全交您决定。开始工作信号在主线程上调用，因此请务必手动转到您选择的后台线程。</p>
+<p>抽象方法 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/ListenableWorker#startWork()"><code>ListenableWorker.startWork()</code></a> 会返回一个将使用操作的 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/androidx/work/ListenableWorker.Result"><code>Result</code></a> 设置的 <code>ListenableFuture</code>。<code>ListenableFuture</code> 是一个轻量级接口：它是一个 <code>Future</code>，用于提供附加监听器和传播异常的功能。在 <code>startWork</code> 方法中，应该返回 <code>ListenableFuture</code>，完成操作后，您需要使用操作的 <code>Result</code> 设置这个返回结果。您可以通过以下两种方式之一创建 <code>ListenableFuture</code> 实例：</p>
+<p>首先引入依赖 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/jetpack/androidx/releases/concurrent#declaring_dependencies"><code>councurrent-futures</code></a> 依赖：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation <span class="string">&quot;androidx.concurrent:concurrent-futures-ktx:1.1.0&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>代码：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CallBackWorker</span></span>(</span><br><span class="line">    context: Context,</span><br><span class="line">    params: WorkerParameters</span><br><span class="line">) : ListenableWorker(context, params) &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">startWork</span><span class="params">()</span></span>: ListenableFuture&lt;Result&gt; &#123;</span><br><span class="line">        Log.i(<span class="string">&quot;zxw&quot;</span>, <span class="string">&quot;startWork&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> CallbackToFutureAdapter.getFuture &#123; completer -&gt;</span><br><span class="line">            <span class="keyword">val</span> callback = <span class="keyword">object</span> : Callback &#123;</span><br><span class="line">                <span class="meta">@Volatile</span></span><br><span class="line">                <span class="keyword">var</span> successes = <span class="number">0</span></span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onFailure</span><span class="params">()</span></span> &#123;</span><br><span class="line">                    Log.i(<span class="string">&quot;zxw&quot;</span>, <span class="string">&quot;onFailure&quot;</span>)</span><br><span class="line">                    completer.<span class="keyword">set</span>(Result.failure())</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onSuccess</span><span class="params">()</span></span> &#123;</span><br><span class="line">                    successes++</span><br><span class="line">                    <span class="keyword">if</span> (successes == <span class="number">100</span>) &#123;</span><br><span class="line">                        Log.i(<span class="string">&quot;zxw&quot;</span>, <span class="string">&quot;onSuccess + <span class="subst">$&#123;Thread.currentThread().name&#125;</span>&quot;</span>)</span><br><span class="line">                        completer.<span class="keyword">set</span>(Result.success())</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            downloadAsynchronously(<span class="string">&quot;https://example.com&quot;</span>, callback)</span><br><span class="line">             <span class="comment">// 添加一个取消监听器即可：                                       </span></span><br><span class="line">            completer.addCancellationListener(&#123;</span><br><span class="line">                Log.i(<span class="string">&quot;zxw&quot;</span>, <span class="string">&quot;run cancel&quot;</span>)</span><br><span class="line">            &#125;, Executors.newSingleThreadExecutor())</span><br><span class="line"></span><br><span class="line">            callback</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  </span><br><span class="line">    <span class="meta">@SuppressLint(<span class="meta-string">&quot;RestrictedApi&quot;</span>)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">downloadAsynchronously</span><span class="params">(s: <span class="type">String</span>, callback: <span class="type">Callback</span>)</span></span> &#123;</span><br><span class="line">        Thread &#123;</span><br><span class="line">            Log.i(<span class="string">&quot;zxw&quot;</span>, <span class="string">&quot;backgroundExecutor execute&quot;</span>)</span><br><span class="line">            repeat(<span class="number">100</span>) &#123;</span><br><span class="line">                callback.onSuccess()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;.start()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">Callback</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">onFailure</span><span class="params">()</span></span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">onSuccess</span><span class="params">()</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="9-3、跨进程支持"><a href="#9-3、跨进程支持" class="headerlink" title="9.3、跨进程支持"></a>9.3、跨进程支持</h2><p>使用 <a target="_blank" rel="noopener" href="https://developer.android.google.cn/reference/kotlin/androidx/work/multiprocess/RemoteListenableWorker"><code>RemoteListenableWorker</code></a>（<code>ListenableWorker</code> 的实现）将工作器绑定到特定进程，<a target="_blank" rel="noopener" href="https://developer.android.google.cn/topic/libraries/architecture/workmanager/advanced/listenableworker#remotelistenableworker">文档</a>。</p>
+
+    </div>
+
+    
+    
+    
+      
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>sven
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://zhaoxiaowen-sven.github.io/2022/05/14/Notes/Android/Jetpack/Jetpack_04_WorkManager/" title="Jetpack_04_WorkManager使用">https://zhaoxiaowen-sven.github.io/2022/05/14/Notes/Android/Jetpack/Jetpack_04_WorkManager/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/27/Notes/Java/%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%BC%8F/" rel="prev" title="Java 生产者消费">
+      <i class="fa fa-chevron-left"></i> Java 生产者消费
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Jetpack-04-WorkManager%E4%BD%BF%E7%94%A8"><span class="nav-text">Jetpack_04_WorkManager使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8WorkManager"><span class="nav-text">一、为什么使用WorkManager</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="nav-text">二、基本使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1%E3%80%81%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8"><span class="nav-text">2.1、简单使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-1%E3%80%81%E5%AE%9A%E4%B9%89Worker"><span class="nav-text">2.1.1、定义Worker</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-2%E3%80%81%E5%88%9B%E5%BB%BAWorkRequest"><span class="nav-text">2.1.2、创建WorkRequest</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-3%E3%80%81%E5%B0%86-WorkRequest-%E6%8F%90%E4%BA%A4%E7%BB%99%E7%B3%BB%E7%BB%9F"><span class="nav-text">2.1.3、将 WorkRequest 提交给系统</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2%E3%80%81PeriodicWorkRequest"><span class="nav-text">2.2、PeriodicWorkRequest</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%81%B5%E6%B4%BB%E7%9A%84%E8%BF%90%E8%A1%8C%E9%97%B4%E9%9A%94"><span class="nav-text">灵活的运行间隔</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%89%E3%80%81WorkRequest%E9%85%8D%E7%BD%AE"><span class="nav-text">三、WorkRequest配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1%E3%80%81%E5%B7%A5%E4%BD%9C%E7%BA%A6%E6%9D%9F"><span class="nav-text">3.1、工作约束</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2%E3%80%81%E5%BB%B6%E8%BF%9F%E5%B7%A5%E4%BD%9C"><span class="nav-text">3.2、延迟工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3%E3%80%81%E9%87%8D%E8%AF%95%E5%92%8C%E9%80%80%E9%81%BF%E7%AD%96%E7%95%A5"><span class="nav-text">3.3、重试和退避策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4%E3%80%81%E6%A0%87%E8%AE%B0%E5%B7%A5%E4%BD%9C"><span class="nav-text">3.4、标记工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5%E3%80%81%E5%88%86%E9%85%8D%E8%BE%93%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="nav-text">3.5、分配输入数据</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%8A%A0%E6%80%A5%E5%B7%A5%E4%BD%9C"><span class="nav-text">四、加急工作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1%E3%80%81%E9%85%8D%E9%A2%9D"><span class="nav-text">4.1、配额</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2%E3%80%81%E6%89%A7%E8%A1%8C%E5%8A%A0%E6%80%A5%E5%B7%A5%E4%BD%9C"><span class="nav-text">4.2、执行加急工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3%E3%80%81%E5%90%91%E5%90%8E%E5%85%BC%E5%AE%B9%E6%80%A7%E5%92%8C%E5%89%8D%E5%8F%B0%E6%9C%8D%E5%8A%A1"><span class="nav-text">4.3、向后兼容性和前台服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E5%89%8D%E5%8F%B0%E6%9C%8D%E5%8A%A1%E8%AF%B4%E6%98%8E"><span class="nav-text">1、前台服务说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E6%94%AF%E6%8C%81%E9%95%BF%E6%97%B6%E9%97%B4%E8%BF%90%E8%A1%8C%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%99%A8"><span class="nav-text">2、支持长时间运行的工作器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E7%AE%A1%E7%90%86%E5%B7%A5%E4%BD%9C"><span class="nav-text">五、管理工作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1%E3%80%81%E5%94%AF%E4%B8%80%E5%B7%A5%E4%BD%9C"><span class="nav-text">5.1、唯一工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2%E3%80%81%E4%BB%BB%E5%8A%A1%E7%8A%B6%E6%80%81"><span class="nav-text">5.2、任务状态</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81-WorkInfo%E7%B1%BB"><span class="nav-text">1、**WorkInfo类**</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E6%9F%A5%E8%AF%A2%E7%8A%B6%E6%80%81"><span class="nav-text">2、查询状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E5%A4%8D%E6%9D%82%E7%9A%84%E5%B7%A5%E4%BD%9C%E6%9F%A5%E8%AF%A2"><span class="nav-text">3、复杂的工作查询</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3%E3%80%81%E5%8F%96%E6%B6%88%E5%92%8C%E5%81%9C%E6%AD%A2%E5%B7%A5%E4%BD%9C"><span class="nav-text">5.3、取消和停止工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-4%E3%80%81%E5%81%9C%E6%AD%A2Worker"><span class="nav-text">5.4、停止Worker</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81onStopped-%E5%9B%9E%E8%B0%83"><span class="nav-text">1、onStopped() 回调</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81isStopped-%E5%B1%9E%E6%80%A7"><span class="nav-text">2、isStopped() 属性</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-5%E3%80%81%E4%BB%BB%E5%8A%A1%E8%BF%9B%E5%BA%A6%E8%A7%82%E5%AF%9F"><span class="nav-text">5.5、任务进度观察</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E6%9B%B4%E6%96%B0%E8%BF%9B%E5%BA%A6"><span class="nav-text">1、更新进度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E8%A7%82%E5%AF%9F%E8%BF%9B%E5%BA%A6"><span class="nav-text">2、观察进度</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%B7%A5%E4%BD%9C%E9%93%BE"><span class="nav-text">六、工作链</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1%E3%80%81%E8%BE%93%E5%85%A5%E5%90%88%E5%B9%B6%E5%99%A8"><span class="nav-text">6.1、输入合并器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81OverwritingInputMerger"><span class="nav-text">1、OverwritingInputMerger</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81ArrayCreatingInputMerger"><span class="nav-text">2、ArrayCreatingInputMerger</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2%E3%80%81%E9%93%BE%E6%8E%A5%E5%92%8C%E5%B7%A5%E4%BD%9C%E7%8A%B6%E6%80%81"><span class="nav-text">6.2、链接和工作状态</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E8%87%AA%E5%AE%9A%E4%B9%89WorkManager"><span class="nav-text">七、自定义WorkManager</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A7%BB%E9%99%A4%E9%BB%98%E8%AE%A4%E5%AE%9E%E7%8E%B0"><span class="nav-text">移除默认实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0Configguration-Provider"><span class="nav-text">实现Configguration.Provider</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E8%87%AA%E5%AE%9A%E4%B9%89WorkerFactory"><span class="nav-text">八、自定义WorkerFactory</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#DelegatingWorkerFactory%E4%BD%BF%E7%94%A8"><span class="nav-text">DelegatingWorkerFactory使用</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E7%BA%BF%E7%A8%8B%E5%A4%84%E7%90%86"><span class="nav-text">九、线程处理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#9-1%E3%80%81Worker-%E4%B8%AD%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%A4%84%E7%90%86"><span class="nav-text">9.1、Worker 中的线程处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-2%E3%80%81ListenableWorker-%E4%B8%AD%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%A4%84%E7%90%86"><span class="nav-text">9.2、ListenableWorker 中的线程处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-3%E3%80%81%E8%B7%A8%E8%BF%9B%E7%A8%8B%E6%94%AF%E6%8C%81"><span class="nav-text">9.3、跨进程支持</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="sven"
+      src="/images/sven.jpeg">
+  <p class="site-author-name" itemprop="name">sven</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">73</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhaoxiaowen-sven" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhaoxiaowen-sven" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhaoxiaowen-sven@gmail.com" title="E-Mail → mailto:zhaoxiaowen-sven@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sven</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -33,7 +33,7 @@
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/17096a7ade13cc34~tplv-t2oaga2asx-zoom-in-crop-mark:1304:0:0:0.awebp">
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/17096a7af51d4c32~tplv-t2oaga2asx-zoom-in-crop-mark:1304:0:0:0.awebp">
 <meta property="article:published_time" content="2021-02-24T15:08:49.493Z">
-<meta property="article:modified_time" content="2022-05-04T08:32:45.077Z">
+<meta property="article:modified_time" content="2022-05-14T07:59:47.497Z">
 <meta property="article:author" content="sven">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://zhaoxiaowen-sven.github.io/pics/viewmodel.gif">
@@ -259,8 +259,10 @@
 <p>如果资源配置发生变更，我们需要考虑数据的存储与恢复，若不进行存储，则需要重新获取数据。而<code>ViewModel</code>独立于资源配置变化，即使资源配置变化导致Activity页面重建，也不会影响<code>ViewModel</code>的生命周期。</p>
 </li>
 </ul>
-<h1 id="二、基本使用"><a href="#二、基本使用" class="headerlink" title="二、基本使用"></a>二、基本使用</h1><p>本文Demo基于<code>Lifecycle 2.4.1</code>版本源码，程序demo基于<code>sdk 31</code></p>
-<p>引入依赖</p>
+<h1 id="二、基本使用"><a href="#二、基本使用" class="headerlink" title="二、基本使用"></a>二、基本使用</h1><blockquote>
+<p>本文Demo基于<code>Lifecycle 2.4.1</code>版本源码，程序demo基于<code>sdk 31</code></p>
+</blockquote>
+<p><strong>引入依赖</strong></p>
 <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    <span class="keyword">def</span> lifecycle_version = <span class="string">&quot;2.4.1&quot;</span></span><br><span class="line">    <span class="comment">// ViewModel</span></span><br><span class="line">    implementation <span class="string">&quot;androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version&quot;</span></span><br><span class="line">    <span class="comment">// LiveData</span></span><br><span class="line">    implementation <span class="string">&quot;androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version&quot;</span></span><br><span class="line">    <span class="comment">// Lifecycles only (without ViewModel or LiveData)</span></span><br><span class="line">    implementation <span class="string">&quot;androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Saved state module for ViewModel</span></span><br><span class="line">    implementation <span class="string">&quot;androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Annotation processor</span></span><br><span class="line">    kapt <span class="string">&quot;androidx.lifecycle:lifecycle-compiler:$lifecycle_version&quot;</span></span><br><span class="line">    <span class="comment">// alternately - if using Java8, use the following instead of lifecycle-compiler</span></span><br><span class="line">    implementation <span class="string">&quot;androidx.lifecycle:lifecycle-common-java8:$lifecycle_version&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="2-1、简单使用"><a href="#2-1、简单使用" class="headerlink" title="2.1、简单使用"></a>2.1、简单使用</h2><p><code>ViewModel</code>类主要负责为界面准备数据，并在配置更改期间自动保留<code>ViewModel</code>对象。</p>
@@ -542,7 +544,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">72</span>
+          <span class="site-state-item-count">73</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
