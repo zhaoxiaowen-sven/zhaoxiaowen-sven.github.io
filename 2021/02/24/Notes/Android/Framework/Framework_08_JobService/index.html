@@ -31,7 +31,7 @@
 <meta property="og:image" content="http://gityuan.com/images/jobscheduler/state_controller.jpg">
 <meta property="og:image" content="https://leanote.com/api/file/getImage?fileId=5a585894ab64413e0d001645">
 <meta property="article:published_time" content="2021-02-24T15:08:49.507Z">
-<meta property="article:modified_time" content="2022-05-28T14:32:29.116Z">
+<meta property="article:modified_time" content="2022-07-03T14:55:07.441Z">
 <meta property="article:author" content="sven">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://leanote.com/api/file/getImage?fileId=5a573518ab64415fdc001540">
@@ -396,8 +396,6 @@
 
 <h4 id="3、处理消息"><a href="#3、处理消息" class="headerlink" title="3、处理消息"></a>3、处理消息</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onControllerStateChanged</span><span class="params">()</span> </span>&#123; </span><br><span class="line">		mHandler.obtainMessage(MSG_CHECK_JOB).sendToTarget();</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 和上面的流程相同</span></span><br><span class="line"><span class="keyword">final</span> <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">JobHandler</span> <span class="keyword">extends</span> <span class="title">Handler</span> </span>&#123;</span><br><span class="line">		<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handleMessage</span><span class="params">(Message message)</span> </span>&#123;</span><br><span class="line">				<span class="comment">//...</span></span><br><span class="line">				<span class="keyword">case</span> MSG_CHECK_JOB:</span><br><span class="line">				     <span class="keyword">if</span> (DEBUG) &#123;</span><br><span class="line">				         Slog.d(TAG, <span class="string">&quot;MSG_CHECK_JOB&quot;</span>);</span><br><span class="line">				     &#125;</span><br><span class="line">				     removeMessages(MSG_CHECK_JOB);</span><br><span class="line">				     <span class="keyword">if</span> (mReportedActive) &#123;</span><br><span class="line">				         <span class="comment">// if jobs are currently being run, queue all ready jobs for execution.</span></span><br><span class="line">				         queueReadyJobsForExecutionLocked();</span><br><span class="line">				     &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				         <span class="comment">// Check the list of jobs and run some of them if we feel inclined.</span></span><br><span class="line">				         maybeQueueReadyJobsForExecutionLocked();</span><br><span class="line">				     &#125;</span><br><span class="line">			<span class="comment">//...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-
-
 <h3 id="5-2、JobStore-initAndGet"><a href="#5-2、JobStore-initAndGet" class="headerlink" title="5.2、JobStore.initAndGet"></a>5.2、JobStore.initAndGet</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> JobStore <span class="title">initAndGet</span><span class="params">(JobSchedulerService jobManagerService)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (sSingletonLock) &#123;</span><br><span class="line">        <span class="keyword">if</span> (sSingleton == <span class="keyword">null</span>) &#123;</span><br><span class="line">            sSingleton = <span class="keyword">new</span> JobStore(jobManagerService.getContext(),</span><br><span class="line">                    jobManagerService.getLock(), Environment.getDataDirectory());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> sSingleton;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>该方法会创建job目录以及jobs.xml文件, 以及从文件中读取所有的JobStatus。</p>
@@ -525,20 +523,20 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">74</span>
+          <span class="site-state-item-count">76</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

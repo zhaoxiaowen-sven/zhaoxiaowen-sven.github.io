@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20220528180120396.png">
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/v2-bffd85c278ba2eb0bf8ef550e9b93b4f_r.jpg">
 <meta property="article:published_time" content="2022-05-21T13:08:12.428Z">
-<meta property="article:modified_time" content="2022-05-28T14:38:06.333Z">
+<meta property="article:modified_time" content="2022-05-28T14:41:04.105Z">
 <meta property="article:author" content="sven">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://pic2.zhimg.com/v2-61b832aa9c912ffbeaec57769d166221_r.jpg">
@@ -278,7 +278,7 @@
 <ol>
 <li><code>WorkManager</code>的初始化是在app冷启动后，由<code>WorkManagerInitializer</code>这个<code>ContentProvider</code>执行</li>
 <li>初始化过程包含了对<code>Configuration/WorkManagerTaskExecutor/WorkDatabase/Schedulers/Processor</code>等的初始化。</li>
-<li><code>Schedulers</code> 用来调度任务执行，根据SDK Version 创建不同的 <code>Schedule</code>，最后再通过<code>Processor</code> 执行具体的任务。</li>
+<li><code>Schedulers</code> 用来调度任务执行，根据SDK Version 创建不同的 <code>Scheduler</code>，最后再通过<code>Processor</code> 执行具体的任务。</li>
 </ol>
 <h1 id="二、WorkRequest创建"><a href="#二、WorkRequest创建" class="headerlink" title="二、WorkRequest创建"></a>二、<code>WorkRequest</code>创建</h1><p>创建任务时，我们通常是通过<code>WorkRequestBuilder</code>来构建，</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> request6 = OneTimeWorkRequestBuilder&lt;CallBackWorker&gt;().build()</span><br></pre></td></tr></table></figure>
@@ -440,7 +440,10 @@
     <a href="/2022/05/14/Notes/Android/Jetpack/Jetpack_04_WorkManager%E4%BD%BF%E7%94%A8/" rel="prev" title="Jetpack_04_WorkManager使用">
       <i class="fa fa-chevron-left"></i> Jetpack_04_WorkManager使用
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2022/06/25/Notes/Java/Advanced/Java%E8%BF%9B%E9%98%B603_%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/" rel="next" title="Java进阶03_动态代理">
+      Java进阶03_动态代理 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -514,20 +517,20 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">74</span>
+          <span class="site-state-item-count">76</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

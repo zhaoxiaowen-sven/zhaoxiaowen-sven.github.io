@@ -39,7 +39,7 @@
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20220220192933393.png">
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200720204713384.png">
 <meta property="article:published_time" content="2020-11-22T10:20:02.802Z">
-<meta property="article:modified_time" content="2022-02-20T15:37:45.313Z">
+<meta property="article:modified_time" content="2022-06-14T00:40:55.051Z">
 <meta property="article:author" content="sven">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20200720195342044.png">
@@ -333,7 +333,7 @@
 <li>CallServerInterceptor：</li>
 </ul>
 <h2 id="3-1、RetryAndFollowUpInterceptor"><a href="#3-1、RetryAndFollowUpInterceptor" class="headerlink" title="3.1、RetryAndFollowUpInterceptor"></a>3.1、RetryAndFollowUpInterceptor</h2><p><strong>重试和重定向拦截器</strong></p>
-<p>RetryAndFollowUpInterceptor开启了一个while(true)的循环，并在循环内部完成两个重要的判定：</p>
+<p><code>RetryAndFollowUpInterceptor</code>开启了一个while(true)的循环，并在循环内部完成两个重要的判定：</p>
 <ol>
 <li><strong>当请求内部抛出异常时，判定是否需要重试</strong></li>
 <li><strong>当响应结果是3xx重定向时，构建新的请求并发送请求</strong></li>
@@ -424,7 +424,7 @@
 <img src="/pics/image-20220220195153696.png" alt="image-20220220195153696" style="zoom:33%;" />
 
 <ol>
-<li>Transmitter：建立连接的s发射器</li>
+<li>Transmitter：建立连接的发射器</li>
 <li>ExchangeFinder：请求连接获取，请求编解码实例构建</li>
 <li>Exchange：传输交换数据实现类</li>
 <li>ExchangeCodec：Http连接I/O操作上层封装类</li>
@@ -509,9 +509,9 @@
 <p>结合前面的责任链调用图可以分析出来，假如一个请求在 RetryAndFollowUpInterceptor 这个拦截器内部重试或者重定向了 N 次，那么其内部嵌套的所有拦截器也会被调用N次，同样 networkInterceptors 自定义的拦截器也会被调用 N 次。而相对的 Interceptors 则一个请求只会调用一次，所以在OkHttp的内部也将其称之为 Application Interceptor。 </p>
 <p>另外还需要注意的一点是，在执行完ConnectInterceptor之后，其实添加了自定义的网络拦截器networkInterceptors，按照顺序执行的规定，所有的networkInterceptor执行时，socket连接其实已经建立了，可以通过realChain拿到socket做一些事情了，这也就是为什么称之为network Interceptor的原因。</p>
 <h1 id="四、ConnectionPool连接池"><a href="#四、ConnectionPool连接池" class="headerlink" title="四、ConnectionPool连接池"></a>四、ConnectionPool连接池</h1><p>OkHttp通过ConnectionPool来缓存连接<code>RealConnection</code>，内部有一个connections的ArrayDeque对象就是用来保存缓存的连接池。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">ConnectionPool</span> </span>&#123;</span><br><span class="line">  <span class="keyword">final</span> RealConnectionPool delegate;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">ConnectionPool</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 默认空闲连接个数，有效时间5s</span></span><br><span class="line">    <span class="keyword">this</span>(<span class="number">5</span>, <span class="number">5</span>, TimeUnit.MINUTES);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">ConnectionPool</span><span class="params">(<span class="keyword">int</span> maxIdleConnections, <span class="keyword">long</span> keepAliveDuration, TimeUnit timeUnit)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.delegate = <span class="keyword">new</span> RealConnectionPool(maxIdleConnections, keepAliveDuration, timeUnit);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">ConnectionPool</span> </span>&#123;</span><br><span class="line">  <span class="keyword">final</span> RealConnectionPool delegate;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">ConnectionPool</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 默认空闲连接个数，有效时间5min</span></span><br><span class="line">    <span class="keyword">this</span>(<span class="number">5</span>, <span class="number">5</span>, TimeUnit.MINUTES);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">ConnectionPool</span><span class="params">(<span class="keyword">int</span> maxIdleConnections, <span class="keyword">long</span> keepAliveDuration, TimeUnit timeUnit)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.delegate = <span class="keyword">new</span> RealConnectionPool(maxIdleConnections, keepAliveDuration, timeUnit);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>RealConnectionPool</p>
+<p><code>RealConnectionPool</code></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">RealConnectionPool</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 执行清理的线程</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Executor executor = <span class="keyword">new</span> ThreadPoolExecutor(<span class="number">0</span> <span class="comment">/* corePoolSize */</span>,</span><br><span class="line">      Integer.MAX_VALUE <span class="comment">/* maximumPoolSize */</span>, <span class="number">60L</span> <span class="comment">/* keepAliveTime */</span>, TimeUnit.SECONDS,</span><br><span class="line">      <span class="keyword">new</span> SynchronousQueue&lt;&gt;(), Util.threadFactory(<span class="string">&quot;OkHttp ConnectionPool&quot;</span>, <span class="keyword">true</span>));</span><br><span class="line">	</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> maxIdleConnections;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> keepAliveDurationNs;</span><br><span class="line"> </span><br><span class="line">  <span class="comment">// 队列保存空闲连接</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">final</span> Deque&lt;RealConnection&gt; connections = <span class="keyword">new</span> ArrayDeque&lt;&gt;();</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">RealConnectionPool</span><span class="params">(<span class="keyword">int</span> maxIdleConnections, <span class="keyword">long</span> keepAliveDuration, TimeUnit timeUnit)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.maxIdleConnections = maxIdleConnections;</span><br><span class="line">    <span class="keyword">this</span>.keepAliveDurationNs = timeUnit.toNanos(keepAliveDuration);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="4-1、连接保存"><a href="#4-1、连接保存" class="headerlink" title="4.1、连接保存"></a>4.1、连接保存</h2><p><code>RealConnectionPool#put</code>，连接保存代码入口是在<code>Exchange#findConnection</code>中</p>
@@ -651,20 +651,20 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">74</span>
+          <span class="site-state-item-count">76</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
