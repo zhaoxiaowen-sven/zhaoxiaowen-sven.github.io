@@ -1934,7 +1934,7 @@
   </entry>
   <entry>
     <title>Design01_设计模式之美</title>
-    <url>/2021/02/18/Notes/Design/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%BE%8E/</url>
+    <url>/2022/12/25/Notes/Design/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B9%8B%E7%BE%8E/</url>
     <content><![CDATA[<h1 id="设计模式之美"><a href="#设计模式之美" class="headerlink" title="设计模式之美"></a>设计模式之美</h1><span id="more"></span>
 
 <p><img src="/pics/image-20200417165625730.png" alt="image-20200417165625730"></p>
@@ -2484,7 +2484,7 @@
 <p>享元模式关注的是避免创建重复对象，减少内存占用，提出不可变的部分，作为享元。</p>
 ]]></content>
       <categories>
-        <category>Designxxx</category>
+        <category>Design</category>
       </categories>
   </entry>
   <entry>
@@ -11541,7 +11541,7 @@ public static void waitToFinish() &#123;
   </entry>
   <entry>
     <title>JUC_08_Semaphore</title>
-    <url>/2021/04/09/Notes/Java/02JUC/JUC_08_Semaphore/</url>
+    <url>/2022/12/25/Notes/Java/02JUC/JUC_08_Semaphore/</url>
     <content><![CDATA[<h1 id="JUC-08-Semaphore"><a href="#JUC-08-Semaphore" class="headerlink" title="JUC_08_Semaphore"></a>JUC_08_Semaphore</h1><span id="more"></span>
 
 <p>Semaphore 用来控制同时访问共享资源的线程数量。举例：</p>
@@ -11574,9 +11574,6 @@ public static void waitToFinish() &#123;
         <category>Java</category>
         <category>JUC</category>
       </categories>
-      <tags>
-        <tag>JUC</tag>
-      </tags>
   </entry>
   <entry>
     <title>JUC_09_ReentrantReadWriteLock</title>
@@ -11686,7 +11683,7 @@ public static void waitToFinish() &#123;
   </entry>
   <entry>
     <title>JUC_10_BlockingQueue</title>
-    <url>/2021/04/09/Notes/Java/02JUC/JUC_10_BlockingQueue/</url>
+    <url>/2022/12/25/Notes/Java/02JUC/JUC_10_BlockingQueue/</url>
     <content><![CDATA[<h1 id="JUC-10-BlockingQueue"><a href="#JUC-10-BlockingQueue" class="headerlink" title="JUC_10_BlockingQueue"></a>JUC_10_BlockingQueue</h1><span id="more"></span>
 
 <p>BlockingQueue，阻塞队列，先了解几个概念。</p>
@@ -11877,9 +11874,6 @@ public static void waitToFinish() &#123;
         <category>Java</category>
         <category>JUC</category>
       </categories>
-      <tags>
-        <tag>JUC</tag>
-      </tags>
   </entry>
   <entry>
     <title>JUC_12_ThreadPoolExecutor</title>
