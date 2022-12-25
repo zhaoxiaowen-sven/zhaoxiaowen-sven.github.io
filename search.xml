@@ -1087,7 +1087,6 @@
 ]]></content>
       <categories>
         <category>Algorithm</category>
-        <category>Leetcode</category>
       </categories>
   </entry>
   <entry>
@@ -1474,11 +1473,7 @@
 ]]></content>
       <categories>
         <category>Algorithm</category>
-        <category>Leetcode</category>
       </categories>
-      <tags>
-        <tag>dp</tag>
-      </tags>
   </entry>
   <entry>
     <title>ALG_06_贪心算法</title>
@@ -1653,11 +1648,7 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">minCameraCover</span><span class="params">(TreeNode root)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 情况4</span></span><br><span class="line">    <span class="keyword">if</span> (dfs(root) == <span class="number">0</span>) &#123; <span class="comment">// root 无覆盖</span></span><br><span class="line">        result++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 0 -&gt; 不可以监视 1-&gt;有摄像头 2-&gt;能监视到</span></span><br><span class="line"><span class="comment">// 父节点有9中情况要考虑</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">dfs</span><span class="params">(TreeNode root)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (root == <span class="keyword">null</span>) &#123; <span class="comment">// 空节点认为是可覆盖</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> left = dfs(root.left); <span class="comment">// 左</span></span><br><span class="line">    <span class="keyword">int</span> right = dfs(root.right);<span class="comment">// 右</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 情况1</span></span><br><span class="line">    <span class="comment">// 左右节点都有覆盖</span></span><br><span class="line">    <span class="keyword">if</span> (left == <span class="number">2</span> &amp;&amp; right == <span class="number">2</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 情况2</span></span><br><span class="line">    <span class="comment">// left == 0 &amp;&amp; right == 0 左右节点无覆盖</span></span><br><span class="line">    <span class="comment">// left == 1 &amp;&amp; right == 0 左节点有摄像头，右节点无覆盖</span></span><br><span class="line">    <span class="comment">// left == 0 &amp;&amp; right == 1 左节点有无覆盖，右节点摄像头</span></span><br><span class="line">    <span class="comment">// left == 0 &amp;&amp; right == 2 左节点无覆盖，右节点覆盖</span></span><br><span class="line">    <span class="comment">// left == 2 &amp;&amp; right == 0 左节点覆盖，右节点无覆盖</span></span><br><span class="line">    <span class="keyword">if</span> (left == <span class="number">0</span> || right == <span class="number">0</span>) &#123;</span><br><span class="line">        result++;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 情况3</span></span><br><span class="line">    <span class="comment">// left == 1 &amp;&amp; right == 2 左节点有摄像头，右节点有覆盖</span></span><br><span class="line">    <span class="comment">// left == 2 &amp;&amp; right == 1 左节点有覆盖，右节点有摄像头</span></span><br><span class="line">    <span class="comment">// left == 1 &amp;&amp; right == 1 左右节点都有摄像头</span></span><br><span class="line">    <span class="comment">// 其他情况前段代码均已覆盖</span></span><br><span class="line">    <span class="keyword">if</span> (left == <span class="number">1</span> || right == <span class="number">1</span>) <span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 以上代码我没有使用else，主要是为了把各个分支条件展现出来，这样代码有助于读者理解</span></span><br><span class="line">    <span class="comment">// 这个 return -1 逻辑不会走到这里。</span></span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>Algorithm</category>
-        <category>Leetcode</category>
       </categories>
-      <tags>
-        <tag>greedy</tag>
-      </tags>
   </entry>
   <entry>
     <title>ALG_05_回溯</title>
@@ -1762,7 +1753,7 @@
 <h4 id="93-复原-IP-地址"><a href="#93-复原-IP-地址" class="headerlink" title="93. 复原 IP 地址"></a><a href="https://leetcode-cn.com/problems/restore-ip-addresses/">93. 复原 IP 地址</a></h4><blockquote>
 <p>给定一个只包含数字的字符串，用以表示一个 IP 地址，返回所有可能从 s 获得的 有效 IP 地址 。你可以按任何顺序返回答案。</p>
 <p>有效 IP 地址 正好由四个整数（每个整数位于 0 到 255 之间组成，且不能含有前导 0），整数之间用 ‘.’ 分隔。</p>
-<p>例如：”0.1.2.201” 和 “192.168.1.1” 是 有效 IP 地址，但是 “0.011.255.245”、”192.168.1.312” 和 “<a href="mailto:&#49;&#57;&#x32;&#x2e;&#49;&#54;&#56;&#x40;&#49;&#x2e;&#49;">&#49;&#57;&#x32;&#x2e;&#49;&#54;&#56;&#x40;&#49;&#x2e;&#49;</a>“ 是 无效 IP 地址。</p>
+<p>例如：”0.1.2.201” 和 “192.168.1.1” 是 有效 IP 地址，但是 “0.011.255.245”、”192.168.1.312” 和 “<a href="mailto:&#49;&#57;&#50;&#46;&#49;&#54;&#x38;&#x40;&#x31;&#x2e;&#x31;">&#49;&#57;&#50;&#46;&#49;&#54;&#x38;&#x40;&#x31;&#x2e;&#x31;</a>“ 是 无效 IP 地址。</p>
 </blockquote>
 <p>此题的难点在于：</p>
 <ol>
@@ -1926,11 +1917,7 @@
 ]]></content>
       <categories>
         <category>Algorithm</category>
-        <category>Leetcode</category>
       </categories>
-      <tags>
-        <tag>backtrack</tag>
-      </tags>
   </entry>
   <entry>
     <title>非暴力沟通</title>
@@ -11588,9 +11575,6 @@ public static void waitToFinish() &#123;
         <category>Java</category>
         <category>JUC</category>
       </categories>
-      <tags>
-        <tag>xxxx</tag>
-      </tags>
   </entry>
   <entry>
     <title>JUC_09_ReentrantReadWriteLock</title>
