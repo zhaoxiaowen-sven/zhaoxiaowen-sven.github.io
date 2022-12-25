@@ -9566,7 +9566,7 @@ public static void waitToFinish() &#123;
 <p>缺点：基于类的继承，那么final类和final方法一定无法通过cglib代理；也不能代理<code>private</code> 的方法</p>
 ]]></content>
       <categories>
-        <category>JAVA</category>
+        <category>Java</category>
         <category>Java进阶</category>
       </categories>
   </entry>
