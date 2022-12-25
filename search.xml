@@ -2484,7 +2484,7 @@
 <p>享元模式关注的是避免创建重复对象，减少内存占用，提出不可变的部分，作为享元。</p>
 ]]></content>
       <categories>
-        <category>Design</category>
+        <category>Designxxx</category>
       </categories>
   </entry>
   <entry>
