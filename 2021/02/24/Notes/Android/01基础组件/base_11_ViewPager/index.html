@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhaoxiaowen-sven.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="base_11_ViewPager">
+<meta property="og:type" content="article">
+<meta property="og:title" content="base_11_ViewPager">
+<meta property="og:url" content="https://zhaoxiaowen-sven.github.io/2021/02/24/Notes/Android/01%E5%9F%BA%E7%A1%80%E7%BB%84%E4%BB%B6/base_11_ViewPager/index.html">
+<meta property="og:site_name" content="Sven&#39;s blog">
+<meta property="og:description" content="base_11_ViewPager">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-02-24T15:08:49.503Z">
+<meta property="article:modified_time" content="2021-10-30T14:14:49.051Z">
+<meta property="article:author" content="sven">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://zhaoxiaowen-sven.github.io/2021/02/24/Notes/Android/01%E5%9F%BA%E7%A1%80%E7%BB%84%E4%BB%B6/base_11_ViewPager/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>base_11_ViewPager | Sven's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+      <a target="_blank" rel="noopener" href="https://github.com/zhaoxiaowen-sven" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Sven's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaowen-sven.github.io/2021/02/24/Notes/Android/01%E5%9F%BA%E7%A1%80%E7%BB%84%E4%BB%B6/base_11_ViewPager/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/sven.jpeg">
+      <meta itemprop="name" content="sven">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sven's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          base_11_ViewPager
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-02-24 23:08:49" itemprop="dateCreated datePublished" datetime="2021-02-24T23:08:49+08:00">2021-02-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E5%9F%BA%E7%A1%80/" itemprop="url" rel="index"><span itemprop="name">基础</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="base-11-ViewPager"><a href="#base-11-ViewPager" class="headerlink" title="base_11_ViewPager"></a>base_11_ViewPager</h1><span id="more"></span>
+
+<p>ViewPager作为广泛使用的控件，本文主要介绍他的各种使用方式。</p>
+<h2 id="1-viewPager-基本使用"><a href="#1-viewPager-基本使用" class="headerlink" title="1. viewPager 基本使用"></a>1. viewPager 基本使用</h2><p>   1.导入依赖<br>   2.新建Adapter文件继承自PagerAdapter<br>   3.添加view<br>1.1 布局中加入viewpager</p>
+<pre><code>&lt;android.support.v4.view.ViewPager
+    android:id=&quot;@+id/vp2&quot;
+    android:layout_weight=&quot;1&quot;
+    android:layout_width=&quot;match_parent&quot;
+    android:layout_height=&quot;0dp&quot; /&gt;
+</code></pre>
+<p>1.2 添加view 创建Adapter</p>
+<pre><code>class MyPagerAdapter extends PagerAdapter &#123;
+    private List&lt;View&gt; mViewList;
+    public MyPagerAdapter(List&lt;View&gt; viewList) &#123;
+        this.mViewList = viewList;
+    &#125;
+    @Override
+    public int getCount() &#123;
+        return mViewList == null ? 0 : mViewList.size();
+    &#125;
+    @Override
+    public boolean isViewFromObject(View view, Object object) &#123;
+        return view == object;
+    &#125;
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) &#123;
+        container.addView(mViewList.get(position));
+        return mViewList.get(position);
+    &#125;
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) &#123;
+        container.removeView(mViewList.get(position));
+    &#125;
+&#125;
+</code></pre>
+<p>1.3 调用</p>
+<pre><code>protected void onCreate(Bundle savedInstanceState) &#123;
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_vp2);
+    mViewPager = (ViewPager) findViewById(R.id.vp2);
+    bindViews();
+&#125;
+private void bindViews() &#123;
+    LayoutInflater layoutInflater = getLayoutInflater();
+    view1 = layoutInflater.inflate(R.layout.page1, null);
+    view2 = layoutInflater.inflate(R.layout.page2, null);
+    view3 = layoutInflater.inflate(R.layout.page3, null);
+    List&lt;View&gt; viewList = new ArrayList&lt;&gt;();
+    viewList = new ArrayList&lt;&gt;();
+    viewList.add(view1);
+    viewList.add(view2);
+    viewList.add(view3);
+&#125;
+</code></pre>
+<h2 id="2-ViewPager标题栏，PagerTitleStrip和PagerTabStrip"><a href="#2-ViewPager标题栏，PagerTitleStrip和PagerTabStrip" class="headerlink" title="2. ViewPager标题栏，PagerTitleStrip和PagerTabStrip"></a>2. ViewPager标题栏，PagerTitleStrip和PagerTabStrip</h2><p>2.1 将它作为子控件添加在ViewPager中</p>
+<pre><code>&lt;android.support.v4.view.ViewPager
+    android:id=&quot;@+id/vp2&quot;
+    android:layout_weight=&quot;1&quot;
+    android:layout_width=&quot;match_parent&quot;
+    android:layout_height=&quot;0dp&quot;&gt;
+    &lt;android.support.v4.view.PagerTabStrip
+        android:id=&quot;@+id/vp_strip&quot;
+        android:layout_gravity=&quot;top&quot;
+        android:layout_width=&quot;match_parent&quot;
+        android:layout_height=&quot;wrap_content&quot;&gt;
+    &lt;/android.support.v4.view.PagerTabStrip&gt;
+&lt;/android.support.v4.view.ViewPager&gt;
+</code></pre>
+<p>2.2 重写适配器的getPageTitle(int)函数来获取标题</p>
+<pre><code>mPagerTabStrip = (PagerTabStrip) findViewById(R.id.vp_strip);
+
+class MyPagerAdapter extends PagerAdapter &#123;
+...
+    @Override
+    public CharSequence getPageTitle(int position) &#123;
+        return mTitleList.get(position);
+    &#125;
+&#125;
+</code></pre>
+<p>2.3 区别：<br>    1.PagerTabStrip在当前页面下，会有一个下划线条来提示当前页面的Tab是哪个。<br>    2.PagerTabStrip的Tab是可以点击的，当用户点击某一个Tab时，当前页面就会跳转到这个页面，而PagerTitleStrip则没这个功能。   </p>
+<h2 id="3-ViewPager-Fragment"><a href="#3-ViewPager-Fragment" class="headerlink" title="3.ViewPager + Fragment"></a>3.ViewPager + Fragment</h2><h3 id="3-1-Fragment的滑动切换"><a href="#3-1-Fragment的滑动切换" class="headerlink" title="3.1 Fragment的滑动切换"></a>3.1 Fragment的滑动切换</h3><pre><code>fragmentList.add(new Fragment1());
+fragmentList.add(new Fragment2());
+fragmentList.add(new Fragment3());
+mViewPager.setAdapter(new FragPagerAdapter(getSupportFragmentManager(), fragmentList));
+for (int i = 0; i &lt; titleList.size(); i++)&#123;
+    mTabLayout.addTab(mTabLayout.newTab().setText(titleList.get(i)));
+&#125;
+</code></pre>
+<h3 id="3-2-FragmentPagerAdapter-和-FragmentStatePagerAdapter"><a href="#3-2-FragmentPagerAdapter-和-FragmentStatePagerAdapter" class="headerlink" title="3.2 FragmentPagerAdapter 和 FragmentStatePagerAdapter"></a>3.2 FragmentPagerAdapter 和 FragmentStatePagerAdapter</h3><pre><code>class FragPagerAdapter extends FragmentStatePagerAdapter &#123;
+    private List&lt;Fragment&gt; mFragmentList;
+    public FragPagerAdapter(FragmentManager fm , List&lt;Fragment&gt; fragmentList)&#123;
+        super(fm);
+        this.mFragmentList = fragmentList;
+    &#125;
+    @Override
+    public Fragment getItem(int position) &#123;
+        return mFragmentList.get(position);
+    &#125;
+    @Override
+    public int getCount() &#123;
+        return mFragmentList.size();
+    &#125;
+&#125;
+</code></pre>
+<p>使用 FragmentPagerAdapter 时，ViewPager 中的所有 Fragment 实例常驻内存，当 Fragment 变得不可见时仅仅是视图结构的销毁，即调用了 onDestroyView 方法。由于 FragmentPagerAdapter 内存消耗较大，所以适合少量静态页面的场景。</p>
+<p>使用 FragmentStatePagerAdapter 时，当 Fragment 变得不可见，不仅视图层次销毁，实例也被销毁，即调用了 onDestroyView 和 onDestroy 方法，仅仅保存 Fragment 状态。相比而言， FragmentStatePagerAdapter 内存占用较小，所以适合大量动态页面，比如我们常见的新闻列表类应用。<br><a target="_blank" rel="noopener" href="http://yifeng.studio/2016/12/23/android-fragment-and-viewpager-attentions/">http://yifeng.studio/2016/12/23/android-fragment-and-viewpager-attentions/</a></p>
+<h2 id="4-ViewPager和Tablayout联动"><a href="#4-ViewPager和Tablayout联动" class="headerlink" title="4. ViewPager和Tablayout联动"></a>4. ViewPager和Tablayout联动</h2><p>viewPager 和 tablayout关联的3种方式：</p>
+<h3 id="4-1-addOnTabSelectedListener-addOnPageChangeListener"><a href="#4-1-addOnTabSelectedListener-addOnPageChangeListener" class="headerlink" title="4.1.addOnTabSelectedListener + addOnPageChangeListener"></a>4.1.addOnTabSelectedListener + addOnPageChangeListener</h3><pre><code>mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() &#123;
+        @Override
+        public void onTabSelected(TabLayout.Tab tab) &#123;
+            mViewPager.setCurrentItem(tab.getPosition());
+        &#125;
+        @Override
+        public void onTabUnselected(TabLayout.Tab tab) &#123;
+        &#125;
+        @Override
+        public void onTabReselected(TabLayout.Tab tab) &#123;
+        &#125;
+    &#125;);
+
+mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() &#123;
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) &#123;
+        &#125;
+        @Override
+        public void onPageSelected(int position) &#123;
+            mTabLayout.getTabAt(position).select();
+        &#125;
+        @Override
+        public void onPageScrollStateChanged(int state) &#123;
+        &#125;
+    &#125;);
+</code></pre>
+<h3 id="4-2-setupWithViewPager-复写-getPageTitle"><a href="#4-2-setupWithViewPager-复写-getPageTitle" class="headerlink" title="4.2 setupWithViewPager + 复写 getPageTitle"></a>4.2 setupWithViewPager + 复写 getPageTitle</h3><p>通过setupWithViewPager将TabLayout和ViewPager建立关联，会发现之前设置的tab消失了，需要复写VpAdapter的getPageTitle</p>
+<pre><code>mTabLayout.setupWithViewPager(mViewPager);
+@Override
+public CharSequence getPageTitle(int position) &#123;
+   return mTitleList.get(position);
+&#125;
+</code></pre>
+<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/d83f10c1a765">https://www.jianshu.com/p/d83f10c1a765</a></p>
+<h3 id="4-3-addOnPageChangeListener-复写addOnTabSelectedListener"><a href="#4-3-addOnPageChangeListener-复写addOnTabSelectedListener" class="headerlink" title="4.3 addOnPageChangeListener + 复写addOnTabSelectedListener"></a>4.3 addOnPageChangeListener + 复写addOnTabSelectedListener</h3><pre><code>mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() &#123;
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) &#123;
+        mViewPager.setCurrentItem(tab.getPosition());
+    &#125;
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) &#123;
+    &#125;
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) &#123;
+    &#125;
+&#125;);
+</code></pre>
+<h2 id="5-ViewPager-轮播图"><a href="#5-ViewPager-轮播图" class="headerlink" title="5. ViewPager 轮播图"></a>5. ViewPager 轮播图</h2><p>有2种方法：<br>5.1 Integer.MAX_VALUE ???<br>再在初始化时设置当前页面为几千页(如：ViewPager.setCurrentItem(1000*data.size)),其实就是障眼法，大爷心情好的话，向前滑动几千页也不是不可能的;</p>
+<p>5.2 滑动到最左或最右时，设置滑动的index 为<br>   1，2，3 -&gt; 3, 1, 2, 3, 1</p>
+<pre><code>class MyPagerAdapter extends PagerAdapter &#123;
+    private List&lt;View&gt; mViewList;
+    public MyPagerAdapter(List&lt;View&gt; viewList) &#123;
+        this.mViewList = viewList;
+    &#125;
+    @Override
+    public int getCount() &#123;
+        return mViewList == null ? 0 : mViewList.size();
+    &#125;
+    @Override
+    public boolean isViewFromObject(View view, Object object) &#123;
+        return view == object;
+    &#125;
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) &#123;
+        View view = mViewList.get(position);
+        container.addView(view);
+        return view;
+    &#125;
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) &#123;
+        container.removeView(mViewList.get(position));
+    &#125;
+&#125;
+</code></pre>
+<p>5.3 自动循环,触摸停止<br>通过handler postdelay实现：<br>    private Runnable autoScrollRunnable = new Runnable() {</p>
+<pre><code>    @Override
+    public void run() &#123;
+        if (!stopAutoScroll) &#123;
+            int currentItem = viewPager.getCurrentItem();
+            viewPager.setCurrentItem(currentItem + 1, true);
+            handler.postDelayed(autoScrollRunnable, 4000);
+        &#125;
+    &#125;
+&#125;;
+
+
+handler.postDelayed(autoScrollRunnable, 4000);
+viewPager.setOnTouchListener(new View.OnTouchListener() &#123;
+
+   @Override
+   public boolean onTouch(View v, MotionEvent event) &#123;
+       switch (event.getAction()) &#123;
+       case MotionEvent.ACTION_DOWN:
+           stopAutoScroll = true;
+           handler.removeCallbacks(autoScrollRunnable);
+           break;
+
+       case MotionEvent.ACTION_UP:
+       case MotionEvent.ACTION_CANCEL:
+           stopAutoScroll = false;
+           handler.postDelayed(autoScrollRunnable, 4000);
+           break;
+       &#125;
+       return false;
+   &#125;
+&#125;)
+</code></pre>
+<p>3.自动循环</p>
+<p>遇到的问题：<br>java.lang.IllegalStateException: The specified child already has a parent. You must call removeView() on the child’s parent first.<br>解决：<a target="_blank" rel="noopener" href="http://blog.csdn.net/qibanxuehua/article/details/47253299">http://blog.csdn.net/qibanxuehua/article/details/47253299</a></p>
+<h2 id="6-切换动画"><a href="#6-切换动画" class="headerlink" title="6.切换动画"></a>6.切换动画</h2><p><a target="_blank" rel="noopener" href="http://blog.csdn.net/shedoor/article/details/78957852">http://blog.csdn.net/shedoor/article/details/78957852</a><br>Q:<br>The application’s PagerAdapter changed the adapter’s contents without calling PagerAdapter#notifyDataSetChanged!</p>
+<p>mTabLayout.setupWithViewPager 和 mViewPager.addOnPageChangeListener</p>
+
+    </div>
+
+    
+    
+    
+      
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>sven
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://zhaoxiaowen-sven.github.io/2021/02/24/Notes/Android/01%E5%9F%BA%E7%A1%80%E7%BB%84%E4%BB%B6/base_11_ViewPager/" title="base_11_ViewPager">https://zhaoxiaowen-sven.github.io/2021/02/24/Notes/Android/01基础组件/base_11_ViewPager/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/02/24/Notes/Android/01%E5%9F%BA%E7%A1%80%E7%BB%84%E4%BB%B6/base_08_ListView/" rel="prev" title="base_08_ListView">
+      <i class="fa fa-chevron-left"></i> base_08_ListView
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/02/24/Notes/Android/01%E5%9F%BA%E7%A1%80%E7%BB%84%E4%BB%B6/base_10_ViewPager/" rel="next" title="base_10_WebView">
+      base_10_WebView <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#base-11-ViewPager"><span class="nav-text">base_11_ViewPager</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-viewPager-%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="nav-text">1. viewPager 基本使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-ViewPager%E6%A0%87%E9%A2%98%E6%A0%8F%EF%BC%8CPagerTitleStrip%E5%92%8CPagerTabStrip"><span class="nav-text">2. ViewPager标题栏，PagerTitleStrip和PagerTabStrip</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-ViewPager-Fragment"><span class="nav-text">3.ViewPager + Fragment</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-Fragment%E7%9A%84%E6%BB%91%E5%8A%A8%E5%88%87%E6%8D%A2"><span class="nav-text">3.1 Fragment的滑动切换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-FragmentPagerAdapter-%E5%92%8C-FragmentStatePagerAdapter"><span class="nav-text">3.2 FragmentPagerAdapter 和 FragmentStatePagerAdapter</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-ViewPager%E5%92%8CTablayout%E8%81%94%E5%8A%A8"><span class="nav-text">4. ViewPager和Tablayout联动</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-addOnTabSelectedListener-addOnPageChangeListener"><span class="nav-text">4.1.addOnTabSelectedListener + addOnPageChangeListener</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-setupWithViewPager-%E5%A4%8D%E5%86%99-getPageTitle"><span class="nav-text">4.2 setupWithViewPager + 复写 getPageTitle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-addOnPageChangeListener-%E5%A4%8D%E5%86%99addOnTabSelectedListener"><span class="nav-text">4.3 addOnPageChangeListener + 复写addOnTabSelectedListener</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-ViewPager-%E8%BD%AE%E6%92%AD%E5%9B%BE"><span class="nav-text">5. ViewPager 轮播图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E5%88%87%E6%8D%A2%E5%8A%A8%E7%94%BB"><span class="nav-text">6.切换动画</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="sven"
+      src="/images/sven.jpeg">
+  <p class="site-author-name" itemprop="name">sven</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">77</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhaoxiaowen-sven" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhaoxiaowen-sven" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhaoxiaowen-sven@gmail.com" title="E-Mail → mailto:zhaoxiaowen-sven@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sven</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

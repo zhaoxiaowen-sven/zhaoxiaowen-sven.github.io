@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhaoxiaowen-sven.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="open_07_DiskLruCache原理分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="open_07_DiskLruCache">
+<meta property="og:url" content="https://zhaoxiaowen-sven.github.io/2020/12/07/Notes/Android/02%E5%BC%80%E6%BA%90/open_07_DiskLruCache/index.html">
+<meta property="og:site_name" content="Sven&#39;s blog">
+<meta property="og:description" content="open_07_DiskLruCache原理分析">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-12-07T13:52:52.401Z">
+<meta property="article:modified_time" content="2021-10-30T13:52:45.309Z">
+<meta property="article:author" content="sven">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://zhaoxiaowen-sven.github.io/2020/12/07/Notes/Android/02%E5%BC%80%E6%BA%90/open_07_DiskLruCache/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>open_07_DiskLruCache | Sven's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+      <a target="_blank" rel="noopener" href="https://github.com/zhaoxiaowen-sven" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Sven's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaowen-sven.github.io/2020/12/07/Notes/Android/02%E5%BC%80%E6%BA%90/open_07_DiskLruCache/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/sven.jpeg">
+      <meta itemprop="name" content="sven">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sven's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          open_07_DiskLruCache
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-07 21:52:52" itemprop="dateCreated datePublished" datetime="2020-12-07T21:52:52+08:00">2020-12-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E5%BC%80%E6%BA%90/" itemprop="url" rel="index"><span itemprop="name">开源</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="open-07-DiskLruCache原理分析"><a href="#open-07-DiskLruCache原理分析" class="headerlink" title="open_07_DiskLruCache原理分析"></a>open_07_DiskLruCache原理分析</h1><span id="more"></span>
+
+<h2 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h2><p>diskLruCache，顾名思义，支持Lru算法的磁盘缓存。<a target="_blank" rel="noopener" href="https://github.com/JakeWharton/DiskLruCache">github地址</a></p>
+<h2 id="二、构造方法"><a href="#二、构造方法" class="headerlink" title="二、构造方法"></a>二、构造方法</h2><p>DiskLruCache构造方法需要传入4个参数，含义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="title">DiskLruCache</span><span class="params">(File directory, <span class="keyword">int</span> appVersion, <span class="keyword">int</span> valueCount, <span class="keyword">long</span> maxSize)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.directory = directory;</span><br><span class="line">    <span class="keyword">this</span>.appVersion = appVersion;</span><br><span class="line">    <span class="keyword">this</span>.journalFile = <span class="keyword">new</span> File(directory, JOURNAL_FILE);</span><br><span class="line">    <span class="keyword">this</span>.journalFileTmp = <span class="keyword">new</span> File(directory, JOURNAL_FILE_TEMP);</span><br><span class="line">    <span class="keyword">this</span>.journalFileBackup = <span class="keyword">new</span> File(directory, JOURNAL_FILE_BACKUP);</span><br><span class="line">    <span class="keyword">this</span>.valueCount = valueCount;</span><br><span class="line">    <span class="keyword">this</span>.maxSize = maxSize;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>directory – 缓存路径</p>
+</li>
+<li><p>appVersion – 缓存版本</p>
+</li>
+<li><p>valueCount – 一个key可以对应几个值</p>
+</li>
+<li><p>maxSize – 缓存文件大小</p>
+</li>
+<li><p>redundantOpCount – 冗余操作数，避免journal文件过大的限制，冗余操作如果大于2000 &amp;&amp; 大于当前所有的缓存文件。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">journalRebuildRequired</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> redundantOpCompactThreshold = <span class="number">2000</span>;</span><br><span class="line">    <span class="keyword">return</span> redundantOpCount &gt;= redundantOpCompactThreshold </span><br><span class="line">        &amp;&amp; redundantOpCount &gt;= lruEntries.size();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>journalFile、journalFileTmp、journalFileBackup –  日志文件、临时日志文件、备份日志文件。</p>
+<p>DiskLruCache创建时，会自动创建一个journal文件，负责缓存数据的维护，journal文件中会保存DiskLrucache版本以及文件的CRUD操作。</p>
+</li>
+</ul>
+<h2 id="三、lruEntries"><a href="#三、lruEntries" class="headerlink" title="三、lruEntries"></a>三、lruEntries</h2><p>介绍日志文件读取之前，Entry和Editor对象。</p>
+<p>Entry对象保存再lruEntries中，lruEntries是一个LinkedHashMap，记录着缓存文件（dirty或clean）的信息，文件名、大小，写入状态等等。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> LinkedHashMap&lt;String, Entry&gt; lruEntries =</span><br><span class="line">    <span class="keyword">new</span> LinkedHashMap&lt;String, Entry&gt;(<span class="number">0</span>, <span class="number">0.75f</span>, <span class="keyword">true</span>);</span><br></pre></td></tr></table></figure>
+
+<p>accessOrder = true，LRU算法是通过LinkedHashMap实现的。看一下Entry对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String key; <span class="comment">//文件名，也是lruEntries的key</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Lengths of this entry&#x27;s files.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span>[] lengths; <span class="comment">//文件长度 对应clean记录的最后的数字，通常lengths数组的长度都为1；若同一个key若有多条记录，则大于1。</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * True if this entry has ever been published. </span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> readable; <span class="comment">//标记是否可读，只有clean的记录才可读</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The ongoing edit or null if this entry is not being edited.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Editor currentEditor; <span class="comment">//正在写入的记录，也用来区分clean和dirty数据</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The sequence number of the most recently committed edit to this entry.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> sequenceNumber; <span class="comment">//日志提交的次数</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// clean文件名的格式：key+“.”+index</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> File <span class="title">getCleanFile</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> File(directory, key + <span class="string">&quot;.&quot;</span> + i);</span><br><span class="line">   	&#125;</span><br><span class="line">    <span class="comment">// dirty文件名:key+“.”+index + &quot;.tmp&quot;</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> File <span class="title">getDirtyFile</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">new</span> File(directory, key + <span class="string">&quot;.&quot;</span> + i + <span class="string">&quot;.tmp&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、journal文件"><a href="#四、journal文件" class="headerlink" title="四、journal文件"></a>四、journal文件</h2><p>journal文件格式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cat journal</span><br><span class="line">libcore.io.DiskLruCache</span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">8960</span></span><br><span class="line"><span class="number">1</span></span><br><span class="line"></span><br><span class="line">DIRTY bda205e0e3cec1055dc7a5e91960cab5</span><br><span class="line">CLEAN bda205e0e3cec1055dc7a5e91960cab5 <span class="number">5830</span></span><br><span class="line">READ bda205e0e3cec1055dc7a5e91960cab5</span><br><span class="line">REMOVE bda205e0e3cec1055dc7a5e91960cab5</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-1-文件头部分"><a href="#4-1-文件头部分" class="headerlink" title="4.1 文件头部分"></a>4.1 文件头部分</h3><ul>
+<li>第一行是个固定的字符串“libcore.io.DiskLruCache”，标志着我们使用的是DiskLruCache技术。</li>
+<li>第二行是DiskLruCache的版本号，这个值是恒为1的。</li>
+<li>第三行是应用程序的版本号，我们在open()方法里传入的版本号是什么这里就会显示什么。</li>
+<li>第四行是valueCount，一个key可以对应几个值。</li>
+<li>第五行是一个空行。</li>
+</ul>
+<h3 id="4-2-内容部分"><a href="#4-2-内容部分" class="headerlink" title="4.2 内容部分"></a>4.2 内容部分</h3><p>  journal 文件的内容部分记录着缓存文件的操作。</p>
+<ul>
+<li><p>DIRTY表示写入记录，写入成功后面会紧跟一条clean记录，失败会紧跟一条REMOVE记录。也就是说，每一行DIRTY的key，后面都应该有一行对应的CLEAN或者REMOVE的记录，否则这条数据就是“脏”的，会被自动删除掉。</p>
+</li>
+<li><p>REMOVE记录除了写入失败的场景，手动调用remove时也会写入一条remove记录。</p>
+</li>
+<li><p>CLEAN记录的最后还有一串数字，表示的是文件的大小，单位是字节。</p>
+</li>
+<li><p>READ记录，每当我们调用get()方法去读取一条缓存数据时，就会向journal文件中写入一条READ记录。</p>
+</li>
+</ul>
+<h2 id="五、获取"><a href="#五、获取" class="headerlink" title="五、获取"></a>五、获取</h2><p>DiskLruCache的构造方法是私有的，没有向外暴露，获取DiskLruCache需要通过open 方法获取。</p>
+<h3 id="5-1-open"><a href="#5-1-open" class="headerlink" title="5.1 open"></a>5.1 open</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> DiskLruCache <span class="title">open</span><span class="params">(File directory, <span class="keyword">int</span> appVersion, <span class="keyword">int</span> valueCount, <span class="keyword">long</span> maxSize)</span></span></span><br><span class="line"><span class="function">    <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (maxSize &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;maxSize &lt;= 0&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (valueCount &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;valueCount &lt;= 0&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// If a bkp file exists, use it instead.</span></span><br><span class="line">    File backupFile = <span class="keyword">new</span> File(directory, JOURNAL_FILE_BACKUP);</span><br><span class="line">    <span class="keyword">if</span> (backupFile.exists()) &#123;</span><br><span class="line">        File journalFile = <span class="keyword">new</span> File(directory, JOURNAL_FILE);</span><br><span class="line">        <span class="comment">// If journal file also exists just delete backup file.</span></span><br><span class="line">        <span class="keyword">if</span> (journalFile.exists()) &#123;</span><br><span class="line">            backupFile.delete();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            renameTo(backupFile, journalFile, <span class="keyword">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Prefer to pick up where we left off.</span></span><br><span class="line">    DiskLruCache cache = <span class="keyword">new</span> DiskLruCache(directory, appVersion, valueCount, maxSize);</span><br><span class="line">    <span class="keyword">if</span> (cache.journalFile.exists()) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            cache.readJournal();</span><br><span class="line">            cache.processJournal();</span><br><span class="line">            <span class="keyword">return</span> cache;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException journalIsCorrupt) &#123;</span><br><span class="line">            System.out</span><br><span class="line">                .println(<span class="string">&quot;DiskLruCache &quot;</span></span><br><span class="line">                    + directory</span><br><span class="line">                    + <span class="string">&quot; is corrupt: &quot;</span></span><br><span class="line">                    + journalIsCorrupt.getMessage()</span><br><span class="line">                    + <span class="string">&quot;, removing&quot;</span>);</span><br><span class="line">            cache.delete();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Create a new empty cache.</span></span><br><span class="line">    directory.mkdirs();</span><br><span class="line">    cache = <span class="keyword">new</span> DiskLruCache(directory, appVersion, valueCount, maxSize);</span><br><span class="line">    cache.rebuildJournal();</span><br><span class="line">    <span class="keyword">return</span> cache;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>主要分为3个流程：</p>
+<p>10 - 15行，存在journal备份文件时，若journal文件也存在，删除备份文件；否则将备份文件做为journal文件。</p>
+<p>23 - 38行，读取journal文件，初始化lruEntries数组，将标记为clean的文件信息（包括文件名，大小等等）加载到内存lruEntries中；将标记为dirty的文件删除。</p>
+<p>41 - 41行, journal 文件不存在，重新创建缓存。</p>
+<h3 id="5-2-readJournal"><a href="#5-2-readJournal" class="headerlink" title="5.2 readJournal"></a>5.2 readJournal</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">readJournal</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    StrictLineReader reader = <span class="keyword">new</span> StrictLineReader(<span class="keyword">new</span> FileInputStream(journalFile), Util.US_ASCII);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">       <span class="comment">//  读取文件头</span></span><br><span class="line">        String magic = reader.readLine();</span><br><span class="line">        String version = reader.readLine();</span><br><span class="line">        String appVersionString = reader.readLine();</span><br><span class="line">        String valueCountString = reader.readLine();</span><br><span class="line">        String blank = reader.readLine();</span><br><span class="line">        <span class="keyword">if</span> (!MAGIC.equals(magic)</span><br><span class="line">            || !VERSION_1.equals(version)</span><br><span class="line">            || !Integer.toString(appVersion).equals(appVersionString)</span><br><span class="line">            || !Integer.toString(valueCount).equals(valueCountString)</span><br><span class="line">            || !<span class="string">&quot;&quot;</span>.equals(blank)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">&quot;unexpected journal header: [&quot;</span> + magic + <span class="string">&quot;, &quot;</span> + version + <span class="string">&quot;, &quot;</span></span><br><span class="line">                + valueCountString + <span class="string">&quot;, &quot;</span> + blank + <span class="string">&quot;]&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> lineCount = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">            	<span class="comment">// 读取文件内容部分</span></span><br><span class="line">                readJournalLine(reader.readLine());</span><br><span class="line">                lineCount++;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (EOFException endOfJournal) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        redundantOpCount = lineCount - lruEntries.size();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// If we ended on a truncated line, rebuild the journal before appending to it.</span></span><br><span class="line">        <span class="keyword">if</span> (reader.hasUnterminatedLine()) &#123;</span><br><span class="line">            rebuildJournal();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            journalWriter = <span class="keyword">new</span> BufferedWriter(<span class="keyword">new</span> OutputStreamWriter(</span><br><span class="line">                <span class="keyword">new</span> FileOutputStream(journalFile, <span class="keyword">true</span>), Util.US_ASCII));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        Util.closeQuietly(reader);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>5 - 17行：读取jorunal文件头部分，如果文件信息和初始化传入的信息不存在，直接抛出异常在open中将当前journal文件删除，重新创建</p>
+<p>20 - 28行：读取现有journal文件。</p>
+<p>32- 36行：如果行尾返回-1，重新构建下文件；否则将已有信息写入journal文件。</p>
+<h4 id="5-2-1-readJournalLine"><a href="#5-2-1-readJournalLine" class="headerlink" title="5.2.1 readJournalLine"></a>5.2.1 readJournalLine</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// journal日志格式</span></span><br><span class="line">DIRTY bda205e0e3cec1055dc7a5e91960cab5</span><br><span class="line">CLEAN bda205e0e3cec1055dc7a5e91960cab5 <span class="number">5830</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">readJournalLine</span><span class="params">(String line)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> firstSpace = line.indexOf(<span class="string">&#x27; &#x27;</span>);</span><br><span class="line">    <span class="keyword">if</span> (firstSpace == -<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">&quot;unexpected journal line: &quot;</span> + line);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> keyBegin = firstSpace + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">int</span> secondSpace = line.indexOf(<span class="string">&#x27; &#x27;</span>, keyBegin);</span><br><span class="line">    <span class="keyword">final</span> String key;</span><br><span class="line">    <span class="comment">// key值为文件名</span></span><br><span class="line">    <span class="keyword">if</span> (secondSpace == -<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="comment">// 非clean记录，key值为第一个空格到行尾</span></span><br><span class="line">        key = line.substring(keyBegin);</span><br><span class="line">        <span class="comment">// remove 记录处理</span></span><br><span class="line">        <span class="keyword">if</span> (firstSpace == REMOVE.length() &amp;&amp; line.startsWith(REMOVE)) &#123;</span><br><span class="line">            lruEntries.remove(key);</span><br><span class="line">            <span class="comment">// 注意这里会return，也就是说初始化时remove记录不添加到lruEntries中，否则后面会崩掉</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 对于clean记录，key值，第一个空格到第二个空格间</span></span><br><span class="line">        key = line.substring(keyBegin, secondSpace);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Entry entry = lruEntries.get(key);</span><br><span class="line">    <span class="keyword">if</span> (entry == <span class="keyword">null</span>) &#123;</span><br><span class="line">        entry = <span class="keyword">new</span> Entry(key);</span><br><span class="line">        lruEntries.put(key, entry);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (secondSpace != -<span class="number">1</span> &amp;&amp; firstSpace == CLEAN.length() &amp;&amp; line.startsWith(CLEAN)) &#123;</span><br><span class="line">       <span class="comment">//clean记录处理：</span></span><br><span class="line">       <span class="comment">// 1.读取有多少个记录长度</span></span><br><span class="line">       <span class="comment">// 2.标记readable为true </span></span><br><span class="line">       <span class="comment">// 3.currentEditor 标记为null </span></span><br><span class="line">       <span class="comment">// 4.设置长度数组</span></span><br><span class="line">        String[] parts = line.substring(secondSpace + <span class="number">1</span>).split(<span class="string">&quot; &quot;</span>);</span><br><span class="line">        entry.readable = <span class="keyword">true</span>;</span><br><span class="line">        entry.currentEditor = <span class="keyword">null</span>;</span><br><span class="line">        entry.setLengths(parts);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (secondSpace == -<span class="number">1</span> &amp;&amp; firstSpace == DIRTY.length() &amp;&amp; line.startsWith(DIRTY)) &#123;</span><br><span class="line">     <span class="comment">//dirty 记录给currentEditor赋值</span></span><br><span class="line">        entry.currentEditor = <span class="keyword">new</span> Editor(entry);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (secondSpace == -<span class="number">1</span> &amp;&amp; firstSpace == READ.length() &amp;&amp; line.startsWith(READ)) &#123;</span><br><span class="line">        <span class="comment">// This work was already done by calling lruEntries.get().</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">&quot;unexpected journal line: &quot;</span> + line);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>7 - 18行：解析记录的类型和文件名，并将remove记录从lruEntries中删除</p>
+<p>28 - 48行：将clean、dirty等记录加到lruEntries中</p>
+<h4 id="5-2-2-processJournal"><a href="#5-2-2-processJournal" class="headerlink" title="5.2.2 processJournal"></a>5.2.2 processJournal</h4><p>processJournal会继续对上一步加入到lruEntries中的数据进行处理。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">private void processJournal() throws IOException &#123;</span><br><span class="line">    deleteIfExists(journalFileTmp);</span><br><span class="line">    for (Iterator&lt;Entry&gt; i = lruEntries.values().iterator(); i.hasNext(); ) &#123;</span><br><span class="line">        Entry entry = i.next();</span><br><span class="line">        // 1.计算所有cleanfile的大小</span><br><span class="line">        if (entry.currentEditor == null) &#123;</span><br><span class="line">            for (int t = 0; t &lt; valueCount; t++) &#123;</span><br><span class="line">                size += entry.lengths[t];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">        // 2.删除所有脏数据</span><br><span class="line">            entry.currentEditor = null;</span><br><span class="line">            for (int t = 0; t &lt; valueCount; t++) &#123;</span><br><span class="line">                deleteIfExists(entry.getCleanFile(t));//?</span><br><span class="line">                deleteIfExists(entry.getDirtyFile(t));</span><br><span class="line">            &#125;</span><br><span class="line">            i.remove();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>6 - 8行：统计所有clean数据的大小，也就是当前缓存数据的大小</p>
+<p>12 - 13行：删除孤立的dirty数据，clean和dirty记录是配对出现的，且上一步中clean在dirty数据之后，所以currentEditor此时一定为null。    </p>
+<h3 id="5-3-rebuildJournal"><a href="#5-3-rebuildJournal" class="headerlink" title="5.3 rebuildJournal"></a>5.3 rebuildJournal</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">rebuildJournal</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (journalWriter != <span class="keyword">null</span>) &#123;</span><br><span class="line">        journalWriter.close();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Writer writer = <span class="keyword">new</span> BufferedWriter(</span><br><span class="line">        <span class="keyword">new</span> OutputStreamWriter(<span class="keyword">new</span> FileOutputStream(journalFileTmp), Util.US_ASCII));</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        writer.write(MAGIC);</span><br><span class="line">        writer.write(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">        writer.write(VERSION_1);</span><br><span class="line">        writer.write(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">        writer.write(Integer.toString(appVersion));</span><br><span class="line">        writer.write(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">        writer.write(Integer.toString(valueCount));</span><br><span class="line">        writer.write(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line">        writer.write(<span class="string">&quot;\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (Entry entry : lruEntries.values()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (entry.currentEditor != <span class="keyword">null</span>) &#123;</span><br><span class="line">                writer.write(DIRTY + <span class="string">&#x27; &#x27;</span> + entry.key + <span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                writer.write(CLEAN + <span class="string">&#x27; &#x27;</span> + entry.key + entry.getLengths() + <span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        writer.close();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (journalFile.exists()) &#123;</span><br><span class="line">        renameTo(journalFile, journalFileBackup, <span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    renameTo(journalFileTmp, journalFile, <span class="keyword">false</span>);</span><br><span class="line">    journalFileBackup.delete();</span><br><span class="line"></span><br><span class="line">    journalWriter = <span class="keyword">new</span> BufferedWriter(</span><br><span class="line">        <span class="keyword">new</span> OutputStreamWriter(<span class="keyword">new</span> FileOutputStream(journalFile, <span class="keyword">true</span>), Util.US_ASCII));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>6 - 17行：创建journal临时文件，写journal文件头信息。</p>
+<p>19 - 20行：将lruEntries里的所有信息写入到journal,tmp中。</p>
+<p>30 - 34行:  处理journal文件，防止当次写入过程中出现异常，避免journal文件丢失。主要过程：1.将当前的journal重命名为备份文件；2.将临时文件命名为journal文件。3.将信息都写入journal文件。</p>
+<h2 id="六、写入"><a href="#六、写入" class="headerlink" title="六、写入"></a>六、写入</h2><p>一个标准的写入操作如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">DiskLruCache.Editor editor = <span class="keyword">null</span>;</span><br><span class="line">Writer bw = <span class="keyword">null</span>;</span><br><span class="line">key = FileKeyGenerator.hashKeyForDisk(key);</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">	editor = getDiskCache().edit(key);</span><br><span class="line">	OutputStream os = editor.newOutputStream(<span class="number">0</span>);</span><br><span class="line">	bw = <span class="keyword">new</span> OutputStreamWriter(os);</span><br><span class="line">	bw.write(value);</span><br><span class="line">	bw.flush();</span><br><span class="line">	editor.commit();</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">	...</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      CloseUtils.closeIO(bw);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">synchronized</span> DiskLruCache <span class="title">getDiskCache</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (mDiskLruCache == <span class="keyword">null</span>) &#123;</span><br><span class="line">		mDiskLruCache = DiskLruCache.open(mDirectory, APP_VERSION, VALUE_COUNT, mFileSize);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> mDiskLruCache;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-1-DiskLruCache-edit"><a href="#6-1-DiskLruCache-edit" class="headerlink" title="6.1 DiskLruCache.edit"></a>6.1 DiskLruCache.edit</h3><p>获取editor对象，进行写入操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">synchronized</span> Editor <span class="title">edit</span><span class="params">(String key, <span class="keyword">long</span> expectedSequenceNumber)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    checkNotClosed();</span><br><span class="line">    validateKey(key);</span><br><span class="line">    Entry entry = lruEntries.get(key);</span><br><span class="line">    <span class="keyword">if</span> (expectedSequenceNumber != ANY_SEQUENCE_NUMBER &amp;&amp; (entry == <span class="keyword">null</span></span><br><span class="line">        || entry.sequenceNumber != expectedSequenceNumber)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>; <span class="comment">// Snapshot is stale.</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (entry == <span class="keyword">null</span>) &#123;</span><br><span class="line">        entry = <span class="keyword">new</span> Entry(key);</span><br><span class="line">        lruEntries.put(key, entry); <span class="comment">// put 到lruEntries </span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (entry.currentEditor != <span class="keyword">null</span>) &#123; <span class="comment">//editor != null，说明正在被写入</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>; <span class="comment">// Another edit is in progress.</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 走到这里有2种可能，新增一条记录或者更新现有的记录</span></span><br><span class="line">    Editor editor = <span class="keyword">new</span> Editor(entry);</span><br><span class="line">    entry.currentEditor = editor;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Flush the journal before creating files to prevent file leaks.</span></span><br><span class="line">    journalWriter.write(DIRTY + <span class="string">&#x27; &#x27;</span> + key + <span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">    journalWriter.flush();</span><br><span class="line">    <span class="keyword">return</span> editor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第3行：验证key，必须是字母、数字、下划线、横线（-）组成，且长度在1-120之间。</p>
+<p>9 - 17行：创建一个entry，如果editor 不为空，说明正在被写入。</p>
+<p>20 - 23行：journal中写入一条DIRTY记录，并将editor对象返回。</p>
+<h3 id="6-2-Editor"><a href="#6-2-Editor" class="headerlink" title="6.2 Editor"></a>6.2 Editor</h3><p>Editor对象是DiskLruCache写入数据时提供给调用者进行写入操作的对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Editor</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Entry entry; <span class="comment">// </span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span>[] written; <span class="comment">// 同一个key多个值的可写状态，只有dirty是才是可写的</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> hasErrors;<span class="comment">//io过程是否出了错</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> committed;<span class="comment">//标记是否提交</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>再看一下写入的过程</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">   OutputStream os = editor.newOutputStream(<span class="number">0</span>);</span><br><span class="line">bw = <span class="keyword">new</span> OutputStreamWriter(os);</span><br><span class="line">bw.write(value);</span><br><span class="line">bw.flush(); <span class="comment">//一定要刷新，否则文件没有大小</span></span><br><span class="line">editor.commit();</span><br></pre></td></tr></table></figure>
+
+<h4 id="6-2-1-editor-newOutputStream"><a href="#6-2-1-editor-newOutputStream" class="headerlink" title="6.2.1 editor.newOutputStream"></a>6.2.1 editor.newOutputStream</h4><p>将dirty文件和FaultHidingOutputStream绑定，向文件中写缓存。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> OutputStream <span class="title">newOutputStream</span><span class="params">(<span class="keyword">int</span> index)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (index &lt; <span class="number">0</span> || index &gt;= valueCount) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;Expected index &quot;</span> + index + <span class="string">&quot; to &quot;</span></span><br><span class="line">            + <span class="string">&quot;be greater than 0 and less than the maximum value count &quot;</span></span><br><span class="line">            + <span class="string">&quot;of &quot;</span> + valueCount);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">synchronized</span> (DiskLruCache.<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (entry.currentEditor != <span class="keyword">this</span>) &#123; <span class="comment">// entry和editor是不是匹配的</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!entry.readable) &#123; <span class="comment">// dirty记录设置为可读</span></span><br><span class="line">            written[index] = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        File dirtyFile = entry.getDirtyFile(index); <span class="comment">//获取dirty文件，就是edit是创建的</span></span><br><span class="line">        FileOutputStream outputStream;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            outputStream = <span class="keyword">new</span> FileOutputStream(dirtyFile);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">            <span class="comment">// Attempt to recreate the cache directory.</span></span><br><span class="line">            directory.mkdirs();</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                outputStream = <span class="keyword">new</span> FileOutputStream(dirtyFile);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (FileNotFoundException e2) &#123;</span><br><span class="line">                <span class="comment">// We are unable to recover. Silently eat the writes.</span></span><br><span class="line">                <span class="keyword">return</span> NULL_OUTPUT_STREAM;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> FaultHidingOutputStream(outputStream);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>28行：editor.newOutputStream创建的是一个FaultHidingOutputStream，如果write过程中出现IOException，hasErrors会被置为true。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">FaultHidingOutputStream</span> <span class="keyword">extends</span> <span class="title">FilterOutputStream</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">FaultHidingOutputStream</span><span class="params">(OutputStream out)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(out);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">write</span><span class="params">(<span class="keyword">int</span> oneByte)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            out.write(oneByte);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            hasErrors = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">write</span><span class="params">(<span class="keyword">byte</span>[] buffer, <span class="keyword">int</span> offset, <span class="keyword">int</span> length)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            out.write(buffer, offset, length);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            hasErrors = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="6-2-2-editor-commit"><a href="#6-2-2-editor-commit" class="headerlink" title="6.2.2 editor.commit"></a>6.2.2 editor.commit</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">commit</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (hasErrors) &#123;</span><br><span class="line">        completeEdit(<span class="keyword">this</span>, <span class="keyword">false</span>);</span><br><span class="line">        remove(entry.key); <span class="comment">// The previous entry is stale.</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        completeEdit(<span class="keyword">this</span>, <span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    committed = <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>写入过程出现异常hasError == true，就删除这条数据，否则就说明写入成功，那么hasError指的是什么呢？回头看下写入的过程，秘密就在editor.newOutputStream(0)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">OutputStream os = editor.newOutputStream(<span class="number">0</span>);</span><br><span class="line">bw = <span class="keyword">new</span> OutputStreamWriter(os);</span><br><span class="line">bw.write(value);</span><br><span class="line">bw.flush();</span><br></pre></td></tr></table></figure>
+
+<p>第3行调用write操作其实调用的是editor.newOutputStream(0).write。</p>
+<h4 id="6-2-3-completeEdit"><a href="#6-2-3-completeEdit" class="headerlink" title="6.2.3 completeEdit"></a>6.2.3 completeEdit</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">completeEdit</span><span class="params">(Editor editor, <span class="keyword">boolean</span> success)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    Entry entry = editor.entry;</span><br><span class="line">    <span class="keyword">if</span> (entry.currentEditor != editor) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// If this edit is creating the entry for the first time, every index must have a value.</span></span><br><span class="line">    <span class="keyword">if</span> (success &amp;&amp; !entry.readable) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; valueCount; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!editor.written[i]) &#123;</span><br><span class="line">                editor.abort();</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">&quot;Newly created entry didn&#x27;t create value for index &quot;</span> + i);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (!entry.getDirtyFile(i).exists()) &#123;</span><br><span class="line">                editor.abort();</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; valueCount; i++) &#123;</span><br><span class="line">        File dirty = entry.getDirtyFile(i);</span><br><span class="line">        <span class="keyword">if</span> (success) &#123;</span><br><span class="line">            <span class="keyword">if</span> (dirty.exists()) &#123;</span><br><span class="line">                File clean = entry.getCleanFile(i);</span><br><span class="line">                dirty.renameTo(clean);</span><br><span class="line">                <span class="keyword">long</span> oldLength = entry.lengths[i];</span><br><span class="line">                <span class="keyword">long</span> newLength = clean.length();</span><br><span class="line">                entry.lengths[i] = newLength;</span><br><span class="line">                size = size - oldLength + newLength;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            deleteIfExists(dirty);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    redundantOpCount++;<span class="comment">//记录日志文件的长度</span></span><br><span class="line">    entry.currentEditor = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (entry.readable | success) &#123;</span><br><span class="line">        entry.readable = <span class="keyword">true</span>;</span><br><span class="line">        journalWriter.write(CLEAN + <span class="string">&#x27; &#x27;</span> + entry.key + entry.getLengths() + <span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">        <span class="keyword">if</span> (success) &#123;</span><br><span class="line">            entry.sequenceNumber = nextSequenceNumber++;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        lruEntries.remove(entry.key);</span><br><span class="line">        journalWriter.write(REMOVE + <span class="string">&#x27; &#x27;</span> + entry.key + <span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    journalWriter.flush();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (size &gt; maxSize || journalRebuildRequired()) &#123;</span><br><span class="line">        executorService.submit(cleanupCallable);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>8 - 19行：首次创建时：1.如果有多个记录，那么每一个记录都必须有值，否则抛出异常；2.写入的文件是否存在，若不存在，则删除。</p>
+<p>21 - 35行：将dirty文件重命名为clean文件；更新clean文件的长度和所有文件的大小。</p>
+<p>39 - 49行：写入成功，journal中插入一条成功的记录；否则插入remove记录。</p>
+<p>51 - 53行:  大小超过阈值或者需要重建时，重新整理journal文件。</p>
+<h2 id="七、读取"><a href="#七、读取" class="headerlink" title="七、读取"></a>七、读取</h2><p>一个标准的读取流程如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">InputStream inputStream = <span class="keyword">null</span>;</span><br><span class="line">ByteArrayOutputStream outStream = <span class="keyword">null</span>;</span><br><span class="line">key = FileKeyGenerator.hashKeyForDisk(key);</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    DiskLruCache.Snapshot snapshot = getDiskCache().get(key);</span><br><span class="line">    <span class="keyword">if</span> (snapshot == <span class="keyword">null</span>) &#123;</span><br><span class="line">        Log.e(<span class="string">&quot;TAG&quot;</span>, <span class="string">&quot;Not find entry from disk , or entry.readable = false&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    inputStream = snapshot.getInputStream(<span class="number">0</span>);</span><br><span class="line">    outStream = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">    <span class="keyword">byte</span>[] data = <span class="keyword">new</span> <span class="keyword">byte</span>[BUFFER_SIZE];</span><br><span class="line">    <span class="keyword">int</span> count = -<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span> ((count = inputStream.read(data, <span class="number">0</span>, BUFFER_SIZE)) != -<span class="number">1</span>) &#123;</span><br><span class="line">        outStream.write(data, <span class="number">0</span>, count);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> String(outStream.toByteArray());</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    Log.e(TAG, <span class="string">&quot;readFromDisk&quot;</span>, e);</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    CloseUtils.closeIO(inputStream, outStream);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-1-DiskLruCache-get"><a href="#7-1-DiskLruCache-get" class="headerlink" title="7.1 DiskLruCache.get"></a>7.1 DiskLruCache.get</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> Snapshot <span class="title">get</span><span class="params">(String key)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    checkNotClosed();</span><br><span class="line">    validateKey(key);</span><br><span class="line">    Entry entry = lruEntries.get(key);</span><br><span class="line">    <span class="keyword">if</span> (entry == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!entry.readable) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Open all streams eagerly to guarantee that we see a single published</span></span><br><span class="line">    <span class="comment">// snapshot. If we opened streams lazily then the streams could come</span></span><br><span class="line">    <span class="comment">// from different edits.</span></span><br><span class="line">    InputStream[] ins = <span class="keyword">new</span> InputStream[valueCount];</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; valueCount; i++) &#123;</span><br><span class="line">            ins[i] = <span class="keyword">new</span> FileInputStream(entry.getCleanFile(i));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">        <span class="comment">// A file must have been deleted manually!</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; valueCount; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (ins[i] != <span class="keyword">null</span>) &#123;</span><br><span class="line">                Util.closeQuietly(ins[i]);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    redundantOpCount++;</span><br><span class="line">    journalWriter.append(READ + <span class="string">&#x27; &#x27;</span> + key + <span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">    <span class="keyword">if</span> (journalRebuildRequired()) &#123;</span><br><span class="line">        executorService.submit(cleanupCallable);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Snapshot(key, entry.sequenceNumber, ins, entry.lengths);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>get方法会返回一个SnapShot（快照）对象，对应是key的Entry对象。获取过程如下：</p>
+<p>1.判断lruEntries是否存在且可读(clean的记录才是可读的)，从entry中获取clean文件的对应的InputStream</p>
+<p>2.冗余记录 ++ ，journal中增加一条read记录，判断下是否要整理</p>
+<p>3.返回snapShot对象</p>
+<h3 id="7-2-Snapshot"><a href="#7-2-Snapshot" class="headerlink" title="7.2 Snapshot"></a>7.2 Snapshot</h3><p>Snapshot 中保存着对应key的entry对象及其文件的inputStream，用于上层读取，SnapShot返回数据对象有2个api：</p>
+<ul>
+<li><p>Snapshot.getInputStream返回的是一个inputStream对象</p>
+</li>
+<li><p>Snapshot.getString 返回String对象，内部也是调用了getInputStream对象。</p>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Snapshot</span> <span class="keyword">implements</span> <span class="title">Closeable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String key;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span> sequenceNumber;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> InputStream[] ins;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">long</span>[] lengths;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Snapshot</span><span class="params">(String key, <span class="keyword">long</span> sequenceNumber, InputStream[] ins, <span class="keyword">long</span>[] lengths)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.key = key;</span><br><span class="line">        <span class="keyword">this</span>.sequenceNumber = sequenceNumber;</span><br><span class="line">        <span class="keyword">this</span>.ins = ins;</span><br><span class="line">        <span class="keyword">this</span>.lengths = lengths;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns the unbuffered stream with the value for &#123;<span class="doctag">@code</span> index&#125;.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> InputStream <span class="title">getInputStream</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> ins[index];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns the string value for &#123;<span class="doctag">@code</span> index&#125;.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getString</span><span class="params">(<span class="keyword">int</span> index)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> inputStreamToString(getInputStream(index));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns the byte length of the value for &#123;<span class="doctag">@code</span> index&#125;.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">getLength</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> lengths[index];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (InputStream in : ins) &#123;</span><br><span class="line">            Util.closeQuietly(in);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="八、其他方法"><a href="#八、其他方法" class="headerlink" title="八、其他方法"></a>八、其他方法</h2><h3 id="8-1-remove方法"><a href="#8-1-remove方法" class="headerlink" title="8.1 remove方法"></a>8.1 remove方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">boolean</span> <span class="title">remove</span><span class="params">(String key)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    checkNotClosed();</span><br><span class="line">    validateKey(key);</span><br><span class="line">    Entry entry = lruEntries.get(key);</span><br><span class="line">    <span class="keyword">if</span> (entry == <span class="keyword">null</span> || entry.currentEditor != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; valueCount; i++) &#123;</span><br><span class="line">        File file = entry.getCleanFile(i);</span><br><span class="line">        <span class="keyword">if</span> (file.exists() &amp;&amp; !file.delete()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">&quot;failed to delete &quot;</span> + file);</span><br><span class="line">        &#125;</span><br><span class="line">        size -= entry.lengths[i];</span><br><span class="line">        entry.lengths[i] = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    redundantOpCount++;</span><br><span class="line">    journalWriter.append(REMOVE + <span class="string">&#x27; &#x27;</span> + key + <span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line">    lruEntries.remove(key);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (journalRebuildRequired()) &#123;</span><br><span class="line">        executorService.submit(cleanupCallable);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果实体存在且不在被编辑，就可以直接进行删除，然后写入一条REMOVE记录。</p>
+<h3 id="8-2-close方法"><a href="#8-2-close方法" class="headerlink" title="8.2 close方法"></a>8.2 close方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (journalWriter == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>; <span class="comment">// Already closed.</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (Entry entry : <span class="keyword">new</span> ArrayList&lt;Entry&gt;(lruEntries.values())) &#123;</span><br><span class="line">        <span class="keyword">if</span> (entry.currentEditor != <span class="keyword">null</span>) &#123;</span><br><span class="line">            entry.currentEditor.abort();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    trimToSize();</span><br><span class="line">    journalWriter.close();</span><br><span class="line">    journalWriter = <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>与open对应，手动关闭缓存。关闭时若还有正在编辑的数据，直接abort掉，最后关闭journalWriter。</p>
+<p>trimToSize，size超过阈值后，从lruEntries第一个元素开始删除，直到小于maxSize</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">trimToSize</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (size &gt; maxSize) &#123;</span><br><span class="line">        Map.Entry&lt;String, Entry&gt; toEvict = lruEntries.entrySet().iterator().next();</span><br><span class="line">        remove(toEvict.getKey());</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="8-3-abort方法"><a href="#8-3-abort方法" class="headerlink" title="8.3 abort方法"></a>8.3 abort方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">abort</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    completeEdit(<span class="keyword">this</span>, <span class="keyword">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>就是存储失败的时候的逻辑，会向journal文件中写入一条remove记录</p>
+<h2 id="九、其他"><a href="#九、其他" class="headerlink" title="九、其他"></a>九、其他</h2><h3 id="9-1-多个value的写入"><a href="#9-1-多个value的写入" class="headerlink" title="9.1 多个value的写入"></a>9.1 多个value的写入</h3><p>以写入String为例，其他数据的写入都可通过OutputStreamWriter。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">editor = getDiskCache().edit(key);</span><br><span class="line">editor.set(<span class="number">0</span>, <span class="string">&quot;abc&quot;</span>);</span><br><span class="line">editor.set(<span class="number">1</span>, <span class="string">&quot;abc&quot;</span>);</span><br><span class="line">editor.set(<span class="number">2</span>, <span class="string">&quot;abc&quot;</span>);</span><br><span class="line">editor.commit();</span><br></pre></td></tr></table></figure>
+
+<p>写入后的journal文件格式如下：clean文件尾带 3个数字字符串，缓存中存在3个缓存文件</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">journal文件</span><br><span class="line"></span><br><span class="line">DIRTY c431ca75aeea1753604a07b33e6a329a</span><br><span class="line">CLEAN c431ca75aeea1753604a07b33e6a329a <span class="number">3</span> <span class="number">6</span> <span class="number">6</span></span><br><span class="line"></span><br><span class="line">缓存文件</span><br><span class="line">-rw------- <span class="number">1</span> u0_a394 u0_a394_cache    <span class="number">3</span> <span class="number">2020</span>-<span class="number">05</span>-<span class="number">14</span> <span class="number">20</span>:<span class="number">45</span> c431ca75aeea1753604a07b33e6a329a<span class="number">.0</span></span><br><span class="line">-rw------- <span class="number">1</span> u0_a394 u0_a394_cache    <span class="number">6</span> <span class="number">2020</span>-<span class="number">05</span>-<span class="number">14</span> <span class="number">20</span>:<span class="number">45</span> c431ca75aeea1753604a07b33e6a329a<span class="number">.1</span></span><br><span class="line">-rw------- <span class="number">1</span> u0_a394 u0_a394_cache    <span class="number">6</span> <span class="number">2020</span>-<span class="number">05</span>-<span class="number">14</span> <span class="number">20</span>:<span class="number">45</span> c431ca75aeea1753604a07b33e6a329a<span class="number">.2</span></span><br><span class="line">-rw------- <span class="number">1</span> u0_a394 u0_a394_cache <span class="number">1567</span> <span class="number">2020</span>-<span class="number">05</span>-<span class="number">14</span> <span class="number">20</span>:<span class="number">45</span> journal</span><br></pre></td></tr></table></figure>
+
+<h3 id="9-2-字符串写入"><a href="#9-2-字符串写入" class="headerlink" title="9.2 字符串写入"></a>9.2 字符串写入</h3><p>editor提供了2种写入操作，写入字符流和字符串。</p>
+<h4 id="9-2-1-写入字符串"><a href="#9-2-1-写入字符串" class="headerlink" title="9.2.1 写入字符串"></a>9.2.1 写入字符串</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">editor.set(<span class="number">0</span>, <span class="string">&quot;abc&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">set</span><span class="params">(<span class="keyword">int</span> index, String value)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    Writer writer = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        writer = <span class="keyword">new</span> OutputStreamWriter(newOutputStream(index), Util.UTF_8);</span><br><span class="line">        writer.write(value);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        Util.closeQuietly(writer);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="9-2-2-流写入"><a href="#9-2-2-流写入" class="headerlink" title="9.2.2 流写入"></a>9.2.2 流写入</h4><p>通过流的形式写入时一定要执行一次flush，否则写入的文件在journal中会没有大小</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">OutputStream os = editor.newOutputStream(<span class="number">0</span>);</span><br><span class="line">bw = <span class="keyword">new</span> OutputStreamWriter(os);</span><br><span class="line">bw.write(value);</span><br><span class="line">bw.flush();</span><br></pre></td></tr></table></figure>
+
+<h2 id="十、总结"><a href="#十、总结" class="headerlink" title="十、总结"></a>十、总结</h2><p>DiskLruCache 内部是通过lruEntries保存所有的缓存文件名也就是路径，lruEntries本身是一个LinkedHashMap，Lru机制其实就是通过LinkedHashMap实现的；</p>
+<p>缓存的增删改查都会记录到journal文件中，dirty记录表示的是写入的记录，一条有效的缓存会对应一条dirty和一条clean日志，他们是配对出现的；</p>
+<p>初始化过程中会读取journal文件，将所有标记为clean和dirty的文件加入lruEntries中；最后计算所有clean文件的大小并删除所有孤立的标记为dirty文件；</p>
+<p>记录总大小size在写入记录和删除记录时都会随之发生变化，当达到设定阈值maxSize时，会从头部数据开始删除，直到小于maxSize；</p>
+<p>在get、edit、remove时都会检查清理操作，主要过程有2个：1.移除lruEntries多余元素 2.重建journal文件。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/lmj623565791/article/details/47251585">Android DiskLruCache源码解析硬盘缓存的绝佳方案</a></p>
+<p><a target="_blank" rel="noopener" href="http://blog.csdn.net/guolin_blog/article/details/28863651">Android DiskLruCache完全解析，硬盘缓存的最佳方案</a></p>
+
+    </div>
+
+    
+    
+    
+      
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>sven
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://zhaoxiaowen-sven.github.io/2020/12/07/Notes/Android/02%E5%BC%80%E6%BA%90/open_07_DiskLruCache/" title="open_07_DiskLruCache">https://zhaoxiaowen-sven.github.io/2020/12/07/Notes/Android/02开源/open_07_DiskLruCache/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/22/Notes/Android/02%E5%BC%80%E6%BA%90/open_04_OKHTTP%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="prev" title="open_04_OKHTTP源码分析">
+      <i class="fa fa-chevron-left"></i> open_04_OKHTTP源码分析
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/07/Notes/Read/0001-%E9%9D%9E%E6%9A%B4%E5%8A%9B%E6%B2%9F%E9%80%9A/" rel="next" title="非暴力沟通">
+      非暴力沟通 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#open-07-DiskLruCache%E5%8E%9F%E7%90%86%E5%88%86%E6%9E%90"><span class="nav-text">open_07_DiskLruCache原理分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%A6%82%E8%BF%B0"><span class="nav-text">一、概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95"><span class="nav-text">二、构造方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81lruEntries"><span class="nav-text">三、lruEntries</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81journal%E6%96%87%E4%BB%B6"><span class="nav-text">四、journal文件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E6%96%87%E4%BB%B6%E5%A4%B4%E9%83%A8%E5%88%86"><span class="nav-text">4.1 文件头部分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E5%86%85%E5%AE%B9%E9%83%A8%E5%88%86"><span class="nav-text">4.2 内容部分</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E8%8E%B7%E5%8F%96"><span class="nav-text">五、获取</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-open"><span class="nav-text">5.1 open</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-readJournal"><span class="nav-text">5.2 readJournal</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-1-readJournalLine"><span class="nav-text">5.2.1 readJournalLine</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-2-processJournal"><span class="nav-text">5.2.2 processJournal</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-rebuildJournal"><span class="nav-text">5.3 rebuildJournal</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD%E3%80%81%E5%86%99%E5%85%A5"><span class="nav-text">六、写入</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1-DiskLruCache-edit"><span class="nav-text">6.1 DiskLruCache.edit</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2-Editor"><span class="nav-text">6.2 Editor</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#6-2-1-editor-newOutputStream"><span class="nav-text">6.2.1 editor.newOutputStream</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-2-2-editor-commit"><span class="nav-text">6.2.2 editor.commit</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6-2-3-completeEdit"><span class="nav-text">6.2.3 completeEdit</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83%E3%80%81%E8%AF%BB%E5%8F%96"><span class="nav-text">七、读取</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-DiskLruCache-get"><span class="nav-text">7.1 DiskLruCache.get</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-2-Snapshot"><span class="nav-text">7.2 Snapshot</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB%E3%80%81%E5%85%B6%E4%BB%96%E6%96%B9%E6%B3%95"><span class="nav-text">八、其他方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-remove%E6%96%B9%E6%B3%95"><span class="nav-text">8.1 remove方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-2-close%E6%96%B9%E6%B3%95"><span class="nav-text">8.2 close方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-3-abort%E6%96%B9%E6%B3%95"><span class="nav-text">8.3 abort方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E5%85%B6%E4%BB%96"><span class="nav-text">九、其他</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#9-1-%E5%A4%9A%E4%B8%AAvalue%E7%9A%84%E5%86%99%E5%85%A5"><span class="nav-text">9.1 多个value的写入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-2-%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%86%99%E5%85%A5"><span class="nav-text">9.2 字符串写入</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#9-2-1-%E5%86%99%E5%85%A5%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="nav-text">9.2.1 写入字符串</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#9-2-2-%E6%B5%81%E5%86%99%E5%85%A5"><span class="nav-text">9.2.2 流写入</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E3%80%81%E6%80%BB%E7%BB%93"><span class="nav-text">十、总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-text">参考</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="sven"
+      src="/images/sven.jpeg">
+  <p class="site-author-name" itemprop="name">sven</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">77</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhaoxiaowen-sven" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhaoxiaowen-sven" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhaoxiaowen-sven@gmail.com" title="E-Mail → mailto:zhaoxiaowen-sven@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sven</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
