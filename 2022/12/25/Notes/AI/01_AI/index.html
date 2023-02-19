@@ -27,23 +27,37 @@
 <meta property="og:site_name" content="Sven&#39;s blog">
 <meta property="og:description" content="AI_01_机器学习概论">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20221225170243247.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230218215922689.png">
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20221225170207243.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230219164624681.png">
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20221225170024329.png">
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20221225170555949.png">
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20221225172054329.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230219171018153.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230219171135996.png">
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20221225172010087.png">
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20221225171937716.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230219171740523.png">
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20221225172859233.png">
-<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20221225173710616.png">
-<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20221225175127425.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230219174248498.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230219181654398.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230219174343811.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230219174440060.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230219182424735.png">
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20221225175231621.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230219183209344.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230219183231543.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230219183743972.png">
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20221226170953259.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230219194415753.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230219195532348.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230219195856123.png">
+<meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230219200914145.png">
 <meta property="article:published_time" content="2022-12-25T07:22:01.372Z">
-<meta property="article:modified_time" content="2023-01-02T09:49:37.718Z">
+<meta property="article:modified_time" content="2023-02-19T12:09:30.697Z">
 <meta property="article:author" content="sven">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20221225170243247.png">
+<meta name="twitter:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230218215922689.png">
 
 <link rel="canonical" href="https://zhaoxiaowen-sven.github.io/2022/12/25/Notes/AI/01_AI/">
 
@@ -246,59 +260,126 @@
       
         <h1 id="AI-01-机器学习概论"><a href="#AI-01-机器学习概论" class="headerlink" title="AI_01_机器学习概论"></a>AI_01_机器学习概论</h1><span id="more"></span>
 
-<h1 id="一、机器学习的分类"><a href="#一、机器学习的分类" class="headerlink" title="一、机器学习的分类"></a>一、机器学习的分类</h1><h2 id="1-1、分类"><a href="#1-1、分类" class="headerlink" title="1.1、分类"></a>1.1、分类</h2><p><code>Regression</code>：The function outputs a scalar. </p>
-<p><code>Classification</code>：Given options (classes), the function outputs the correct one.</p>
-<p><code>Structured Learning</code>：create something with structure (image, document)    </p>
-<h2 id="1-2、机器学习步骤"><a href="#1-2、机器学习步骤" class="headerlink" title="1.2、机器学习步骤"></a>1.2、机器学习步骤</h2><h3 id="1、Function-With-UnKownn-Parameters"><a href="#1、Function-With-UnKownn-Parameters" class="headerlink" title="1、Function With  UnKownn Parameters"></a>1、Function With  UnKownn Parameters</h3><p> <code>Model : y = b + wx</code></p>
+<h1 id="一、机器学习的分类"><a href="#一、机器学习的分类" class="headerlink" title="一、机器学习的分类"></a>一、机器学习的分类</h1><h2 id="1-1、分类"><a href="#1-1、分类" class="headerlink" title="1.1、分类"></a>1.1、分类</h2><p><code>Regression</code>：The function outputs a scalar。找函数关系，输出一个数字</p>
+<p><code>Classification</code>：Given options (classes), the function outputs the correct one。做选择题， 从选项中选择</p>
+<p><code>Structured Learning</code>：create something with structure (image, document)。创造    </p>
+<h2 id="1-2、机器学习步骤"><a href="#1-2、机器学习步骤" class="headerlink" title="1.2、机器学习步骤"></a>1.2、机器学习步骤</h2><h3 id="1、Function-With-UnKownn-Parameters"><a href="#1、Function-With-UnKownn-Parameters" class="headerlink" title="1、Function With  UnKownn Parameters"></a>1、Function With  UnKownn Parameters</h3><p> <code>Model（函数） : y = b + wx</code></p>
 <p>y : 预测结果, x : 输入参数, w : weight,  b：bias</p>
-<h3 id="2、Define-Loss-from-Training-Data"><a href="#2、Define-Loss-from-Training-Data" class="headerlink" title="2、Define Loss from Training Data"></a>2、Define Loss from Training Data</h3><p><code>Loss</code>：how good a set of values is。L(w，b)</p>
-<p>误差：e1 = |y - y’| , L means MAE</p>
-<p>​            e2 = (y - y’)^2 , L means MSE</p>
-<p><code>Loss =</code><br>$$<br>L = 1/N \sum_1^n e_n<br>$$</p>
-<h3 id="3、Optimization"><a href="#3、Optimization" class="headerlink" title="3、Optimization"></a>3、Optimization</h3><h4 id="Gradient-Descent"><a href="#Gradient-Descent" class="headerlink" title="Gradient Descent"></a><code>Gradient Descent</code></h4><p>梯度下降，找出Loss 最小的 w 和 b</p>
-<img src="/pics/image-20221225170243247.png" alt="image-20221225170243247" style="zoom:33%;" />
+<h3 id="2、Define-Loss-from-Training-Data"><a href="#2、Define-Loss-from-Training-Data" class="headerlink" title="2、Define Loss from Training Data"></a>2、Define Loss from Training Data</h3><p><code>Loss（误差）</code>：how good a set of values is。</p>
+<p>计算误差的公式：<code>Loss = L(w，b)</code><br>$$<br>L = 1/N \sum_1^n e_n<br>$$</p>
+<p>e1 = |y - y’| , L means MAE，绝对值差</p>
+<p> e2 = (y - y’)^2 , L means MSE，绝对值差的平方</p>
+<h3 id="3、Optimization"><a href="#3、Optimization" class="headerlink" title="3、Optimization"></a>3、Optimization</h3><p><code>Gradient Descent</code>：梯度下降，找出误差最小的 <code>Model</code></p>
+<p>随机选取一个w0，计算w对Loss的微分（斜率）n，n  &gt; 0, 增大 W，n &lt; 0，减小W。 </p>
+<img src="/pics/image-20230218215922689.png" alt="image-20230218215922689" style="zoom:30%;" />
 
-<h2 id="1-3、优化Linear-models"><a href="#1-3、优化Linear-models" class="headerlink" title="1.3、优化Linear models"></a>1.3、优化Linear models</h2><h3 id="1、new-Function"><a href="#1、new-Function" class="headerlink" title="1、new Function"></a>1、new Function</h3><img src="/pics/image-20221225170207243.png" alt="image-20221225170207243" style="zoom:33%;" />
+<h2 id="1-3、机器学习步骤理解"><a href="#1-3、机器学习步骤理解" class="headerlink" title="1.3、机器学习步骤理解"></a>1.3、机器学习步骤理解</h2><h3 id="1、new-Function"><a href="#1、new-Function" class="headerlink" title="1、new Function"></a>1、new Function</h3><p>简单函数模拟不出来红色的复杂的情况，这叫做model的 bias，需要使用<code>S型的简单函数</code>进行叠加。</p>
+<img src="/pics/image-20221225170207243.png" alt="image-20221225170207243" style="zoom:33%;" />
 
 <p><code>red = constant + sum of set of f（x）</code></p>
-<h4 id="Sigmoid-Function"><a href="#Sigmoid-Function" class="headerlink" title="Sigmoid Function"></a><code>Sigmoid Function</code></h4><p>$$<br>y = c * 1/1+e^{-(b + wx_1)} = c * sigmoid(b + wx_1)<br>$$</p>
-<img src="/pics/image-20221225170024329.png" alt="image-20221225170024329" style="zoom:50%;" />
+<img src="/pics/image-20230219164624681.png" alt="image-20230219164624681" style="zoom:20%;" />
+
+<h4 id="Sigmoid-Function"><a href="#Sigmoid-Function" class="headerlink" title="Sigmoid Function"></a><code>Sigmoid Function</code></h4><p>S型的函数<br>$$<br>y = c * 1/1+e^{-(b + wx_1)} = c * sigmoid(b + wx_1)<br>$$</p>
+<p>w决定函数的斜率，b决定函数的x起始点，c 决定函数的Y的最大高度</p>
+<img src="/pics/image-20221225170024329.png" alt="image-20221225170024329" style="zoom:30%;" />
 
 
 
-<p><code>red = constant + setof sigmoid function</code> </p>
+<p><code>red = constant + setof sigmoid function</code> ，红色的函数是一系列S型函数叠加的结果。</p>
 <img src="/pics/image-20221225170555949.png" alt="image-20221225170555949" style="zoom:33%;" />
 $$
 y = b + \sum_i c_i sigmoid(b_i + w_ix_1)
 $$
-考虑多个Features
+使用S型函数可以写出弹性非常好的复杂函数。
 
 <img src="/pics/image-20221225172054329.png" alt="image-20221225172054329" style="zoom:33%;" />
 
+<p>考虑多个Features：</p>
+<img src="/pics/image-20230219171018153.png" alt="image-20230219171018153" style="zoom:50%;" />
+$$
+W_{ij} = 表示在第i个Sigmoid中，乘给第j个feature的Weight
+$$
+使用线性代数表示：
 
+<img src="/pics/image-20230219171135996.png" alt="image-20230219171135996" style="zoom:50%;" />
 
-
-
+<p>省略过程，最终的函数式：</p>
 <img src="/pics/image-20221225172010087.png" alt="image-20221225172010087" style="zoom:33%;" />
 
-<p>用线性代数表示</p>
+<p>用线性代数表示：</p>
 <img src="/pics/image-20221225171937716.png" alt="image-20221225171937716" style="zoom:33%;" />
 
-<h3 id="2、Loss"><a href="#2、Loss" class="headerlink" title="2、Loss"></a>2、Loss</h3><img src="/pics/image-20221225172859233.png" alt="image-20221225172859233" style="zoom:33%;" />
+<p>回到机器学习的框架中：</p>
+<img src="/pics/image-20230219171740523.png" alt="image-20230219171740523" style="zoom:50%;" />
 
-<h3 id="3、Optimization-1"><a href="#3、Optimization-1" class="headerlink" title="3、Optimization"></a>3、Optimization</h3><img src="/pics/image-20221225173710616.png" alt="image-20221225173710616" style="zoom:33%;" />
+<h3 id="2、Loss"><a href="#2、Loss" class="headerlink" title="2、Loss"></a>2、Loss</h3><p>$$<br>Loss = L(\theta),\theta 代表所有未知的参数，<br>$$</p>
+<img src="/pics/image-20221225172859233.png" alt="image-20221225172859233" style="zoom:33%;" />
 
-<p><code>epoch = see all batches</code></p>
-<h3 id="4、ReLU"><a href="#4、ReLU" class="headerlink" title="4、ReLU"></a>4、<code>ReLU</code></h3><img src="/pics/image-20221225175127425.png" alt="image-20221225175127425" style="zoom:33%;" />
+<h3 id="3、Optimization-1"><a href="#3、Optimization-1" class="headerlink" title="3、Optimization"></a>3、Optimization</h3><p>$$<br>\theta^* = arg min_\theta L , 找一组 \theta，使得Loss 最小<br>$$</p>
+<h4 id="步骤1"><a href="#步骤1" class="headerlink" title="步骤1 :"></a>步骤1 :</h4><p>随机选一组初始值，计算 g</p>
+<img src="/pics/image-20230219174248498.png" alt="image-20230219174248498" style="zoom:30%;" />
 
+
+<p>$$<br>g（Gradient， 梯度） = \nabla L(\theta^0),<br>\theta^0 代表的是一组参数，即每一组 \theta ^ {1..n} 对 L 进行微分，集合起来就是一个向量<br>$$</p>
+<h4 id="步骤2："><a href="#步骤2：" class="headerlink" title="步骤2："></a>步骤2：</h4><p>update 参数，采用刚才的方法将所有的 未知参数 集合起来，直到 g 是<code>Zero Vector</code>, 或者没法更低。<br>$$<br>\theta^0\ -&gt; \eta -&gt; \theta^1 ， \eta 表示机器学习的learningRate，过程表示一组数据集，计算 Loss 最小值的过程。<br>$$<br>​                                                    <img src="/pics/image-20230219181654398.png" alt="image-20230219181654398" style="zoom:30%;" />      </p>
+<p>重复上面的过程：</p>
+<img src="/pics/image-20230219174343811.png" alt="image-20230219174343811" style="zoom:50%;" />
+
+<p>实际中，使用数据集计算时，将数据分组计算</p>
+<img src="/pics/image-20230219174440060.png" alt="image-20230219174440060" style="zoom:50%;" />
+
+<h3 id="4、ReLU"><a href="#4、ReLU" class="headerlink" title="4、ReLU"></a>4、<code>ReLU</code></h3><p>对<code>Model</code>做替换 ，使用<code>ReLu</code> 替换 <code>Sigmoid</code></p>
+<img src="/pics/image-20230219182424735.png" alt="image-20230219182424735" style="zoom:30%;" />
+
+<p>2 个<code>ReLu</code> 可以合成一个<code>Sigmoid</code>，<code>ReLu</code> 应用更多</p>
 <img src="/pics/image-20221225175231621.png" alt="image-20221225175231621" style="zoom:33%;" />
 
+<h2 id="1-4、深度学习的诞生"><a href="#1-4、深度学习的诞生" class="headerlink" title="1.4、深度学习的诞生"></a>1.4、深度学习的诞生</h2><img src="/pics/image-20230219183209344.png" alt="image-20230219183209344" style="zoom:50%;" />
 
+<p><code>Neuron 即 model（Sigmoid / ReLu）</code></p>
+<img src="/pics/image-20230219183231543.png" alt="image-20230219183231543" style="zoom:50%;" />
 
+<h2 id="1-5、模型优化"><a href="#1-5、模型优化" class="headerlink" title="1.5、模型优化"></a>1.5、模型优化</h2><p>提交作业到kaggle</p>
+<img src="/pics/image-20230219183743972.png" alt="image-20230219183743972" style="zoom:30%;" />
+
+<p><code>training data Loss</code>过大？</p>
+<ol>
+<li><code>model</code> 过于简单，<code>Model Bias</code>问题</li>
+<li><code>Optimization</code> 不够</li>
+</ol>
 <img src="/pics/image-20221226170953259.png" alt="image-20221226170953259" style="zoom:33%;" />
 
-<p>模型过于简单</p>
-<p>优化不沟通</p>
+
+
+<p>怎么排查？</p>
+<ol>
+<li>层数高，但是Loss更差，说明是 <code>optimization</code>  问题</li>
+</ol>
+<img src="/pics/image-20230219194415753.png" alt="image-20230219194415753" style="zoom:23%;" />
+
+<ol start="2">
+<li><p><code>training data loss </code>小， <code>testing data loss</code> 大</p>
+<ol>
+<li><p>overfiting</p>
+<ol>
+<li>增加训练资料，创建训练资料</li>
+</ol>
+<img src="/pics/image-20230219195532348.png" alt="image-20230219195532348" style="zoom:23%;" />
+
+<ol start="2">
+<li><p>对 model 进行 约束，限制自由度</p>
+<img src="/pics/image-20230219195856123.png" alt="image-20230219195856123" style="zoom:23%;" /></li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<p>​                                        </p>
+<ol>
+<li><p>misMatch ？</p>
+<p>分割训练集</p>
+<img src="/pics/image-20230219200914145.png" alt="image-20230219200914145" style="zoom:23%;" /></li>
+</ol>
 
     </div>
 
@@ -398,7 +479,7 @@ $$
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#AI-01-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A6%82%E8%AE%BA"><span class="nav-text">AI_01_机器学习概论</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-text">一、机器学习的分类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1%E3%80%81%E5%88%86%E7%B1%BB"><span class="nav-text">1.1、分类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%AD%A5%E9%AA%A4"><span class="nav-text">1.2、机器学习步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81Function-With-UnKownn-Parameters"><span class="nav-text">1、Function With  UnKownn Parameters</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81Define-Loss-from-Training-Data"><span class="nav-text">2、Define Loss from Training Data</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81Optimization"><span class="nav-text">3、Optimization</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Gradient-Descent"><span class="nav-text">Gradient Descent</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3%E3%80%81%E4%BC%98%E5%8C%96Linear-models"><span class="nav-text">1.3、优化Linear models</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81new-Function"><span class="nav-text">1、new Function</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Sigmoid-Function"><span class="nav-text">Sigmoid Function</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81Loss"><span class="nav-text">2、Loss</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81Optimization-1"><span class="nav-text">3、Optimization</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81ReLU"><span class="nav-text">4、ReLU</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#AI-01-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%A6%82%E8%AE%BA"><span class="nav-text">AI_01_机器学习概论</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E7%9A%84%E5%88%86%E7%B1%BB"><span class="nav-text">一、机器学习的分类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1%E3%80%81%E5%88%86%E7%B1%BB"><span class="nav-text">1.1、分类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%AD%A5%E9%AA%A4"><span class="nav-text">1.2、机器学习步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81Function-With-UnKownn-Parameters"><span class="nav-text">1、Function With  UnKownn Parameters</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81Define-Loss-from-Training-Data"><span class="nav-text">2、Define Loss from Training Data</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81Optimization"><span class="nav-text">3、Optimization</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3%E3%80%81%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E6%AD%A5%E9%AA%A4%E7%90%86%E8%A7%A3"><span class="nav-text">1.3、机器学习步骤理解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81new-Function"><span class="nav-text">1、new Function</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Sigmoid-Function"><span class="nav-text">Sigmoid Function</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81Loss"><span class="nav-text">2、Loss</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81Optimization-1"><span class="nav-text">3、Optimization</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A41"><span class="nav-text">步骤1 :</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A42%EF%BC%9A"><span class="nav-text">步骤2：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81ReLU"><span class="nav-text">4、ReLU</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4%E3%80%81%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9A%84%E8%AF%9E%E7%94%9F"><span class="nav-text">1.4、深度学习的诞生</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-5%E3%80%81%E6%A8%A1%E5%9E%8B%E4%BC%98%E5%8C%96"><span class="nav-text">1.5、模型优化</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -413,7 +494,7 @@ $$
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-count">81</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
