@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"zhaoxiaowen-sven.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="AI_04_ 机器学习Self-Attention引子CNN 针对的都是输入是一个向量，实际上还有输入是 一组向量的情况，比如 NLP Voice 等等   一组输入向量的输出有哪些情况呢？ 可以是一个label，多个label 或者是由机器自己决定输出多少个向量   先讨论输入和输出一样多的情况。 怎么计算输入和输出？联系上下文，输出当前向量，Fully-connected计算量过大   Sel">
+  <meta name="description" content="AI_04_ 机器学习Self-Attention">
 <meta property="og:type" content="article">
 <meta property="og:title" content="AI_04_ 机器学习Self-Attention">
 <meta property="og:url" content="https://zhaoxiaowen-sven.github.io/2023/03/19/Notes/AI/AI_04_%20%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0Self-Attention/index.html">
 <meta property="og:site_name" content="Sven&#39;s blog">
-<meta property="og:description" content="AI_04_ 机器学习Self-Attention引子CNN 针对的都是输入是一个向量，实际上还有输入是 一组向量的情况，比如 NLP Voice 等等   一组输入向量的输出有哪些情况呢？ 可以是一个label，多个label 或者是由机器自己决定输出多少个向量   先讨论输入和输出一样多的情况。 怎么计算输入和输出？联系上下文，输出当前向量，Fully-connected计算量过大   Sel">
+<meta property="og:description" content="AI_04_ 机器学习Self-Attention">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230319181331185.png">
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230319182203672.png">
@@ -48,7 +48,7 @@
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230319204819279.png">
 <meta property="og:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230319205329443.png">
 <meta property="article:published_time" content="2023-03-19T10:06:46.281Z">
-<meta property="article:modified_time" content="2023-03-19T13:19:53.535Z">
+<meta property="article:modified_time" content="2023-03-19T13:22:00.113Z">
 <meta property="article:author" content="sven">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://zhaoxiaowen-sven.github.io/pics/image-20230319181331185.png">
@@ -252,7 +252,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="AI-04-机器学习Self-Attention"><a href="#AI-04-机器学习Self-Attention" class="headerlink" title="AI_04_ 机器学习Self-Attention"></a>AI_04_ 机器学习Self-Attention</h1><h2 id="引子"><a href="#引子" class="headerlink" title="引子"></a>引子</h2><p>CNN 针对的都是输入是一个向量，实际上还有输入是 一组向量的情况，比如 NLP Voice 等等</p>
+        <h1 id="AI-04-机器学习Self-Attention"><a href="#AI-04-机器学习Self-Attention" class="headerlink" title="AI_04_ 机器学习Self-Attention"></a>AI_04_ 机器学习Self-Attention</h1><span id="more"></span>
+
+<h2 id="引子"><a href="#引子" class="headerlink" title="引子"></a>引子</h2><p>CNN 针对的都是输入是一个向量，实际上还有输入是 一组向量的情况，比如 NLP Voice 等等</p>
 <img src="/pics/image-20230319181331185.png" alt="image-20230319181331185" style="zoom:25%;" />
 
 <p>一组输入向量的输出有哪些情况呢？</p>
@@ -349,7 +351,10 @@
     <a href="/2023/03/18/Notes/AI/AI_03_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0CNN/" rel="prev" title="AI_03_机器学习CNN">
       <i class="fa fa-chevron-left"></i> AI_03_机器学习CNN
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2023/04/05/Notes/AI/AI_05_%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0Transformer/" rel="next" title="AI_05_ 机器学习Transformer">
+      AI_05_ 机器学习Transformer <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -423,7 +428,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-count">85</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
