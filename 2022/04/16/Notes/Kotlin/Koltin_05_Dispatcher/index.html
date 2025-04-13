@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"zhaoxiaowen-sven.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Koltin_05_DispatcherLaunch12345678910fun main()  &amp;#123;    runBlocking&amp;#123;        launch(Dispatchers.Default) &amp;#123;            println(&quot;Running on thread: $&amp;#123;Thread.currentThread().name&amp;#1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Koltin_05_Dispatcher">
+<meta property="og:url" content="https://zhaoxiaowen-sven.github.io/2022/04/16/Notes/Kotlin/Koltin_05_Dispatcher/index.html">
+<meta property="og:site_name" content="Sven&#39;s blog">
+<meta property="og:description" content="Koltin_05_DispatcherLaunch12345678910fun main()  &amp;#123;    runBlocking&amp;#123;        launch(Dispatchers.Default) &amp;#123;            println(&quot;Running on thread: $&amp;#123;Thread.currentThread().name&amp;#1">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-04-16T07:10:38.755Z">
+<meta property="article:modified_time" content="2024-03-02T12:59:31.314Z">
+<meta property="article:author" content="sven">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://zhaoxiaowen-sven.github.io/2022/04/16/Notes/Kotlin/Koltin_05_Dispatcher/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Koltin_05_Dispatcher | Sven's blog</title><meta name="robots" content="noindex">
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+      <a target="_blank" rel="noopener" href="https://github.com/zhaoxiaowen-sven" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Sven's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zhaoxiaowen-sven.github.io/2022/04/16/Notes/Kotlin/Koltin_05_Dispatcher/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/sven.jpeg">
+      <meta itemprop="name" content="sven">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sven's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Koltin_05_Dispatcher
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-04-16 15:10:38" itemprop="dateCreated datePublished" datetime="2022-04-16T15:10:38+08:00">2022-04-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kotlin/" itemprop="url" rel="index"><span itemprop="name">Kotlin</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kotlin/TODO/" itemprop="url" rel="index"><span itemprop="name">TODO</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Koltin-05-Dispatcher"><a href="#Koltin-05-Dispatcher" class="headerlink" title="Koltin_05_Dispatcher"></a>Koltin_05_Dispatcher</h1><h2 id="Launch"><a href="#Launch" class="headerlink" title="Launch"></a>Launch</h2><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span>  &#123;</span><br><span class="line">    runBlocking&#123;</span><br><span class="line">        launch(Dispatchers.Default) &#123;</span><br><span class="line">            println(<span class="string">&quot;Running on thread: <span class="subst">$&#123;Thread.currentThread().name&#125;</span>&quot;</span>)</span><br><span class="line">            withContext(Dispatchers.Default) &#123;</span><br><span class="line">                println(<span class="string">&quot;Running on thread333: <span class="subst">$&#123;Thread.currentThread().name&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="CoroutineScope-launch"><a href="#CoroutineScope-launch" class="headerlink" title="CoroutineScope.launch"></a>CoroutineScope.launch</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> CoroutineScope.<span class="title">launch</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    context: <span class="type">CoroutineContext</span> = EmptyCoroutineContext,</span></span></span><br><span class="line"><span class="params"><span class="function">    start: <span class="type">CoroutineStart</span> = CoroutineStart.DEFAULT,</span></span></span><br><span class="line"><span class="params"><span class="function">    block: <span class="type">suspend</span> <span class="type">CoroutineScope</span>.() -&gt; <span class="type">Unit</span></span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span>: Job &#123;</span><br><span class="line">    <span class="keyword">val</span> newContext = newCoroutineContext(context)</span><br><span class="line">    <span class="keyword">val</span> coroutine = <span class="keyword">if</span> (start.isLazy)</span><br><span class="line">        LazyStandaloneCoroutine(newContext, block) <span class="keyword">else</span></span><br><span class="line">        StandaloneCoroutine(newContext, active = <span class="literal">true</span>)</span><br><span class="line">    coroutine.start(start, coroutine, block)</span><br><span class="line">    <span class="keyword">return</span> coroutine</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;R&gt;</span> <span class="title">start</span><span class="params">(start: <span class="type">CoroutineStart</span>, receiver: <span class="type">R</span>, block: <span class="type">suspend</span> <span class="type">R</span>.() -&gt; <span class="type">T</span>)</span></span> &#123;</span><br><span class="line">        start(block, receiver, <span class="keyword">this</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="CoroutineStart"><a href="#CoroutineStart" class="headerlink" title="CoroutineStart"></a>CoroutineStart</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">    <span class="keyword">public</span> <span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;R, T&gt;</span> <span class="title">invoke</span><span class="params">(block: <span class="type">suspend</span> <span class="type">R</span>.() -&gt; <span class="type">T</span>, receiver: <span class="type">R</span>, completion: <span class="type">Continuation</span>&lt;<span class="type">T</span>&gt;)</span></span>: <span class="built_in">Unit</span> =</span><br><span class="line">        <span class="keyword">when</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">            DEFAULT -&gt; block.startCoroutineCancellable(receiver, completion)</span><br><span class="line">            ATOMIC -&gt; block.startCoroutine(receiver, completion)</span><br><span class="line">            UNDISPATCHED -&gt; block.startCoroutineUndispatched(receiver, completion)</span><br><span class="line">            LAZY -&gt; <span class="built_in">Unit</span> <span class="comment">// will start lazily</span></span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line"><span class="keyword">internal</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;R, T&gt;</span> <span class="params">(<span class="keyword">suspend</span> (R)</span></span> -&gt; T).startCoroutineCancellable(</span><br><span class="line">    receiver: R, completion: Continuation&lt;T&gt;,</span><br><span class="line">    onCancellation: ((cause: Throwable) -&gt; <span class="built_in">Unit</span>)? = <span class="literal">null</span></span><br><span class="line">) =</span><br><span class="line">    runSafely(completion) &#123;</span><br><span class="line">      <span class="comment">// 1</span></span><br><span class="line">        createCoroutineUnintercepted(receiver, completion)</span><br><span class="line">      <span class="comment">// 2</span></span><br><span class="line">      .intercepted()</span><br><span class="line">      <span class="comment">// 3</span></span><br><span class="line">      .resumeCancellableWith(Result.success(<span class="built_in">Unit</span>), onCancellation)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="intercepted"><a href="#intercepted" class="headerlink" title="intercepted()"></a>intercepted()</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">actual</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> Continuation<span class="type">&lt;T&gt;</span>.<span class="title">intercepted</span><span class="params">()</span></span>: Continuation&lt;T&gt; =</span><br><span class="line">    (<span class="keyword">this</span> <span class="keyword">as</span>? ContinuationImpl)?.intercepted() ?: <span class="keyword">this</span>    </span><br><span class="line">    </span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="title">intercepted</span><span class="params">()</span></span>: Continuation&lt;Any?&gt; =</span><br><span class="line">        intercepted</span><br><span class="line">            ?: (context[ContinuationInterceptor]?.interceptContinuation(<span class="keyword">this</span>) ?: <span class="keyword">this</span>)</span><br><span class="line">                .also &#123; intercepted = it &#125; </span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> <span class="title">interceptContinuation</span><span class="params">(continuation: <span class="type">Continuation</span>&lt;<span class="type">T</span>&gt;)</span></span>: Continuation&lt;T&gt; =</span><br><span class="line">        DispatchedContinuation(<span class="keyword">this</span>, continuation)</span><br></pre></td></tr></table></figure>
+
+<h3 id="resumeCancellableWith-Result-success-Unit-onCancellation"><a href="#resumeCancellableWith-Result-success-Unit-onCancellation" class="headerlink" title="resumeCancellableWith(Result.success(Unit), onCancellation)"></a>resumeCancellableWith(Result.success(Unit), onCancellation)</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> Continuation<span class="type">&lt;T&gt;</span>.<span class="title">resumeCancellableWith</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">    result: <span class="type">Result</span>&lt;<span class="type">T</span>&gt;,</span></span></span><br><span class="line"><span class="params"><span class="function">    onCancellation: ((<span class="type">cause</span>: <span class="type">Throwable</span>) -&gt; <span class="type">Unit</span>)? = <span class="literal">null</span></span></span></span><br><span class="line"><span class="params"><span class="function">)</span></span>: <span class="built_in">Unit</span> = <span class="keyword">when</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">    <span class="keyword">is</span> DispatchedContinuation -&gt; resumeCancellableWith(result, onCancellation)</span><br><span class="line">    <span class="keyword">else</span> -&gt; resumeWith(result)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 代码段9</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">internal</span> <span class="class"><span class="keyword">class</span> <span class="title">DispatchedContinuation</span>&lt;<span class="type">in T</span>&gt;</span>(</span><br><span class="line">    <span class="meta">@JvmField</span> <span class="keyword">val</span> dispatcher: CoroutineDispatcher,</span><br><span class="line">    <span class="meta">@JvmField</span> <span class="keyword">val</span> continuation: Continuation&lt;T&gt;</span><br><span class="line">) : DispatchedTask&lt;T&gt;(MODE_UNINITIALIZED), CoroutineStackFrame, Continuation&lt;T&gt; <span class="keyword">by</span> continuation &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> <span class="title">resumeCancellableWith</span><span class="params">(</span></span></span><br><span class="line"><span class="params"><span class="function">        result: <span class="type">Result</span>&lt;<span class="type">T</span>&gt;,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">noinline</span> onCancellation: ((<span class="type">cause</span>: <span class="type">Throwable</span>) -&gt; <span class="type">Unit</span>)?</span></span></span><br><span class="line"><span class="params"><span class="function">    )</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> state = result.toState(onCancellation)</span><br><span class="line">        <span class="comment">// 1</span></span><br><span class="line">        <span class="keyword">if</span> (dispatcher.isDispatchNeeded(context)) &#123;</span><br><span class="line">            _state = state</span><br><span class="line">            resumeMode = MODE_CANCELLABLE</span><br><span class="line">            <span class="comment">// 2</span></span><br><span class="line">            dispatcher.dispatch(context, <span class="keyword">this</span>)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 3</span></span><br><span class="line">            executeUnconfined(state, MODE_CANCELLABLE) &#123;</span><br><span class="line">                <span class="keyword">if</span> (!resumeCancelled(state)) &#123;</span><br><span class="line">                    resumeUndispatchedWith(result)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">CoroutineDispatcher</span> :</span></span><br><span class="line"><span class="class">    <span class="type">AbstractCoroutineContextElement</span></span>(ContinuationInterceptor), ContinuationInterceptor &#123;</span><br><span class="line">    <span class="comment">// 默认是true</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">open</span> <span class="function"><span class="keyword">fun</span> <span class="title">isDispatchNeeded</span><span class="params">(context: <span class="type">CoroutineContext</span>)</span></span>: <span class="built_in">Boolean</span> = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">abstract</span> <span class="function"><span class="keyword">fun</span> <span class="title">dispatch</span><span class="params">(context: <span class="type">CoroutineContext</span>, block: <span class="type">Runnable</span>)</span></span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">internal</span> <span class="keyword">object</span> Unconfined : CoroutineDispatcher() &#123;</span><br><span class="line">    <span class="comment">// 只有Unconfined会重写成false</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">isDispatchNeeded</span><span class="params">(context: <span class="type">CoroutineContext</span>)</span></span>: <span class="built_in">Boolean</span> = <span class="literal">false</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="DefaultScheduler"><a href="#DefaultScheduler" class="headerlink" title="DefaultScheduler"></a>DefaultScheduler</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public actual object Dispatchers &#123;</span><br><span class="line"></span><br><span class="line">    @JvmStatic</span><br><span class="line">    public actual val Default: CoroutineDispatcher = DefaultScheduler</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">internal object DefaultScheduler : SchedulerCoroutineDispatcher(</span><br><span class="line">    CORE_POOL_SIZE, MAX_POOL_SIZE,</span><br><span class="line">    IDLE_WORKER_KEEP_ALIVE_NS, DEFAULT_SCHEDULER_NAME</span><br><span class="line">) &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="SchedulerCoroutineDispatcher"><a href="#SchedulerCoroutineDispatcher" class="headerlink" title="SchedulerCoroutineDispatcher"></a>SchedulerCoroutineDispatcher</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">internal open class SchedulerCoroutineDispatcher(</span><br><span class="line">    private val corePoolSize: Int = CORE_POOL_SIZE,</span><br><span class="line">    private val maxPoolSize: Int = MAX_POOL_SIZE,</span><br><span class="line">    private val idleWorkerKeepAliveNs: Long = IDLE_WORKER_KEEP_ALIVE_NS,</span><br><span class="line">    private val schedulerName: String = &quot;CoroutineScheduler&quot;,</span><br><span class="line">) : ExecutorCoroutineDispatcher() &#123;</span><br><span class="line"></span><br><span class="line">    private var coroutineScheduler = createScheduler()</span><br><span class="line"></span><br><span class="line">    override fun dispatch(context: CoroutineContext, block: Runnable): Unit = coroutineScheduler.dispatch(block)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="CoroutineScheduler"><a href="#CoroutineScheduler" class="headerlink" title="CoroutineScheduler"></a>CoroutineScheduler</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">internal class CoroutineScheduler(</span><br><span class="line">    @JvmField val corePoolSize: Int,</span><br><span class="line">    @JvmField val maxPoolSize: Int,</span><br><span class="line">    @JvmField val idleWorkerKeepAliveNs: Long = IDLE_WORKER_KEEP_ALIVE_NS,</span><br><span class="line">    @JvmField val schedulerName: String = DEFAULT_SCHEDULER_NAME</span><br><span class="line">) : Executor, Closeable &#123;</span><br><span class="line"></span><br><span class="line">    override fun execute(command: Runnable) = dispatch(command)</span><br><span class="line"></span><br><span class="line">    fun dispatch(block: Runnable, taskContext: TaskContext = NonBlockingContext, tailDispatch: Boolean = false) &#123;</span><br><span class="line">        trackTask() </span><br><span class="line">        // 1</span><br><span class="line">        val task = createTask(block, taskContext)</span><br><span class="line">        // 2</span><br><span class="line">        val currentWorker = currentWorker()</span><br><span class="line">        // 3</span><br><span class="line">        val notAdded = currentWorker.submitToLocalQueue(task, tailDispatch)</span><br><span class="line">        if (notAdded != null) &#123;</span><br><span class="line">            if (!addToGlobalQueue(notAdded)) &#123;</span><br><span class="line"></span><br><span class="line">                throw RejectedExecutionException(&quot;$schedulerName was terminated&quot;)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        val skipUnpark = tailDispatch &amp;&amp; currentWorker != null</span><br><span class="line"></span><br><span class="line">        if (task.mode == TASK_NON_BLOCKING) &#123;</span><br><span class="line">            if (skipUnpark) return</span><br><span class="line">            signalCpuWork()</span><br><span class="line">        &#125; else &#123;</span><br><span class="line"></span><br><span class="line">            signalBlockingWork(skipUnpark = skipUnpark)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    private fun currentWorker(): Worker? = (Thread.currentThread() as? Worker)?.takeIf &#123; it.scheduler == this &#125;</span><br><span class="line"></span><br><span class="line">    // 内部类 Worker</span><br><span class="line">    internal inner class Worker private constructor() : Thread() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Worker"><a href="#Worker" class="headerlink" title="Worker"></a>Worker</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">internal inner class Worker private constructor() : Thread() &#123;</span><br><span class="line"></span><br><span class="line">    override fun run() = runWorker()</span><br><span class="line"></span><br><span class="line">    @JvmField</span><br><span class="line">    var mayHaveLocalTasks = false</span><br><span class="line"></span><br><span class="line">    private fun runWorker() &#123;</span><br><span class="line">        var rescanned = false</span><br><span class="line">        while (!isTerminated &amp;&amp; state != WorkerState.TERMINATED) &#123;</span><br><span class="line">            // 1</span><br><span class="line">            val task = findTask(mayHaveLocalTasks)</span><br><span class="line"></span><br><span class="line">            if (task != null) &#123;</span><br><span class="line">                rescanned = false</span><br><span class="line">                minDelayUntilStealableTaskNs = 0L</span><br><span class="line">                // 2</span><br><span class="line">                executeTask(task)</span><br><span class="line">                continue</span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                mayHaveLocalTasks = false</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            if (minDelayUntilStealableTaskNs != 0L) &#123;</span><br><span class="line">                if (!rescanned) &#123;</span><br><span class="line">                    rescanned = true</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    rescanned = false</span><br><span class="line">                    tryReleaseCpu(WorkerState.PARKING)</span><br><span class="line">                    interrupted()</span><br><span class="line">                    LockSupport.parkNanos(minDelayUntilStealableTaskNs)</span><br><span class="line">                    minDelayUntilStealableTaskNs = 0L</span><br><span class="line">                &#125;</span><br><span class="line">                continue</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            tryPark()</span><br><span class="line">        &#125;</span><br><span class="line">        tryReleaseCpu(WorkerState.TERMINATED)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">internal inner class Worker private constructor() : Thread() &#123;</span><br><span class="line">    private fun executeTask(task: Task) &#123;</span><br><span class="line">        val taskMode = task.mode</span><br><span class="line">        idleReset(taskMode)</span><br><span class="line">        beforeTask(taskMode)</span><br><span class="line">        // 1</span><br><span class="line">        runSafely(task)</span><br><span class="line">        afterTask(taskMode)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fun runSafely(task: Task) &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        // 2</span><br><span class="line">        task.run()</span><br><span class="line">    &#125; catch (e: Throwable) &#123;</span><br><span class="line">        val thread = Thread.currentThread()</span><br><span class="line">        thread.uncaughtExceptionHandler.uncaughtException(thread, e)</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        unTrackTask()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">internal abstract class Task(</span><br><span class="line">    @JvmField var submissionTime: Long,</span><br><span class="line">    @JvmField var taskContext: TaskContext</span><br><span class="line">) : Runnable &#123;</span><br><span class="line">    constructor() : this(0, NonBlockingContext)</span><br><span class="line">    inline val mode: Int get() = taskContext.taskMode // TASK_XXX</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="task-run"><a href="#task-run" class="headerlink" title="task.run()"></a>task.run()</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">internal class DispatchedContinuation&lt;in T&gt;(</span><br><span class="line">    @JvmField val dispatcher: CoroutineDispatcher,</span><br><span class="line">    @JvmField val continuation: Continuation&lt;T&gt;</span><br><span class="line">) : DispatchedTask&lt;T&gt;(MODE_UNINITIALIZED), CoroutineStackFrame, Continuation&lt;T&gt; by continuation &#123;</span><br><span class="line"></span><br><span class="line">    public final override fun run() &#123;</span><br><span class="line"></span><br><span class="line">        val taskContext = this.taskContext</span><br><span class="line">        var fatalException: Throwable? = null</span><br><span class="line">        try &#123;</span><br><span class="line">            val delegate = delegate as DispatchedContinuation&lt;T&gt;</span><br><span class="line">            val continuation = delegate.continuation</span><br><span class="line">            withContinuationContext(continuation, delegate.countOrElement) &#123;</span><br><span class="line">                val context = continuation.context</span><br><span class="line">                val state = takeState() </span><br><span class="line">                val exception = getExceptionalResult(state)</span><br><span class="line"></span><br><span class="line">                val job = if (exception == null &amp;&amp; resumeMode.isCancellableMode) context[Job] else null</span><br><span class="line">                if (job != null &amp;&amp; !job.isActive) &#123;</span><br><span class="line">                    // 1</span><br><span class="line">                    val cause = job.getCancellationException()</span><br><span class="line">                    cancelCompletedResult(state, cause)</span><br><span class="line">                    continuation.resumeWithStackTrace(cause)</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    if (exception != null) &#123;</span><br><span class="line">                        // 2</span><br><span class="line">                        continuation.resumeWithException(exception)</span><br><span class="line">                    &#125; else &#123;</span><br><span class="line">                        // 3</span><br><span class="line">                        continuation.resume(getSuccessfulResult(state))</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (e: Throwable) &#123;</span><br><span class="line"></span><br><span class="line">            fatalException = e</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            val result = runCatching &#123; taskContext.afterTask() &#125;</span><br><span class="line">            handleFatalException(fatalException, result.exceptionOrNull())</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<!-- flag of hidden posts -->
+    </div>
+
+    
+    
+    
+      
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>sven
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="https://zhaoxiaowen-sven.github.io/2022/04/16/Notes/Kotlin/Koltin_05_Dispatcher/" title="Koltin_05_Dispatcher">https://zhaoxiaowen-sven.github.io/2022/04/16/Notes/Kotlin/Koltin_05_Dispatcher/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Koltin-05-Dispatcher"><span class="nav-text">Koltin_05_Dispatcher</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Launch"><span class="nav-text">Launch</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CoroutineScope-launch"><span class="nav-text">CoroutineScope.launch</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CoroutineStart"><span class="nav-text">CoroutineStart</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#intercepted"><span class="nav-text">intercepted()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#resumeCancellableWith-Result-success-Unit-onCancellation"><span class="nav-text">resumeCancellableWith(Result.success(Unit), onCancellation)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DefaultScheduler"><span class="nav-text">DefaultScheduler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SchedulerCoroutineDispatcher"><span class="nav-text">SchedulerCoroutineDispatcher</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CoroutineScheduler"><span class="nav-text">CoroutineScheduler</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Worker"><span class="nav-text">Worker</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#task-run"><span class="nav-text">task.run()</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="sven"
+      src="/images/sven.jpeg">
+  <p class="site-author-name" itemprop="name">sven</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zhaoxiaowen-sven" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhaoxiaowen-sven" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:zhaoxiaowen-sven@gmail.com" title="E-Mail → mailto:zhaoxiaowen-sven@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2025</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">sven</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
